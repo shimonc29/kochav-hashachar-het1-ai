@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>גוגלמוגל - סדרת המשקאות המרעננת</title>
+    <style>
+        :root {
+            --bg-color: #0b0d12;
+            --card-bg: #141720;
+            --text-main: #ffffff;
+            --text-sub: #a0aec0;
+            --pink-accent: #ff2a7d;
+            --purple-accent: #9d4edd;
+            --green-accent: #2ecc71;
+            --brown-accent: #8d5b4c;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+
+        header {
+            background: radial-gradient(circle at center, #231634 0%, var(--bg-color) 70%);
+            padding: 3.5rem 1rem 1.5rem 1rem;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 3.5rem;
+            margin: 0;
+            background: linear-gradient(45deg, var(--pink-accent), var(--purple-accent), var(--green-accent), var(--brown-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            letter-spacing: 1px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            color: var(--text-sub);
+            margin-top: 0.5rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1.5rem 3rem 1.5rem;
+        }
+
+        .hero-banner {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6);
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .hero-banner h2 {
+            font-size: 2rem;
+            margin-top: 0;
+        }
+
+        .flavors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .flavor-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 24px;
+            padding: 2rem 1rem;
+            text-align: center;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
+            position: relative;
+        }
+
+        .flavor-card:hover {
+            transform: translateY(-12px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.7);
+        }
+
+        .can-svg {
+            width: 150px;
+            height: 260px;
+            filter: drop-shadow(0 20px 18px rgba(0,0,0,0.8));
+            transition: transform 0.4s ease;
+        }
+
+        .flavor-card:hover .can-svg {
+            transform: scale(1.06) rotate(-2deg);
+        }
+
+        .rating {
+            color: #ffc107;
+            font-size: 1.2rem;
+            margin: 1rem 0 0.5rem 0;
+        }
+
+        .review-section {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 24px;
+            padding: 2.5rem;
+            margin-top: 4rem;
+        }
+
+        .review-form input, .review-form textarea, .review-form select {
+            width: 100%;
+            padding: 1rem;
+            margin: 0.5rem 0 1.2rem 0;
+            background: #090b0f;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 12px;
+            color: white;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+
+        .review-form input:focus, .review-form textarea:focus, .review-form select:focus {
+            outline: none;
+            border-color: var(--pink-accent);
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--pink-accent), #d61b60);
+            color: white;
+            border: none;
+            padding: 1rem 2.5rem;
+            font-size: 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 8px 20px rgba(255, 42, 125, 0.4);
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        .btn:hover {
+            opacity: 0.95;
+            transform: scale(1.02);
+        }
+
+        /* עיצוב כפתור השיתוף */
+        .share-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 0.8rem 1.8rem;
+            font-size: 0.95rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            margin-top: 1.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .share-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.03);
+        }
+
+        .review-item {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 1.2rem 0;
+        }
+
+        .review-item:last-child {
+            border-bottom: none;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2.5rem;
+            color: var(--text-sub);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>גוגלמוגל</h1>
+        <p>סדרת פחיות הפרימיום המרעננת</p>
+    </header>
+
+    <div class="container">
+        <section class="hero-banner">
+            <h2>עולם של טעמים ייחודיים</h2>
+            <p style="color: var(--text-sub); max-width: 650px; margin: 0 auto;">פחיות קרירות ומעוצבות בשילוב טעמי פירות וטעמים מיוחדים ומפתיעים. בחר את הטעם המועדף עליך!</p>
+            
+            <!-- כפתור שיתוף -->
+            <button class="share-btn" id="shareBtn">
+                <span>🔗</span> שתף את גוגלמוגל עם חברים
+            </button>
+        </section>
+
+        <h2 style="text-align: center; margin-bottom: 2.5rem;">הטעמים בסדרה והמלצות</h2>
+        <div class="flavors-grid">
+            
+            <!-- פחית תות (ורודה) -->
+            <div class="flavor-card">
+                <svg class="can-svg" viewBox="0 0 120 220">
+                    <defs>
+                        <linearGradient id="strawberryGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#990033" />
+                            <stop offset="20%" stop-color="#ff3377" />
+                            <stop offset="50%" stop-color="#ff6699" />
+                            <stop offset="80%" stop-color="#cc0044" />
+                            <stop offset="100%" stop-color="#660022" />
+                        </linearGradient>
+                        <linearGradient id="metalGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#666" />
+                            <stop offset="25%" stop-color="#ccc" />
+                            <stop offset="50%" stop-color="#fff" />
+                            <stop offset="75%" stop-color="#aaa" />
+                            <stop offset="100%" stop-color="#444" />
+                        </linearGradient>
+                        <linearGradient id="innerShadow" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" stop-color="black" stop-opacity="0.3" />
+                            <stop offset="15%" stop-color="black" stop-opacity="0" />
+                            <stop offset="85%" stop-color="black" stop-opacity="0" />
+                            <stop offset="100%" stop-color="black" stop-opacity="0.4" />
+                        </linearGradient>
+                    </defs>
+
+                    <path d="M 25 195 Q 60 210 95 195 L 95 200 Q 60 215 25 200 Z" fill="url(#metalGrad)" />
+                    <rect x="25" y="25" width="70" height="172" rx="10" fill="url(#strawberryGrad)" />
+                    <rect x="25" y="25" width="70" height="172" rx="10" fill="url(#innerShadow)" />
+                    <rect x="42" y="25" width="8" height="172" fill="white" opacity="0.35" />
+                    <rect x="38" y="25" width="3" height="172" fill="white" opacity="0.15" />
+
+                    <path d="M 25 28 Q 60 20 95 28 L 93 20 Q 60 13 27 20 Z" fill="url(#metalGrad)" />
+                    <ellipse cx="60" cy="18" rx="33" ry="6" fill="url(#metalGrad)" />
+                    <ellipse cx="60" cy="17" rx="29" ry="4.5" fill="#333" />
+                    <ellipse cx="60" cy="18" rx="28" ry="4" fill="#888" />
+                    <ellipse cx="60" cy="18" rx="6" ry="2.5" fill="#ddd" />
+                    <circle cx="60" cy="18" r="1" fill="#444" />
+
+                    <text x="60" y="80" font-size="10" fill="white" font-weight="900" text-anchor="middle" letter-spacing="1">גוגלמוגל</text>
+                    <text x="60" y="115" font-size="28" text-anchor="middle">🍓</text>
+                    <text x="60" y="145" font-size="10" fill="#ffe6f0" font-weight="bold" text-anchor="middle">תות קלאסי</text>
+                </svg>
+
+                <h3>תות קלאסי</h3>
+                <div class="rating">★★★★★</div>
+                <p style="color: var(--text-sub);">"פחית ורודה מתוקה וכיפית! הטעם הכי קלאסי ומרענן שיש."</p>
+            </div>
+
+            <!-- פחית פטל (סגולה) -->
+            <div class="flavor-card">
+                <svg class="can-svg" viewBox="0 0 120 220">
+                    <defs>
+                        <linearGradient id="raspberryGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#3c096c" />
+                            <stop offset="20%" stop-color="#7b2cbf" />
+                            <stop offset="50%" stop-color="#9d4edd" />
+                            <stop offset="80%" stop-color="#5a189a" />
+                            <stop offset="100%" stop-color="#240046" />
+                        </linearGradient>
+                    </defs>
+
+                    <path d="M 25 195 Q 60 210 95 195 L 95 200 Q 60 215 25 200 Z" fill="url(#metalGrad)" />
+                    <rect x="25" y="25" width="70" height="172" rx="10" fill="url(#raspberryGrad)" />
+                    <rect x="25" y="25" width="70" height="172" rx="10" fill="url(#innerShadow)" />
+                    <rect x="42" y="25" width="8" height="172" fill="white" opacity="0.35" />
+                    <rect x="38" y="25" width="3" height="172" fill="white" opacity="0.15" />
+
+                    <path d="M 25 28 Q 60 20 95 28 L 93 20 Q 60 13 27 20 Z" fill="url(#metalGrad)" />
+                    <ellipse cx="60" cy="18" rx="33" ry="6" fill="url(#metalGrad)" />
+                    <ellipse cx="60" cy="17" rx="29" ry="4.5" fill="#333" />
+                    <ellipse cx="60" cy="18" rx="28" ry="4" fill="#888" />
+                    <ellipse cx="60" cy="18" rx="6" ry="2.5" fill="#ddd" />
+                    <circle cx="60" cy="18" r="1" fill="#444" />
+
+                    <text x="60" y="78" font-size="10" fill="white" font-weight="900" text-anchor="middle" letter-spacing="1">גוגלמוגל</text>
+                    
+                    <g transform="translate(60, 110)">
+                        <circle cx="-6" cy="-8" r="5" fill="#e0aaff" />
+                        <circle cx="6" cy="-8" r="5" fill="#e0aaff" />
+                        <circle cx="-10" cy="0" r="5" fill="#c77dff" />
+                        <circle cx="0" cy="0" r="5.5" fill="#e0aaff" />
+                        <circle cx="10" cy="0" r="5" fill="#c77dff" />
+                        <circle cx="-6" cy="8" r="5" fill="#9d4edd" />
+                        <circle cx="6" cy="8" r="5" fill="#9d4edd" />
+                        <circle cx="0" cy="14" r="4.5" fill="#7b2cbf" />
+                        <path d="M -5 -12 Q 0 -18 5 -12 Q 0 -10 -5 -12 Z" fill="#2ecc71" />
+                    </g>
+
+                    <text x="60" y="148" font-size="10" fill="#f3e8ff" font-weight="bold" text-anchor="middle">פטל חמצמץ</text>
+                </svg>
+
+                <h3>פטל חמצמץ</h3>
+                <div class="rating">★★★★★</div>
+                <p style="color: var(--text-sub);">"הפחית הסגולה הכי יפה שיש, והטעם החמוץ-מתוק של הפטל מושלם!"</p>
+            </div>
+
+            <!-- פחית תפוח (ירוקה) -->
+            <div class="flavor-card">
+                <svg class="can-svg" viewBox="0 0 120 220">
+                    <defs>
+                        <linearGradient id="appleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#145214" />
+                            <stop offset="20%" stop-color="#2ecc71" />
+                            <stop offset="50%" stop-color="#58d68d" />
+                            <stop offset="80%" stop-color="#27ae60" />
+                            <stop offset="100%" stop-color="#0e3a0e" />
+                        </linearGradient>
+                    </defs>
+
+                    <path d="M 25 195 Q 60 210 95 195 L 95 200 Q 60 215 25 200 Z" fill="url(#metalGrad)" />
+                    <rect x="25" y="25" width="70" height="172" rx="10" fill="url(#appleGrad)" />
+                    <rect x="25" y="25" width="70" height="172" rx="10" fill="url(#innerShadow)" />
+                    <rect x="42" y="25" width="8" height="172" fill="white" opacity="0.35" />
+                    <rect x="38" y="25" width="3" height="172" fill="white" opacity="0.15" />
+
+                    <path d="M 25 28 Q 60 20 95 28 L 93 20 Q 60 13 27 20 Z" fill="url(#metalGrad)" />
+                    <ellipse cx="60" cy="18" rx="33" ry="6" fill="url(#metalGrad)" />
+                    <ellipse cx="60" cy="17" rx="29" ry="4.5" fill="#333" />
+                    <ellipse cx="60" cy="18" rx="28" ry="4" fill="#888" />
+                    <ellipse cx="60" cy="18" rx="6" ry="2.5" fill="#ddd" />
+                    <circle cx="60" cy="18" r="1" fill="#444" />
+
+                    <text x="60" y="80" font-size="10" fill="white" font-weight="900" text-anchor="middle" letter-spacing="1">גוגלמוגל</text>
+                    <text x="60" y="115" font-size="28" text-anchor="middle">🍏</text>
+                    <text x="60" y="145" font-size="10" fill="#e8f8f0" font-weight="bold" text-anchor="middle">תפוח ירוק</text>
+                </svg>
+
+                <h3>תפוח ירוק</h3>
+                <div class="rating">★★★★★</div>
+                <p style="color: var(--text-sub);">"מומלץ ביותר! פחית ירוקה עם טעם תפוח ירוק מרענן בטירוף, פריך ומלא אנרגיה."</p>
+            </div>
+
+            <!-- פחית מלפפון ואצות ים (חומה) -->
+            <div class="flavor-card">
+                <svg class="can-svg" viewBox="0 0 120 220">
+                    <defs>
+                        <linearGradient id="seaweedGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stop-color="#4a2e2b" />
+                            <stop offset="20%" stop-color="#8d5b4c" />
+                            <stop offset="50%" stop-color="#a6705d" />
+                            <stop offset="80%" stop-color="#6e4235" />
+                            <stop offset="100%" stop-color="#331c17" />
+                        </linearGradient>
+                    </defs>
+
+                    <path d="M 25 195 Q 60 210 95 195 L 95 200 Q 60 215 25 200 Z" fill="url(#metalGrad)" />
+                    <rect x="25" y="25" width="70" height="172" rx="10" fill="url(#seaweedGrad)" />
+                    <rect x="25" y="25" width="70" height="172" rx="10" fill="url(#innerShadow)" />
+                    <rect x="42" y="25" width="8" height="172" fill="white" opacity="0.35" />
+                    <rect x="38" y="25" width="3" height="172" fill="white" opacity="0.15" />
+
+                    <path d="M 25 28 Q 60 20 95 28 L 93 20 Q 60 13 27 20 Z" fill="url(#metalGrad)" />
+                    <ellipse cx="60" cy="18" rx="33" ry="6" fill="url(#metalGrad)" />
+                    <ellipse cx="60" cy="17" rx="29" ry="4.5" fill="#333" />
+                    <ellipse cx="60" cy="18" rx="28" ry="4" fill="#888" />
+                    <ellipse cx="60" cy="18" rx="6" ry="2.5" fill="#ddd" />
+                    <circle cx="60" cy="18" r="1" fill="#444" />
+
+                    <text x="60" y="78" font-size="10" fill="white" font-weight="900" text-anchor="middle" letter-spacing="1">גוגלמוגל</text>
+                    
+                    <g transform="translate(60, 110)">
+                        <path d="M -12 12 Q -8 0 -12 -12 T -10 -20" stroke="#2d5a27" stroke-width="3" fill="none" opacity="0.8"/>
+                        <path d="M 12 12 Q 16 0 12 -12 T 14 -20" stroke="#2d5a27" stroke-width="3" fill="none" opacity="0.8"/>
+                        <circle cx="0" cy="0" r="11" fill="#78c850" stroke="#2e7d32" stroke-width="2"/>
+                        <circle cx="0" cy="0" r="7" fill="#a5d6a7"/>
+                        <circle cx="-3" cy="-3" r="1" fill="#1b5e20"/>
+                        <circle cx="3" cy="3" r="1" fill="#1b5e20"/>
+                        <circle cx="-3" cy="3" r="1" fill="#1b5e20"/>
+                        <circle cx="3" cy="-3" r="1" fill="#1b5e20"/>
+                    </g>
+
+                    <text x="60" y="148" font-size="8" fill="#f5e6e8" font-weight="bold" text-anchor="middle">מלפפון ואצות</text>
+                </svg>
+
+                <h3>מלפפון ואצות ים</h3>
+                <div class="rating">★★★★☆</div>
+                <p style="color: var(--text-sub);">"שילוב נועז ומיוחד! פחית חומה עם טעם אומאמי מעורר, רענן ומפתיע במיוחד."</p>
+            </div>
+
+        </div>
+
+        <section class="review-section">
+            <h2>חוות דעת מהקהילה</h2>
+            
+            <div class="reviews-list" id="reviewsContainer">
+                <div class="review-item">
+                    <strong>עידו פ.</strong> <span style="color:var(--text-sub); font-size:0.9rem;">(טעם: מלפפון ואצות)</span> <span class="rating">★★★★☆</span>
+                    <p style="color: var(--text-sub); margin-bottom: 0;">"בהתחלה הייתי סקפטי לגבי הפחית החומה, אבל השילוב של המלפפון והאצות מטורף!"</p>
+                </div>
+                <div class="review-item">
+                    <strong>איתי ל.</strong> <span style="color:var(--text-sub); font-size:0.9rem;">(טעם: תפוח ירוק)</span> <span class="rating">★★★★★</span>
+                    <p style="color: var(--text-sub); margin-bottom: 0;">"פחית התפוח הירוק היא פשוט הברקה! מרעננת מאוד לקיץ."</p>
+                </div>
+                <div class="review-item">
+                    <strong>נועה ש.</strong> <span style="color:var(--text-sub); font-size:0.9rem;">(טעם: פטל סגול)</span> <span class="rating">★★★★★</span>
+                    <p style="color: var(--text-sub); margin-bottom: 0;">"העיצוב של הפחית הסגולה מהמם והטעם חמצמץ ומדויק."</p>
+                </div>
+                <div class="review-item">
+                    <strong>גל מ.</strong> <span style="color:var(--text-sub); font-size:0.9rem;">(טעם: תות ורוד)</span> <span class="rating">★★★★★</span>
+                    <p style="color: var(--text-sub); margin-bottom: 0;">"הפחית הוורודה הכי טעימה בסדרה, מתיקות מושלמת."</p>
+                </div>
+            </div>
+
+            <hr style="margin: 2rem 0; border: 0; border-top: 1px solid rgba(255,255,255,0.08);">
+
+            <h3>הוסף חוות דעת משלך</h3>
+            <form class="review-form" id="reviewForm">
+                <label for="name">שם מלא:</label>
+                <input type="text" id="name" required placeholder="הכנס את שמך">
+
+                <label for="flavorSelect">איזה טעם ניסית?</label>
+                <select id="flavorSelect">
+                    <option value="תות (ורוד)">תות 🍓 (פחית ורודה)</option>
+                    <option value="פטל (סגול)">פטל 🫐 (פחית סגולה)</option>
+                    <option value="תפוח (ירוק)">תפוח 🍏 (פחית ירוקה)</option>
+                    <option value="מלפפון ואצות (חום)">מלפפון ואצות 🥒 (פחית חומה)</option>
+                </select>
+
+                <label for="reviewText">חוות הדעת שלך:</label>
+                <textarea id="reviewText" rows="4" required placeholder="מה חשבת על המשקה?"></textarea>
+
+                <button type="submit" class="btn">פרסם חוות דעת</button>
+            </form>
+        </section>
+    </div>
+
+    <footer>
+        <p>© 2026 גוגלמוגל - מותג המשקאות המרענן.</p>
+    </footer>
+
+    <script>
+        // מנגנון הוספת חוות דעת
+        document.getElementById('reviewForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('name').value;
+            const

@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>פסנתר כיף - משחק לימוד פסנתר אינטראקטיבי</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Heebo for clean Hebrew typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Heebo', sans-serif;
+            user-select: none;
+        }
+        /* Custom piano key styling */
+        .piano-key {
+            transition: background-color 0.1s, transform 0.05s;
+        }
+        .white-key {
+            background: linear-gradient(to bottom, #ffffff 0%, #f1f5f9 100%);
+            box-shadow: inset 0 -4px 6px rgba(0,0,0,0.1), 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .white-key:hover {
+            background: linear-gradient(to bottom, #f8fafc 0%, #e2e8f0 100%);
+        }
+        .white-key.active {
+            background: linear-gradient(to bottom, #cbd5e1 0%, #94a3b8 100%) !important;
+            transform: translateY(2px);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .black-key {
+            background: linear-gradient(to bottom, #334155 0%, #0f172a 100%);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
+        .black-key:hover {
+            background: linear-gradient(to bottom, #475569 0%, #1e293b 100%);
+        }
+        .black-key.active {
+            background: linear-gradient(to bottom, #0f172a 0%, #020617 100%) !important;
+            transform: translateY(2px);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+        /* Custom scrollbar for song selection */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden">
+
+    <!-- Header / Navbar -->
+    <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700 py-4 px-6 sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-indigo-600 text-white p-2.5 rounded-2xl shadow-lg shadow-indigo-500/30 flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black bg-gradient-to-r from-indigo-400 to-pink-400 bg-clip-text text-transparent">פסנתר כיף</h1>
+                    <p class="text-xs text-slate-400">אקדמיה אינטראקטיבית ללימוד פסנתר למתחילים</p>
+                </div>
+            </div>
+
+            <!-- Mode Selector Tabs -->
+            <div class="flex bg-slate-900/90 p-1.5 rounded-2xl border border-slate-700/80 shadow-inner">
+                <button onclick="switchMode('free')" id="btn-mode-free" class="px-5 py-2 rounded-xl text-sm font-bold transition-all duration-200 bg-indigo-600 text-white shadow-md">
+                    🎹 חופשי
+                </button>
+                <button onclick="switchMode('trainer')" id="btn-mode-trainer" class="px-5 py-2 rounded-xl text-sm font-bold transition-all duration-200 text-slate-400 hover:text-white">
+                    🎯 זיהוי תווים
+                </button>
+                <button onclick="switchMode('songs')" id="btn-mode-songs" class="px-5 py-2 rounded-xl text-sm font-bold transition-all duration-200 text-slate-400 hover:text-white">
+                    🎵 תרגול שירים
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="max-w-6xl w-full mx-auto p-4 sm:p-6 flex-grow flex flex-col justify-center my-auto">
+        
+        <!-- FREE PLAY MODE -->
+        <div id="mode-free-container" class="space-y-6">
+            <div class="text-center space-y-2">
+                <h2 class="text-3xl font-extrabold text-white">נגינה חופשית</h2>
+                <p class="text-slate-400 max-w-lg mx-auto">הקלק על המקלדת בעכבר, השתמש במקלדת המחשב, או נגן להנאתך. גלה את הצלילים!</p>
+            </div>
+            
+            <!-- Helper keyboard hint box -->
+            <div class="bg-slate-800/50 border border-slate-700/60 rounded-2xl p-4 max-w-2xl mx-auto text-center shadow-lg">
+                <p class="text-xs text-indigo-300 font-medium mb-2">💡 מקשי במקלדת המחשב שלך (אוקטבה מרכזית):</p>
+                <div class="flex flex-wrap justify-center gap-2 text-xs text-slate-300 font-mono">
+                    <span class="bg-slate-700 px-2 py-1 rounded">A: דו (C4)</span>
+                    <span class="bg-slate-700 px-2 py-1 rounded">S: רה (D4)</span>
+                    <span class="bg-slate-700 px-2 py-1 rounded">D: מי (E4)</span>
+                    <span class="bg-slate-700 px-2 py-1 rounded">F: פה (F4)</span>
+                    <span class="bg-slate-700 px-2 py-1 rounded">G: סול (G4)</span>
+                    <span class="bg-slate-700 px-2 py-1 rounded">H: לה (A4)</span>
+                    <span class="bg-slate-700 px-2 py-1 rounded">J: סי (B4)</span>
+                    <span class="bg-slate-700 px-2 py-1 rounded">K: דו גבוה (C5)</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- NOTE TRAINER MODE -->
+        <div id="mode-trainer-container" class="hidden space-y-6">
+            <div class="bg-slate-800/80 border border-slate-700 rounded-3xl p-6 sm:p-8 shadow-xl max-w-3xl mx-auto w-full relative overflow-hidden">
+                <!-- Top stats bar inside card -->
+                <div class="flex justify-between items-center mb-6 border-b border-slate-700 pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-pink-500/10 text-pink-400 px-3 py-1.5 rounded-xl border border-pink-500/20 text-sm font-bold">
+                            ניקוד: <span id="trainer-score" class="text-lg">0</span>
+                        </div>
+                        <div class="bg-indigo-500/10 text-indigo-400 px-3 py-1.5 rounded-xl border border-indigo-500/20 text-sm font-bold">
+                            רצף: <span id="trainer-streak" class="text-lg">0</span> 🔥
+                        </div>
+                    </div>
+                    <button onclick="startTrainerGame()" class="bg-gradient-to-r from-pink-600 to-indigo-600 hover:from-pink-500 hover:to-indigo-500 text-white font-bold px-5 py-2 rounded-xl shadow-lg shadow-indigo-500/20 transition transform active:scale-95 text-sm">
+                        🔄 התחל מחדש
+                    </button>
+                </div>
+
+                <!-- Visual Sheet Note Display (Canvas / SVG) -->
+                <div class="bg-slate-900 rounded-2xl p-6 border border-slate-700/80 flex flex-col items-center justify-center min-h-[240px] relative shadow-inner">
+                    <div id="trainer-feedback" class="absolute top-4 text-xl font-bold transition-all opacity-0"></div>
+                    
+                    <!-- SVG Sheet Music Staff -->
+                    <div class="w-full max-w-md flex flex-col items-center">
+                        <p class="text-xs text-slate-400 mb-4 uppercase tracking-widest font-semibold">זהה את התו בחמשה או לפי השם:</p>
+                        
+                        <div class="text-5xl font-black text-indigo-300 mb-6 bg-slate-800 px-8 py-4 rounded-2xl border border-indigo-500/30 shadow-lg tracking-wider" id="target-note-name">
+                            -
+                        </div>
+
+                        <!-- Staff Container -->
+                        <div class="relative w-64 h-24 border-y-2 border-slate-700 flex items-center justify-center">
+                            <!-- 5 Staff lines -->
+                            <div class="absolute w-full h-[1px] bg-slate-500 top-2"></div>
+                            <div class="absolute w-full h-[1px] bg-slate-500 top-7"></div>
+                            <div class="absolute w-full h-[1px] bg-slate-500 top-12"></div>
+                            <div class="absolute w-full h-[1px] bg-slate-500 top-17"></div>
+                            <div class="absolute w-full h-[1px] bg-slate-500 top-22"></div>
+                            
+                            <!-- Note head element that moves based on pitch -->
+                            <div id="staff-note-head" class="absolute w-6 h-5 bg-pink-500 rounded-full border-2 border-white shadow-md transition-all duration-300 transform -translate-x-1/2 -translate-y-1/2 left-1/2 top-12"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 text-center text-slate-400 text-sm">
+                    לחץ על המקש המתאים במקלדת הפסנתר למטה!
+                </div>
+            </div>
+        </div>
+
+        <!-- SONGS PRACTICE MODE -->
+        <div id="mode-songs-container" class="hidden space-y-6">
+            <div class="bg-slate-800/80 border border-slate-700 rounded-3xl p-6 shadow-xl max-w-4xl mx-auto w-full">
+                <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+                    <div>
+                        <h3 class="text-xl font-bold text-white" id="song-title-display">בחר שיר לתרגול</h3>
+                        <p class="text-xs text-slate-400">השתמש בתווים הנופלים או בעזרת המדריך</p>
+                    </div>
+                    <!-- Song selection dropdown -->
+                    <div class="flex items-center gap-3 w-full sm:w-auto">
+                        <select id="song-select" onchange="selectSong(this.value)" class="bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-indigo-500 w-full sm:w-64 shadow-inner">
+                            <option value="happy_birthday">יום הולדת שמח (Happy Birthday)</option>
+                            <option value="joy_to_the_world">אודה לשמחה (Ode to Joy)</option>
+                            <option value="twinkle">כוכב נוצץ (Twinkle Twinkle Little Star)</option>
+                            <option value="jingle_bells">פעמוני חג (Jingle Bells)</option>
+                        </select>
+                        <button id="song-play-btn" onclick="toggleSongPlay()" class="bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-5 py-2 rounded-xl shadow-lg shadow-indigo-500/20 text-sm transition flex items-center gap-2 shrink-0">
+                            ▶ נגן שיר
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Falling Notes Game Canvas Area -->
+                <div class="bg-slate-900 rounded-2xl border border-slate-700/80 h-48 relative overflow-hidden shadow-inner flex items-center justify-center">
+                    <canvas id="falling-notes-canvas" class="w-full h-full absolute inset-0"></canvas>
+                    <div id="song-overlay-msg" class="absolute z-10 text-center pointer-events-none">
+                        <div class="text-xl font-bold text-slate-400/80 bg-slate-900/80 px-6 py-2 rounded-xl backdrop-blur border border-slate-700">
+                            לחץ על "נגן שיר" כדי להתחיל בתרגול!
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Song progress & stats -->
+                <div class="flex justify-between items-center mt-4 text-xs text-slate-400 px-2">
+                    <span id="song-progress-text">התקדמות: 0 / 0</span>
+                    <span id="song-score-text">דיוק: 100%</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- PIANO KEYBOARD COMPONENT -->
+        <div class="mt-8 bg-slate-800/90 border border-slate-700/90 p-4 sm:p-6 rounded-3xl shadow-2xl max-w-5xl mx-auto w-full backdrop-blur">
+            <div class="flex justify-between items-center mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="text-xs font-bold text-slate-300">מקלדת פסנתר פעילה (2 אוקטבות)</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <span class="text-xs text-slate-400">הצג שמות תווים:</span>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="toggle-labels" onchange="toggleKeyLabels()" checked class="sr-only peer">
+                        <div class="w-9 h-5 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-600"></div>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Piano Keys Container -->
+            <div id="piano-keyboard" class="relative flex justify-center bg-slate-950 p-3 rounded-2xl shadow-inner overflow-x-auto select-none border border-slate-900">
+                <!-- Keys will be dynamically rendered here -->
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center py-4 text-xs text-slate-500 border-t border-slate-800 mt-6">
+        פסנתר כיף אינטראקטיבי &copy; 2026 | פותח בעזרת Web Audio API ו-Tailwind CSS
+    </footer>
+
+    <!-- Success / Message Modal (No alert usage) -->
+    <div id="custom-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-slate-800 border border-slate-700 rounded-3xl p-8 max-w-md w-full mx-4 shadow-2xl text-center space-y-4 animate-in fade-in zoom-in duration-200">
+            <div id="modal-icon" class="w-16 h-16 bg-indigo-500/20 text-indigo-400 rounded-2xl mx-auto flex items-center justify-center text-3xl font-bold">🎉</div>
+            <h3 id="modal-title" class="text-2xl font-black text-white">כל הכבוד!</h3>
+            <p id="modal-message" class="text-slate-300 text-sm">השלמת את השיר בהצלחה רבה!</p>
+            <button onclick="closeModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl shadow-lg shadow-indigo-500/30 transition">
+                המשך
+            </button>
+        </div>
+    </div>
+
+    <!-- Application JavaScript -->
+    <script>
+        // --- Web Audio API Synth Engine ---
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        }
+
+        // Play piano frequency with smooth envelope (ADSR)
+        function playTone(frequency, duration = 1.2) {
+            initAudio();
+            if (!audioCtx) return;
+
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+
+            // Use triangle + sine for a warm piano-like tone
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+
+            // Envelope
+            const now = audioCtx.currentTime;
+            gainNode.gain.setValueAtTime(0, now);
+            gainNode.gain.linearRampToValueAtTime(0.5, now + 0.03); // Attack
+            gainNode.gain.exponentialRampToValueAtTime(0.001, now + duration); // Decay/Release
+
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            osc.start(now);
+            osc.stop(now + duration);
+        }
+
+        // --- Piano Key Definitions (2 Octaves: C4 to C6) ---
+        const pianoKeys = [
+            { note: 'C4', freq: 261.63, type: 'white', label: 'דו', keyboardKey: 'a' },
+            { note: 'C#4', freq: 277.18, type: 'black', label: 'דו#', keyboardKey: 'w' },
+            { note: 'D4', freq: 293.66, type: 'white', label: 'רה', keyboardKey: 's' },
+            { note: 'D#4', freq: 311.13, type: 'black', label: 'רה#', keyboardKey: 'e' },
+            { note: 'E4', freq: 329.63, type: 'white', label: 'מי', keyboardKey: 'd' },
+            { note: 'F4', freq: 349.23, type: 'white', label: 'פה', keyboardKey: 'f' },
+            { note: 'F#4', freq: 369.99, type: 'black', label: 'פה#', keyboardKey: 't' },
+            { note: 'G4', freq: 392.00, type: 'white', label: 'סול', keyboardKey: 'g' },
+            { note: 'G#4', freq: 415.30, type: 'black', label: 'סול#', keyboardKey: 'y' },
+            { note: 'A4', freq: 440.00, type: 'white', label: 'לה', keyboardKey: 'h' },
+            { note: 'A#4', freq: 466.16, type: 'black', label: 'לה#', keyboardKey: 'u' },
+            { note: 'B4', freq: 493.88, type: 'white', label: 'סי', keyboardKey: 'j' },
+            
+            { note: 'C5', freq: 523.25, type: 'white', label: 'דו גבוה', keyboardKey: 'k' },
+            { note: 'C#5', freq: 554.37, type: 'black', label: 'דו#', keyboardKey: 'o' },
+            { note: 'D5', freq: 587.33, type: 'white', label: 'רה', keyboardKey: 'l' },
+            { note: 'D#5', freq: 622.25, type: 'black', label: 'רה#', keyboardKey: 'p' },
+            { note: 'E5', freq: 659.25, type: 'white', label: 'מי', keyboardKey: ';' },
+            { note: 'F5', freq: 698.46, type: 'white', label: 'פה', keyboardKey: "'" },
+            { note: 'F#5', freq: 739.99, type: 'black', label: 'פה#', keyboardKey: ']' },
+            { note: 'G5', freq: 783.99, type: 'white', label: 'סול', keyboardKey: '' },
+            { note: 'G#5', freq: 830.61, type: 'black', label: 'סול#', keyboardKey: '' },
+            { note: 'A5', freq: 880.00, type: 'white', label: 'לה', keyboardKey: '' },
+            { note: 'A#5', freq: 932.33, type: 'black', label: 'לה#', keyboardKey: '' },
+            { note: 'B5', freq: 987.77, type: 'white', label: 'סי', keyboardKey: '' },
+            { note: 'C6', freq: 1046.50, type: 'white', label: 'דו עליון', keyboardKey: '' }
+        ];
+
+        // Map note name to staff position offset (pixels or steps from middle C)
+        const noteStaffOffsets = {
+            'C4': 40,  // Ledger line below
+            'D4': 30,
+            'E4': 20,  // Bottom line
+            'F4': 10,
+            'G4': 0,   // Middle line
+            'A4': -10,
+            'B4': -20,
+            'C5': -30, // Top line
+            'D5': -40
+        };
+
+        // --- Render Piano Keyboard ---
+        function renderKeyboard() {
+            const container = document.getElementById('piano-keyboard');
+            container.innerHTML = '';
+
+            // To render realistic piano layout, we group white and black keys
+            // For simplicity in this layout, we render white keys in a flex row, and position black keys absolutely over them.
+            
+            const whiteKeys = pianoKeys.filter(k => k.type === 'white');
+            const whiteKeyWidth = 48; // width in px
+
+            let whiteIndex = 0;
+            pianoKeys.forEach((keyData, index) => {
+                if (keyData.type === 'white') {
+                    const keyEl = document.createElement('div');
+                    keyEl.className = `piano-key white-key relative flex flex-col justify-end items-center pb-3 rounded-b-xl cursor-pointer select-none border border-slate-300`;
+                    keyEl.style.width = `${whiteKeyWidth}px`;
+                    keyEl.style.height = '180px';
+                    keyEl.dataset.note = keyData.note;
+
+                    keyEl.innerHTML = `
+                        <span class="key-label text-[11px] font-bold text-slate-600 transition-opacity">${keyData.label}</span>
+                        <span class="text-[9px] text-slate-400 font-mono mt-0.5">${keyData.keyboardKey.toUpperCase()}</span>
+                    `;
+
+                    keyEl.addEventListener('mousedown', () => pressKey(keyData, keyEl));
+                    container.appendChild(keyEl);
+                    whiteIndex++;
+                } else {
+                    // Black key - positioned over the gap between previous white key and next white key
+                    const prevWhiteIndex = whiteIndex - 1;
+                    const leftPos = (prevWhiteIndex * whiteKeyWidth) + (whiteKeyWidth * 0.7);
+
+                    const keyEl = document.createElement('div');
+                    keyEl.className = `piano-key black-key absolute top-0 flex flex-col justify-end items-center pb-2 rounded-b-lg cursor-pointer select-none`;
+                    keyEl.style.width = `${whiteKeyWidth * 0.6}px`;
+                    keyEl.style.height = '110px';
+                    keyEl.style.left = `${leftPos}px`;
+                    keyEl.dataset.note = keyData.note;
+
+                    keyEl.innerHTML = `
+                        <span class="key-label text-[9px] font-bold text-slate-300 transition-opacity">${keyData.label}</span>
+                    `;
+
+                    keyEl.addEventListener('mousedown', () => pressKey(keyData, keyEl));
+                    container.appendChild(keyEl);
+                }
+            });
+        }
+
+        function pressKey(keyData, element) {
+            playTone(keyData.freq);
+            
+            // Visual active state
+            element.classList.add('active');
+            setTimeout(() => {
+                element.classList.remove('active');
+            }, 150);
+
+            // Handle game mode interactions
+            if (currentMode === 'trainer') {
+                checkTrainerAnswer(keyData.note);
+            } else if (currentMode === 'songs' && isSongPlaying) {
+                checkSongNote(keyData.note);
+            }
+        }
+
+        // Keyboard keydown listener for PC keyboard
+        const keyMap = {};
+        pianoKeys.forEach(k => {
+            if (k.keyboardKey) {
+                keyMap[k.keyboardKey.toLowerCase()] = k;
+            }
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.repeat) return; // prevent spamming on hold
+            const keyChar = e.key.toLowerCase();
+            if (keyMap[keyChar]) {
+                const kData = keyMap[keyChar];
+                const keyEl = document.querySelector(`[data-note="${kData.note}"]`);
+                if (keyEl) {
+                    pressKey(kData, keyEl);
+                }
+            }
+        });
+
+        function toggleKeyLabels() {
+            const show = document.getElementById('toggle-labels').checked;
+            document.querySelectorAll('.key-label').forEach(el => {
+                el.style.opacity = show ? '1' : '0';
+            });
+        }
+
+        // --- Mode Switching ---
+        let currentMode = 'free';
+
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            // Update tabs UI
+            ['free', 'trainer', 'songs'].forEach(m => {
+                const btn = document.getElementById(`btn-mode-${m}`);
+                const container = document.getElementById(`mode-${m}-container`);
+                if (m === mode) {
+                    btn.className = "px-5 py-2 rounded-xl text-sm font-bold transition-all duration-200 bg-indigo-600 text-white shadow-md";
+                    container.classList.remove('hidden');
+                } else {
+                    btn.className = "px-5 py-2 rounded-xl text-sm font-bold transition-all duration-200 text-slate-400 hover:text-white";
+                    container.classList.add('hidden');
+                }
+            });
+
+            // Specific mode initializers
+            if (mode === 'trainer') {
+                startTrainerGame();
+            } else if (mode === 'songs') {
+                initSongMode();
+            } else {
+                stopSongPlay();
+            }
+        }
+
+        // --- Mode 1: Note Trainer Logic ---
+        let trainerScore = 0;
+        let trainerStreak = 0;
+        let currentTrainerNote = null;
+
+        const trainerNotes = ['C4', 'D4', 'E4', 'F4', 'G4', 'A4', 'B4', 'C5'];
+        const trainerNoteHebrew = {
+            'C4': 'דו (C4)',
+            'D4': 'רה (D4)',
+            'E4': 'מי (E4)',
+            'F4': 'פה (F4)',
+            'G4': 'סול (G4)',
+            'A4': 'לה (A4)',
+            'B4': 'סי (B4)',
+            'C5': 'דו גבוה (C5)'
+        };
+
+        function startTrainerGame() {
+            trainerScore = 0;
+            trainerStreak = 0;
+            updateTrainerStats();
+            nextTrainerRound();
+        }
+
+        function nextTrainerRound() {
+            // Pick random note from trainer notes
+            const randomIndex = Math.floor(Math.random() * trainerNotes.length);
+            currentTrainerNote = trainerNotes[randomIndex];
+
+            // Update UI name and staff position
+            document.getElementById('target-note-name').innerText = trainerNoteHebrew[currentTrainerNote];
+            
+            const staffOffset = noteStaffOffsets[currentTrainerNote] || 0;
+            const noteHead = document.getElementById('staff-note-head');
+            noteHead.style.top = `calc(50% + ${staffOffset}px)`;
+        }
+
+        function checkTrainerAnswer(playedNote) {
+            const feedbackEl = document.getElementById('trainer-feedback');
+            if (playedNote === currentTrainerNote) {
+                trainerScore += 10;
+                trainerStreak += 1;
+                feedbackEl.innerText = "מעולה! ✓";
+                feedbackEl.className = "absolute top-4 text-xl font-bold text-emerald-400 transition-all opacity-100 animate-bounce";
+                
+                setTimeout(() => {
+                    feedbackEl.className = "absolute top-4 text-xl font-bold transition-all opacity-0";
+                    nextTrainerRound();
+                }, 600);
+            } else {
+                trainerStreak = 0;
+                feedbackEl.innerText = "נסה שוב ✗";
+                feedbackEl.className = "absolute top-4 text-xl font-bold text-pink-400 transition-all opacity-100 shake";
+                
+                setTimeout(() => {
+                    feedbackEl.className = "absolute top-4 text-xl font-bold transition-all opacity-0";
+                }, 600);
+            }
+            updateTrainerStats();
+        }
+
+        function updateTrainerStats() {
+            document.getElementById('trainer-score').innerText = trainerScore;
+            document.getElementById('trainer-streak').innerText = trainerStreak;
+        }
+
+        // --- Mode 2: Songs & Melodies Logic ---
+        const songsDatabase = {
+            happy_birthday: {
+                title: "יום הולדת שמח (Happy Birthday)",
+                notes: ['C4', 'C4', 'D4', 'C4', 'F4', 'E4', 'C4', 'C4', 'D4', 'C4', 'G4', 'F4', 'C4', 'C4', 'C5', 'A4', 'F4', 'E4', 'D4', 'A#4', 'A#4', 'A4', 'F4', 'G4', 'F4']
+            },
+            joy_to_the_world: {
+                title: "אודה לשמחה (Ode to Joy)",
+                notes: ['E4', 'E4', 'F4', 'G4', 'G4', 'F4', 'E4', 'D4', 'C4', 'C4', 'D4', 'E4', 'E4', 'D4', 'D4', 'E4', 'E4', 'F4', 'G4', 'G4', 'F4', 'E4', 'D4', 'C4', 'C4', 'D4', 'E4', 'D4', 'C4', 'C4']
+            },
+            twinkle: {
+                title: "כוכב נוצץ (Twinkle Twinkle Little Star)",
+                notes: ['C4', 'C4', 'G4', 'G4', 'A4', 'A4', 'G4', 'F4', 'F4', 'E4', 'E4', 'D4', 'D4', 'C4', 'G4', 'G4', 'F4', 'F4', 'E4', 'E4', 'D4', 'G4', 'G4', 'F4', 'F4', 'E4', 'E4', 'D4', 'C4', 'C4', 'G4', 'G4', 'A4', 'A4', 'G4', 'F4', 'F4', 'E4', 'E4', 'D4', 'D4', 'C4']
+            },
+            jingle_bells: {
+                title: "פעמוני חג (Jingle Bells)",
+                notes: ['E4', 'E4', 'E4', 'E4', 'E4', 'E4', 'E4', 'G4', 'C4', 'D4', 'E4', 'F4', 'F4', 'F4', 'F4', 'F4', 'E4', 'E4', 'E4', 'E4', 'E4', 'D4', 'D4', 'E4', 'D4', 'G4']
+            }
+        };
+
+        let currentSongKey = 'happy_birthday';
+        let currentSongNotes = [];
+        let currentNoteIndex = 0;
+        let isSongPlaying = false;
+        let songCanvas, songCtx;
+        let animationFrameId = null;
+        let fallingNotes = [];
+
+        function initSongMode() {
+            songCanvas = document.getElementById('falling-notes-canvas');
+            songCtx = songCanvas.getContext('2d');
+            resizeSongCanvas();
+            window.addEventListener('resize', resizeSongCanvas);
+            loadSelectedSong('happy_birthday');
+        }
+
+        function resizeSongCanvas() {
+            if (!songCanvas) return;
+            songCanvas.width = songCanvas.parentElement.clientWidth;
+            songCanvas.height = songCanvas.parentElement.clientHeight;
+        }
+
+        function selectSong(songKey) {
+            currentSongKey = songKey;
+            loadSelectedSong(songKey);
+        }
+
+        function loadSelectedSong(key) {
+            stopSongPlay();
+            const song = songsDatabase[key];
+            document.getElementById('song-title-display').innerText = song.title;
+            currentSongNotes = [...song.notes];
+            currentNoteIndex = 0;
+            updateSongProgress();
+        }
+
+        function toggleSongPlay() {
+            if (isSongPlaying) {
+                stopSongPlay();
+            } else {
+                startSongPlay();
+            }
+        }
+
+        function startSongPlay() {
+            isSongPlaying = true;
+            currentNoteIndex = 0;
+            document.getElementById('song-play-btn').innerHTML = '⏹ עצור שיר';
+            document.getElementById('song-play-btn').className = 'bg-pink-600 hover:bg-pink-500 text-white font-bold px-5 py-2 rounded-xl shadow-lg shadow-pink-500/20 text-sm transition flex items-center gap-2 shrink-0';
+            document.getElementById('song-overlay-msg').style.display = 'none';
+
+            // Initialize falling notes representation
+            // Map notes to x positions across canvas width
+            setupFallingNotes();
+            runSongLoop();
+        }
+
+        function stopSongPlay() {
+            isSongPlaying = false;
+            if (animationFrameId) cancelAnimationFrame(animationFrameId);
+            document.getElementById('song-play-btn').innerHTML = '▶ נגן שיר';
+            document.getElementById('song-play-btn').className = 'bg-indigo-600 hover:bg-indigo-500 text-white font-bold px-5 py-2 rounded-xl shadow-lg shadow-indigo-500/20 text-sm transition flex items-center gap-2 shrink-0';
+            const overlay = document.getElementById('song-overlay-msg');
+            if (overlay) overlay.style.display = 'block';
+        }
+
+        function setupFallingNotes() {
+            // Create notes positioned sequentially
+            let spacing = 120; // distance between notes
+            fallingNotes = currentSongNotes.map((note, idx) => {
+                // find note index in pianoKeys to determine x coordinate
+                const keyObj = pianoKeys.find(k => k.note === note);
+                // normalized x based on keyboard position or default fallback
+                const keyIndex = pianoKeys.findIndex(k => k.note === note);
+                const xPct = (keyIndex + 0.5) / pianoKeys.length;
+                
+                return {
+                    note: note,
+                    xPct: xPct,
+                    y: -150 - (idx * spacing),
+                    active: true,
+                    hit: false
+                };
+            });
+        }
+
+        function runSongLoop() {
+            if (!isSongPlaying || !songCtx) return;
+
+            songCtx.clearRect(0, 0, songCanvas.width, songCanvas.height);
+
+            // Draw target hit line at the bottom
+            songCtx.strokeStyle = 'rgba(99, 102, 241, 0.4)';
+            songCtx.lineWidth = 3;
+            songCtx.beginPath();
+            songCtx.moveTo(0, songCanvas.height - 30);
+            songCtx.lineTo(songCanvas.width, songCanvas.height - 30);
+            songCtx.stroke();
+
+            // Update and draw falling notes
+            let allPassed = true;
+            fallingNotes.forEach((fn, idx) => {
+                if (!fn.active) return;
+                allPassed = false;
+
+                fn.y += 2.2; // falling speed
+
+                const x = fn.xPct * songCanvas.width;
+                
+                // Draw note block
+                songCtx.fillStyle = idx === currentNoteIndex ? '#ec4899' : '#6366f1';
+                songCtx.shadowColor = idx === currentNoteIndex ? '#ec4899' : '#6366f1';
+                songCtx.shadowBlur = 10;
+                songCtx.roundRect ? songCtx.roundRect(x - 18, fn.y, 36, 20, 6) : songCtx.rect(x - 18, fn.y, 36, 20);
+                songCtx.fill();
+                songCtx.shadowBlur = 0;
+
+                // Draw note text label inside block
+                songCtx.fillStyle = '#ffffff';
+                songCtx.font = 'bold 11px Heebo';
+                songCtx.textAlign = 'center';
+                songCtx.fillText(fn.note, x, fn.y + 14);
+
+                // Check if note missed bottom boundary
+                if (fn.y > songCanvas.height && idx === currentNoteIndex) {
+                    // Auto advance if missed or waiting
+                }
+            });
+
+            if (allPassed || currentNoteIndex >= currentSongNotes.length) {
+                stopSongPlay();
+                showModal('🎵 כל הכבוד!', `השלמת בהצלחה את השיר "${songsDatabase[currentSongKey].title}"!`);
+                return;
+            }
+
+            animationFrameId = requestAnimationFrame(runSongLoop);
+        }
+
+        function checkSongNote(playedNote) {
+            if (!isSongPlaying) return;
+            const expectedNote = currentSongNotes[currentNoteIndex];
+
+            if (playedNote === expectedNote) {
+                fallingNotes[currentNoteIndex].active = false;
+                currentNoteIndex++;
+                updateSongProgress();
+
+                if (currentNoteIndex >= currentSongNotes.length) {
+                    stopSongPlay();
+                    showModal('🏆 מדהים!', `השלמת בהצלחה את השיר "${songsDatabase[currentSongKey].title}"!`);
+                }
+            }
+        }
+
+        function updateSongProgress() {
+            const total = currentSongNotes.length;
+            document.getElementById('song-progress-text').innerText = `התקדמות: ${currentNoteIndex} / ${total}`;
+            const accuracy = total > 0 ? Math.round((currentNoteIndex / total) * 100) : 100;
+            document.getElementById('song-score-text').innerText = `התקדמות בשיר: ${accuracy}%`;
+        }
+
+        // --- Custom Modal Handling ---
+        function showModal(title, message) {
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-message').innerText = message;
+            document.getElementById('custom-modal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('custom-modal').classList.add('hidden');
+        }
+
+        // Initialize on load
+        window.onload = function() {
+            renderKeyboard();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>המלצות זהב 🌟 - פלטפורמת ההמלצות והחוויות שלך</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Font: Heebo -->
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Heebo', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Heebo', sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .glass-header {
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .card-hover-effect {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover-effect:hover {
+            transform: translateY(-6px);
+        }
+    </style>
+</head>
+<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen flex flex-col selection:bg-rose-500 selection:text-white">
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-40 bg-white/85 dark:bg-slate-900/85 border-b border-slate-200/80 dark:border-slate-800 glass-header shadow-xs transition-colors">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            
+            <!-- Logo & Brand -->
+            <div class="flex items-center gap-3 cursor-pointer" onclick="resetFilters()">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-rose-500 via-rose-600 to-amber-500 flex items-center justify-center text-white shadow-lg shadow-rose-500/25 transform hover:scale-105 transition-transform duration-300">
+                    <i class="fa-solid fa-compass text-xl"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-extrabold bg-gradient-to-r from-slate-900 via-rose-900 to-rose-600 dark:from-white dark:to-rose-400 bg-clip-text text-transparent">המלצות 🌟 זהב</span>
+                    <p class="text-xs text-slate-400 dark:text-slate-400 font-medium hidden sm:block">המקום לשתף ולגלות חוויות מומלצות</p>
+                </div>
+            </div>
+
+            <!-- Header Actions -->
+            <div class="flex items-center gap-3">
+                <!-- Theme Toggle Button -->
+                <button onclick="toggleDarkMode()" id="themeToggleBtn" aria-label="שינוי ערכת נושא" class="w-10 h-10 rounded-2xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-amber-400 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-moon text-lg dark:hidden"></i>
+                    <i class="fa-solid fa-sun text-lg hidden dark:block"></i>
+                </button>
+
+                <!-- Bookmarks Quick Filter -->
+                <button onclick="setCategory('favorites')" id="favToggleBtn" class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 px-3.5 py-2.5 rounded-2xl text-sm font-semibold hover:bg-slate-200 dark:hover:bg-slate-700 transition">
+                    <i class="fa-solid fa-bookmark text-amber-500"></i>
+                    <span class="hidden sm:inline">מועדפים</span>
+                    <span id="favCountBadge" class="bg-rose-500 text-white text-xs px-2 py-0.5 rounded-full font-bold">0</span>
+                </button>
+
+                <!-- Add Recommendation Button -->
+                <button onclick="openModal()" class="flex items-center gap-2 bg-gradient-to-r from-rose-500 to-rose-600 hover:from-rose-600 hover:to-rose-700 text-white px-4 sm:px-5 py-2.5 rounded-2xl font-medium shadow-md shadow-rose-500/20 transform hover:-translate-y-0.5 active:translate-y-0 transition-all">
+                    <i class="fa-solid fa-plus text-sm"></i>
+                    <span class="hidden sm:inline">הוסף המלצה</span>
+                    <span class="sm:hidden">הוסף</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative bg-gradient-to-b from-rose-100/40 via-white to-slate-50 dark:from-slate-900 dark:via-slate-950 dark:to-slate-950 py-14 px-4 overflow-hidden border-b border-slate-200/60 dark:border-slate-800">
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-rose-400/20 dark:bg-rose-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute top-12 -right-24 w-96 h-96 bg-amber-400/20 dark:bg-amber-600/10 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <span class="inline-flex items-center gap-2 py-1.5 px-4 rounded-full text-xs font-semibold bg-rose-100 dark:bg-rose-950/80 text-rose-700 dark:text-rose-300 mb-4 shadow-xs">
+                <i class="fa-solid fa-sparkles text-amber-500"></i> חוויות אמיתיות מהקהילה בלבד
+            </span>
+            <h1 class="text-3xl sm:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-4 leading-tight">
+                מוצאים את המקומות, הספרים והסרטים <br class="hidden sm:inline"/>
+                <span class="bg-gradient-to-r from-rose-500 via-rose-600 to-amber-500 bg-clip-text text-transparent">שבאמת שווים את הזמן שלך</span>
+            </h1>
+            <p class="text-base sm:text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto mb-8 leading-relaxed">
+                קהילה משתפת חוויות על סרטים שחובה לראות, מסעדות מומלצות, ספרים מרתקים ומסלולי טיול עם משכי שהייה ודירוגים אמיתיים.
+            </p>
+
+            <!-- Search Bar -->
+            <div class="relative max-w-2xl mx-auto shadow-xl shadow-slate-200/50 dark:shadow-none rounded-2xl bg-white dark:bg-slate-900 p-2 border border-slate-200 dark:border-slate-800 flex items-center gap-2">
+                <div class="pr-3 pl-1 text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass text-lg"></i>
+                </div>
+                <input type="text" id="searchInput" oninput="filterRecommendations()" placeholder="חפש לפי כותרת, תיאור, תגיות, מחבר או קטגוריה..." class="w-full py-2.5 px-2 focus:outline-none text-slate-800 dark:text-slate-100 text-base placeholder-slate-400 bg-transparent">
+                <button onclick="resetFilters()" title="ניקוי חיפוש" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 px-2">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+        
+        <!-- Category Filter Tabs -->
+        <div class="flex items-center gap-2.5 overflow-x-auto pb-4 mb-6 hide-scrollbar" id="categoryTabs">
+            <button onclick="setCategory('all')" class="category-btn flex items-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-sm whitespace-nowrap transition-all shadow-xs bg-slate-900 text-white dark:bg-rose-600" data-category="all">
+                <i class="fa-solid fa-border-all"></i>
+                <span>הכל</span>
+            </button>
+            <button onclick="setCategory('movies')" class="category-btn flex items-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-sm whitespace-nowrap transition-all shadow-xs bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800" data-category="movies">
+                <i class="fa-solid fa-film text-rose-500"></i>
+                <span>סרטים וסדרות</span>
+            </button>
+            <button onclick="setCategory('books')" class="category-btn flex items-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-sm whitespace-nowrap transition-all shadow-xs bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800" data-category="books">
+                <i class="fa-solid fa-book-open text-blue-500"></i>
+                <span>ספרים</span>
+            </button>
+            <button onclick="setCategory('restaurants')" class="category-btn flex items-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-sm whitespace-nowrap transition-all shadow-xs bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800" data-category="restaurants">
+                <i class="fa-solid fa-utensils text-amber-500"></i>
+                <span>מסעדות ואוכל</span>
+            </button>
+            <button onclick="setCategory('places')" class="category-btn flex items-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-sm whitespace-nowrap transition-all shadow-xs bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800" data-category="places">
+                <i class="fa-solid fa-map-location-dot text-emerald-500"></i>
+                <span>מקומות בילוי וטיולים</span>
+            </button>
+            <button onclick="setCategory('favorites')" class="category-btn flex items-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-sm whitespace-nowrap transition-all shadow-xs bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800" data-category="favorites">
+                <i class="fa-solid fa-star text-amber-400"></i>
+                <span>המועדפים שלי</span>
+            </button>
+        </div>
+
+        <!-- Filter Subrow (Sort, Star Rating Filter & Counter) -->
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-xs">
+            <div class="text-sm font-medium text-slate-500 dark:text-slate-400">
+                מציג <span id="resultCount" class="font-extrabold text-slate-900 dark:text-white">0</span> המלצות
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                <!-- Star Rating Filter -->
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <label for="ratingFilter" class="text-xs font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">סינון דירוג:</label>
+                    <select id="ratingFilter" onchange="filterRecommendations()" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500/20 w-full sm:w-auto">
+                        <option value="all">כל הדירוגים</option>
+                        <option value="5">⭐⭐⭐⭐⭐ (5 בלבד)</option>
+                        <option value="4">⭐⭐⭐⭐+ (4 ומעלה)</option>
+                        <option value="3">⭐⭐⭐+ (3 ומעלה)</option>
+                    </select>
+                </div>
+
+                <!-- Sort By Filter -->
+                <div class="flex items-center gap-2 w-full sm:w-auto">
+                    <label for="sortSelect" class="text-xs font-semibold text-slate-500 dark:text-slate-400 whitespace-nowrap">מיון לפי:</label>
+                    <select id="sortSelect" onchange="filterRecommendations()" class="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-rose-500/20 w-full sm:w-auto">
+                        <option value="newest">החדשים ביותר</option>
+                        <option value="rating">הדירוג הגבוה ביותר</option>
+                        <option value="likes">הכי הרבה לייקים</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recommendations Grid -->
+        <div id="recommendationsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Dynamic Cards Rendered Here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="hidden text-center py-20 bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-slate-200 dark:border-slate-800 my-6">
+            <div class="w-16 h-16 bg-rose-50 dark:bg-rose-950/50 text-rose-500 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-1">לא נמצאו המלצות תואמות</h3>
+            <p class="text-slate-500 dark:text-slate-400 text-sm max-w-xs mx-auto mb-6">נסה לשנות את מילות החיפוש, לאפס את המסננים או להוסיף המלצה חדשה בעצמך!</p>
+            <button onclick="resetFilters()" class="bg-slate-900 dark:bg-rose-600 text-white px-5 py-2.5 rounded-xl text-sm font-semibold hover:opacity-90 transition">איפוס מסננים</button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white dark:bg-slate-900 border-t border-slate-200/80 dark:border-slate-800 py-8 text-center text-sm text-slate-500 dark:text-slate-400 mt-auto transition-colors">
+        <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p class="text-xs sm:text-sm">כל ההמלצות נכתבות על ידי קהילת המשתמשים. שתפו גם אתם את החוויות שלכם!</p>
+            <p class="text-xs font-semibold text-slate-400 dark:text-slate-500">© 2026 המלצות זהב - כל הזכויות שמורות</p>
+        </div>
+    </footer>
+
+    <!-- Add Recommendation Modal -->
+    <div id="recommendationModal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-lg w-full p-6 sm:p-8 transform transition-all scale-95 opacity-0 duration-300 my-8 border border-slate-200 dark:border-slate-800" id="modalContainer">
+            <div class="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-6">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-rose-50 dark:bg-rose-950/60 text-rose-500 flex items-center justify-center">
+                        <i class="fa-solid fa-circle-plus text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-extrabold text-slate-900 dark:text-white">הוספת המלצה חדשה</h3>
+                        <p class="text-xs text-slate-400">שתף את הקהילה בחוויה שלך</p>
+                    </div>
+                </div>
+                <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <form id="recommendationForm" onsubmit="handleFormSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">קטגוריה</label>
+                    <select id="formCategory" required class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/20 text-slate-800 dark:text-slate-100">
+                        <option value="movies">🎬 סרטים וסדרות</option>
+                        <option value="books">📚 ספרים</option>
+                        <option value="restaurants">🍽️ מסעדות ואוכל</option>
+                        <option value="places">🌄 מקומות בילוי וטיולים</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">כותרת ההמלצה</label>
+                    <input type="text" id="formTitle" required placeholder="לדוגמה: מסעדת השף פואה / שובר קופות חדש" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/20 text-slate-800 dark:text-slate-100">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">שם הממליץ</label>
+                        <input type="text" id="formAuthor" required placeholder="השם שלך" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/20 text-slate-800 dark:text-slate-100">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">משך זמן / אורך</label>
+                        <input type="text" id="formDuration" required placeholder="לדוגמה: שעתיים ו-20 דק' / 320 עמודים" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/20 text-slate-800 dark:text-slate-100">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">דירוג (1-5)</label>
+                        <select id="formRating" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/20 text-slate-800 dark:text-slate-100">
+                            <option value="5">⭐⭐⭐⭐⭐ (מעולה ממש)</option>
+                            <option value="4">⭐⭐⭐⭐ (טוב מאוד)</option>
+                            <option value="3">⭐⭐⭐ (טוב)</option>
+                            <option value="2">⭐⭐ (בינוני)</option>
+                            <option value="1">⭐ (טעון שיפור)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">קישור לתמונה (אופציונלי)</label>
+                        <input type="url" id="formImage" placeholder="https://..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/20 text-slate-800 dark:text-slate-100">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">תגיות (מופרדות בפסיקים)</label>
+                    <input type="text" id="formTags" placeholder="דרמה, תל אביב, מומלץ, איטלקי" class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/20 text-slate-800 dark:text-slate-100">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">חוות דעת מפורטת</label>
+                    <textarea id="formDescription" required rows="3" placeholder="ספר למה אהבת את המקום / ספר / סרט, מה מיוחד בו ולמי הוא מתאים..." class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-rose-500/20 text-slate-800 dark:text-slate-100"></textarea>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <button type="button" onclick="closeModal()" class="px-5 py-2.5 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition">ביטול</button>
+                    <button type="submit" class="bg-rose-500 hover:bg-rose-600 text-white px-6 py-2.5 rounded-xl text-xs font-bold shadow-md shadow-rose-500/25 transition">פרסם המלצה</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Detailed View Modal -->
+    <div id="detailsModal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-sm hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl max-w-2xl w-full overflow-hidden transform transition-all scale-95 opacity-0 duration-300 my-8 border border-slate-200 dark:border-slate-800" id="detailsContainer">
+            <div id="detailsContent">
+                <!-- Dynamically filled by JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Toast -->
+    <div id="toast" class="fixed bottom-6 left-6 z-50 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-3 transform translate-y-24 opacity-0 transition-all duration-300 border border-slate-800 dark:border-slate-200">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 dark:text-emerald-600 text-lg"></i>
+        <span id="toastMessage" class="text-xs font-bold">הפעולה בוצעה בהצלחה!</span>
+    </div>
+
+    <script>
+        // Initial Mock Data
+        const defaultRecommendations = [
+            {
+                id: 1,
+                category: 'restaurants',
+                title: 'מסעדת "האחים" - תל אביב',
+                author: 'יובל כהן',
+                rating: 5,
+                duration: 'כשעתיים בילוי',
+                image: 'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=800&q=80',
+                tags: ['אוכל ישראלי', 'תל אביב', 'בשרים', 'מומלץ מאוד'],
+                description: 'חוויה קולינרית מדהימה באווירה תל אביבית חמה ואנרגטית. המנות נדיבות, השיפודים עשויים בטרוף והשירות פשוט יוצא מן הכלל.',
+                likes: 42,
+                date: new Date('2026-04-10').getTime(),
+                comments: [
+                    { author: 'נועה', text: 'מסעדה מעולה! ממליצה בחום על השיפודים שלהם.', date: '11/04/2026' },
+                    { author: 'גיא', text: 'הייתי שם שבוע שעבר, שירות מדהים ואוכל ברמה גבוהה.', date: '12/04/2026' }
+                ]
+            },
+            {
+                id: 2,
+                category: 'movies',
+                title: 'חולית: חלק ב\' (Dune: Part Two)',
+                author: 'דנה לוי',
+                rating: 5,
+                duration: 'שעתיים ו-46 דקות',
+                image: 'https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=800&q=80',
+                tags: ['מדע בדיוני', 'קולנוע', 'אפית', 'חובה בקולנוע'],
+                description: 'יצירת מופת קולנועית בכל קנה מידה. הסאונד, הצילום והעלילה פשוט שואבים אותך פנימה למסע בלתי נשכח בעולם החולות.',
+                likes: 38,
+                date: new Date('2026-04-15').getTime(),
+                comments: [
+                    { author: 'תומר', text: 'סרט העשור! חייבים לראות במסך ענק.', date: '16/04/2026' }
+                ]
+            },
+            {
+                id: 3,
+                category: 'books',
+                title: 'קיצור תולדות האנושות - יובל נח הררי',
+                author: 'עומר שרון',
+                rating: 5,
+                duration: '445 עמודים',
+                image: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?auto=format&fit=crop&w=800&q=80',
+                tags: ['היסטוריה', 'ספר עיון', 'חובה לקרוא', 'פילוסופיה'],
+                description: 'ספר מרתק שמשנה את כל מה שידעת על ההיסטוריה של המין האנושי. כתוב בשפה שווה לכל נפש ומלא בתובנות עמוקות.',
+                likes: 29,
+                date: new Date('2026-03-20').getTime(),
+                comments: []
+            },
+            {
+                id: 4,
+                category: 'places',
+                title: 'שמורת טבע עין גדי ונחל דוד',
+                author: 'מיכל אברהם',
+                rating: 4,
+                duration: '3-4 שעות מסלול',
+                image: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=800&q=80',
+                tags: ['טבע', 'טיולים', 'ים המלח', 'משפחות'],
+                description: 'מסלול מרהיב בלב המדבר עם מעיינות זורמים ומפלים קסומים. מושלם לטיול משפחתי או ליום כיף בטבע במיוחד בעונות המעבר.',
+                likes: 21,
+                date: new Date('2026-04-01').getTime(),
+                comments: [
+                    { author: 'שירה', text: 'היינו עם הילדים והיה מושלם!', date: '03/04/2026' }
+                ]
+            }
+        ];
+
+        // State Management
+        let recommendations = JSON.parse(localStorage.getItem('gold_recommendations')) || defaultRecommendations;
+        let favorites = JSON.parse(localStorage.getItem('gold_favorites')) || [1];
+        let currentCategory = 'all';
+
+        // Dark Mode Initialization
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+
+        function toggleDarkMode() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Save helper
+        function saveToLocalStorage() {
+            localStorage.setItem('gold_recommendations', JSON.stringify(recommendations));
+            localStorage.setItem('gold_favorites', JSON.stringify(favorites));
+            updateFavBadge();
+        }
+
+        function updateFavBadge() {
+            const badge = document.getElementById('favCountBadge');
+            if (badge) badge.textContent = favorites.length;
+        }
+
+        // Initial Load
+        window.addEventListener('DOMContentLoaded', () => {
+            updateFavBadge();
+            renderRecommendations();
+        });
+
+        // Category Filter Setup
+        function setCategory(category) {
+            currentCategory = category;
+            
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                if(btn.dataset.category === category) {
+                    btn.className = "category-btn flex items-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-sm whitespace-nowrap transition-all shadow-xs bg-slate-900 text-white dark:bg-rose-600";
+                } else {
+                    btn.className = "category-btn flex items-center gap-2 px-5 py-2.5 rounded-2xl font-semibold text-sm whitespace-nowrap transition-all shadow-xs bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800";
+                }
+            });
+
+            filterRecommendations();
+        }
+
+        // Tag Search Trigger
+        function filterByTag(tagName) {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.value = tagName;
+            filterRecommendations();
+            window.scrollTo({ top: 300, behavior: 'smooth' });
+        }
+
+        function filterRecommendations() {
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase().trim();
+            const sortBy = document.getElementById('sortSelect').value;
+            const minRating = document.getElementById('ratingFilter').value;
+
+            let filtered = recommendations.filter(item => {
+                // Category or Favorites match
+                let matchesCategory = false;
+                if (currentCategory === 'all') matchesCategory = true;
+                else if (currentCategory === 'favorites') matchesCategory = favorites.includes(item.id);
+                else matchesCategory = item.category === currentCategory;
+
+                // Search Query match
+                const matchesSearch = !searchQuery || 
+                                      item.title.toLowerCase().includes(searchQuery) ||
+                                      item.description.toLowerCase().includes(searchQuery) ||
+                                      item.author.toLowerCase().includes(searchQuery) ||
+                                      item.tags.some(tag => tag.toLowerCase().includes(searchQuery));
+
+                // Rating filter
+                let matchesRating = true;
+                if (minRating === '5') matchesRating = item.rating === 5;
+                else if (minRating === '4') matchesRating = item.rating >= 4;
+                else if (minRating === '3') matchesRating = item.rating >= 3;
+
+                return matchesCategory && matchesSearch && matchesRating;
+            });
+
+            // Sorting logic
+            filtered.sort((a, b) => {
+                if (sortBy === 'newest') return b.date - a.date;
+                if (sortBy === 'rating') return b.rating - a.rating;
+                if (sortBy === 'likes') return b.likes - a.likes;
+                return 0;
+            });
+
+            renderGrid(filtered);
+        }
+
+        function renderGrid(items) {
+            const grid = document.getElementById('recommendationsGrid');
+            const emptyState = document.getElementById('emptyState');
+            const resultCount = document.getElementById('resultCount');
+
+            resultCount.textContent = items.length;
+
+            if (items.length === 0) {
+                grid.innerHTML = '';
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            emptyState.classList.add('hidden');
+            grid.innerHTML = '';
+
+            items.forEach((item) => {
+                const categoryNames = {
+                    movies: { name: 'סרטים וסדרות', icon: 'fa-film', color: 'text-rose-500' },
+                    books: { name: 'ספרים', icon: 'fa-book-open', color: 'text-blue-500' },
+                    restaurants: { name: 'מסעדות ואוכל', icon: 'fa-utensils', color: 'text-amber-500' },
+                    places: { name: 'מקומות בילוי', icon: 'fa-map-location-dot', color: 'text-emerald-500' }
+                };
+
+                const catInfo = categoryNames[item.category] || categoryNames.movies;
+                const imageUrl = item.image && item.image.trim() !== '' ? item.image : 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=800&q=80';
+                const isFav = favorites.includes(item.id);
+
+                // Rating Stars HTML
+                let starsHtml = '';
+                for (let i = 1; i <= 5; i++) {
+                    const starClass = i <= item.rating ? 'fa-solid fa-star text-amber-400' : 'fa-regular fa-star text-slate-300 dark:text-slate-600';
+                    starsHtml += `<button onclick="rateRecommendation(${item.id}, ${i})" title="דרג ${i} כוכבים" class="hover:scale-125 transition-transform"><i class="${starClass}"></i></button>`;
+                }
+
+                // Tags HTML
+                let tagsHtml = item.tags.map(tag => 
+                    `<button onclick="filterByTag('${tag}')" class="bg-slate-100 dark:bg-slate-800 hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-950 text-slate-600 dark:text-slate-300 text-xs px-2.5 py-1 rounded-lg font-medium transition-colors">#${tag}</button>`
+                ).join(' ');
+
+                // Comments HTML
+                let commentsHtml = '';
+                if (item.comments && item.comments.length > 0) {
+                    commentsHtml = item.comments.map(c => `
+                        <div class="bg-slate-50 dark:bg-slate-800/60 p-2.5 rounded-xl text-xs space-y-1 border border-slate-100 dark:border-slate-800">
+                            <div class="flex justify-between items-center text-slate-500 dark:text-slate-400 font-semibold">
+                                <span>${c.author}</span>
+                                <span class="text-[10px] text-slate-400">${c.date}</span>
+                            </div>
+                            <p class="text-slate-700 dark:text-slate-300">${c.text}</p>
+                        </div>
+                    `).join('');
+                } else {
+                    commentsHtml = `<p class="text-xs text-slate-400 italic py-1">אין עדיין תגובות. היה הראשון להגיב!</p>`;
+                }
+
+                const cardHtml = `
+                    <div class="bg-white dark:bg-slate-900 rounded-3xl overflow-hidden border border-slate-200/80 dark:border-slate-800/80 shadow-xs hover:shadow-xl transition-all duration-300 flex flex-col group card-hover-effect">
+                        <!-- Card Header Image -->
+                        <div class="relative h-48 overflow-hidden bg-slate-100 dark:bg-slate-800 cursor-pointer" onclick="openDetailsModal(${item.id})">
+                            <img src="${imageUrl}" alt="${item.title}" onerror="this.src='https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=800&q=80'" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            
+                            <!-- Category Badge -->
+                            <div class="absolute top-3 right-3">
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold backdrop-blur-md bg-white/90 dark:bg-slate-900/90 text-slate-800 dark:text-slate-100 shadow-sm">
+                                    <i class="fa-solid ${catInfo.icon} ${catInfo.color}"></i> ${catInfo.name}
+                                </span>
+                            </div>
+
+                            <!-- Favorite Bookmark Button -->
+                            <button onclick="event.stopPropagation(); toggleFavorite(${item.id})" class="absolute top-3 left-3 w-9 h-9 rounded-full bg-white/90 dark:bg-slate-900/90 text-slate-700 dark:text-slate-200 hover:text-amber-500 dark:hover:text-amber-400 flex items-center justify-center shadow-md transition-colors">
+                                <i class="${isFav ? 'fa-solid text-amber-500' : 'fa-regular'} fa-bookmark text-sm"></i>
+                            </button>
+
+                            <!-- Duration Badge -->
+                            <div class="absolute bottom-3 right-3">
+                                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold backdrop-blur-md bg-slate-900/80 text-white shadow-xs">
+                                    <i class="fa-regular fa-clock text-rose-400"></i> ${item.duration || 'לא צוין'}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Card Body -->
+                        <div class="p-5 flex-grow flex flex-col justify-between">
+                            <div>
+                                <!-- Author & Date -->
+                                <div class="flex items-center justify-between text-xs text-slate-400 mb-2">
+                                    <span>מאת: <strong class="text-slate-700 dark:text-slate-300">${item.author}</strong></span>
+                                    <span>${new Date(item.date).toLocaleDateString('he-IL')}</span>
+                                </div>
+
+                                <!-- Title -->
+                                <h3 onclick="openDetailsModal(${item.id})" class="text-lg font-extrabold text-slate-900 dark:text-white group-hover:text-rose-600 dark:group-hover:text-rose-400 transition-colors mb-2 line-clamp-1 cursor-pointer">${item.title}</h3>
+
+                                <!-- Star Rating -->
+                                <div class="flex items-center justify-between mb-3 text-sm bg-amber-50/60 dark:bg-amber-950/30 p-2 rounded-xl border border-amber-100/60 dark:border-amber-900/40">
+                                    <div class="flex items-center gap-1">
+                                        ${starsHtml}
+                                    </div>
+                                    <span class="text-xs font-bold text-amber-700 dark:text-amber-400">${item.rating}.0</span>
+                                </div>
+
+                                <!-- Description -->
+                                <p class="text-slate-600 dark:text-slate-300 text-xs sm:text-sm line-clamp-3 mb-4 leading-relaxed">${item.description}</p>
+                            </div>
+
+                            <div>
+                                <!-- Tags -->
+                                <div class="flex flex-wrap gap-1.5 mb-4">
+                                    ${tagsHtml}
+                                </div>
+
+                                <!-- Likes & Action Bar -->
+                                <div class="flex items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800 mb-3">
+                                    <button onclick="likeRecommendation(${item.id})" class="flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-rose-500 bg-slate-50 dark:bg-slate-800 hover:bg-rose-50 dark:hover:bg-rose-950/50 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all">
+                                        <i class="fa-solid fa-heart text-rose-500"></i>
+                                        <span>אהבתי</span>
+                                        <span class="bg-white dark:bg-slate-700 px-2 py-0.5 rounded-md text-[11px] font-bold text-slate-700 dark:text-slate-200 shadow-2xs">${item.likes}</span>
+                                    </button>
+
+                                    <div class="flex items-center gap-1">
+                                        <button onclick="openDetailsModal(${item.id})" class="text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white bg-slate-50 dark:bg-slate-800 px-3 py-1.5 rounded-xl text-xs font-semibold transition" title="קרא עוד">
+                                            <span>מלא</span> <i class="fa-solid fa-arrow-left text-[10px] mr-1"></i>
+                                        </button>
+
+                                        <button onclick="shareRecommendation('${item.title}')" class="text-slate-500 dark:text-slate-400 hover:text-blue-500 bg-slate-50 dark:bg-slate-800 p-2 rounded-xl text-xs transition" title="שתף המלצה">
+                                            <i class="fa-solid fa-share-nodes"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Comments Accordion Header -->
+                                <div class="border-t border-slate-100 dark:border-slate-800 pt-3">
+                                    <button onclick="toggleComments(${item.id})" class="w-full flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-rose-500 transition">
+                                        <span class="flex items-center gap-1.5">
+                                            <i class="fa-regular fa-comment-dots text-rose-500"></i> תגובות (<span id="comment-count-${item.id}">${item.comments ? item.comments.length : 0}</span>)
+                                        </span>
+                                        <i id="chevron-${item.id}" class="fa-solid fa-chevron-down text-[10px] transition-transform"></i>
+                                    </button>
+
+                                    <!-- Expandable Comments Content -->
+                                    <div id="comments-box-${item.id}" class="hidden space-y-2 mt-2 pt-2 border-t border-dashed border-slate-200 dark:border-slate-800">
+                                        <div class="space-y-2 max-h-36 overflow-y-auto pr-1">
+                                            ${commentsHtml}
+                                        </div>
+                                        <!-- Quick add comment -->
+                                        <div class="space-y-1.5 mt-2 pt-1">
+                                            <div class="flex gap-1.5">
+                                                <input type="text" id="comment-author-${item.id}" placeholder="שמך" class="w-1/3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1 text-xs text-slate-800 dark:text-slate-100 focus:outline-none">
+                                                <input type="text" id="comment-input-${item.id}" placeholder="הוסף תגובה..." class="w-2/3 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-2.5 py-1 text-xs text-slate-800 dark:text-slate-100 focus:outline-none">
+                                            </div>
+                                            <button onclick="addComment(${item.id})" class="w-full bg-slate-900 dark:bg-rose-600 hover:bg-slate-800 dark:hover:bg-rose-700 text-white py-1.5 rounded-xl text-xs font-semibold transition">שלח תגובה</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += cardHtml;
+            });
+        }
+
+        // Toggle Favorites Logic
+        function toggleFavorite(id) {
+            const index = favorites.indexOf(id);
+            if (index > -1) {
+                favorites.splice(index, 1);
+                showToast('ההמלצה הוסרה מהמועדפים!');
+            } else {
+                favorites.push(id);
+                showToast('ההמלצה נוספה למועדפים! ⭐');
+            }
+            saveToLocalStorage();
+            filterRecommendations();
+        }
+
+        // Like Logic
+        function likeRecommendation(id) {
+            const item = recommendations.find(r => r.id === id);
+            if (item) {
+                item.likes += 1;
+                saveToLocalStorage();
+                filterRecommendations();
+                showToast('הלייק נוסף בהצלחה! 👍');
+            }
+        }
+
+        // Rating Logic
+        function rateRecommendation(id, ratingValue) {
+            const item = recommendations.find(r => r.id === id);
+            if (item) {
+                item.rating = ratingValue;
+                saveToLocalStorage();
+                filterRecommendations();
+                showToast(`הדירוג עודכן ל-${ratingValue} כוכבים! ⭐`);
+            }
+        }
+
+        // Comment Addition
+        function addComment(id) {
+            const authorInput = document.getElementById(`comment-author-${id}`);
+            const textInput = document.getElementById(`comment-input-${id}`);
+            
+            const author = authorInput ? authorInput.value.trim() || 'אורח' : 'אורח';
+            const text = textInput ? textInput.value.trim() : '';
+
+            if(!text) return;
+
+            const item = recommendations.find(r => r.id === id);
+            if (item) {
+                if(!item.comments) item.comments = [];
+                const nowStr = new Date().toLocaleDateString('he-IL');
+                item.comments.push({
+                    author: author,
+                    text: text,
+                    date: nowStr
+                });
+                saveToLocalStorage();
+                filterRecommendations();
+                showToast('התגובה נוספה בהצלחה! 💬');
+            }
+        }
+
+        function toggleComments(id) {
+            const box = document.getElementById(`comments-box-${id}`);
+            const chevron = document.getElementById(`chevron-${id}`);
+            if (box) {
+                box.classList.toggle('hidden');
+                if (chevron) chevron.classList.toggle('rotate-180');
+            }
+        }
+
+        // Detailed Modal Trigger
+        function openDetailsModal(id) {
+            const item = recommendations.find(r => r.id === id);
+            if (!item) return;
+
+            const container = document.getElementById('detailsContent');
+            const imageUrl = item.image && item.image.trim() !== '' ? item.image : 'https://images.unsplash.com/photo-1499750310107-5fef28a66643?auto=format&fit=crop&w=800&q=80';
+            
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                const starClass = i <= item.rating ? 'fa-solid fa-star text-amber-400' : 'fa-regular fa-star text-slate-300';
+                starsHtml += `<i class="${starClass}"></i>`;
+            }
+
+            let commentsHtml = (item.comments && item.comments.length > 0) ? item.comments.map(c => `
+                <div class="bg-slate-50 dark:bg-slate-800 p-3 rounded-2xl text-xs space-y-1">
+                    <div class="flex justify-between items-center text-slate-500 dark:text-slate-400 font-bold">
+                        <span>${c.author}</span>
+                        <span class="text-[10px]">${c.date}</span>
+                    </div>
+                    <p class="text-slate-700 dark:text-slate-200 leading-relaxed">${c.text}</p>
+                </div>
+            `).join('') : `<p class="text-xs text-slate-400 italic">אין תגובות כרגע.</p>`;
+
+            container.innerHTML = `
+                <div class="relative h-64 sm:h-80 overflow-hidden bg-slate-900">
+                    <img src="${imageUrl}" class="w-full h-full object-cover opacity-90">
+                    <button onclick="closeDetailsModal()" class="absolute top-4 left-4 w-9 h-9 rounded-full bg-slate-900/80 text-white flex items-center justify-center hover:bg-slate-900 transition">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                    <div class="absolute bottom-4 right-4 left-4 flex items-center justify-between">
+                        <span class="bg-rose-500 text-white text-xs px-3 py-1 rounded-full font-bold shadow-md">
+                            ${item.duration || 'חוויה מומלצת'}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="p-6 space-y-4">
+                    <div class="flex items-center justify-between text-xs text-slate-400">
+                        <span>ממליץ: <strong class="text-slate-700 dark:text-slate-200">${item.author}</strong></span>
+                        <span>${new Date(item.date).toLocaleDateString('he-IL')}</span>
+                    </div>
+
+                    <h2 class="text-2xl font-black text-slate-900 dark:text-white">${item.title}</h2>
+
+                    <div class="flex items-center gap-2 bg-amber-50 dark:bg-amber-950/40 p-2.5 rounded-2xl border border-amber-100 dark:border-amber-900/40 text-amber-500 text-sm font-bold">
+                        <div>${starsHtml}</div>
+                        <span class="text-slate-700 dark:text-slate-300 text-xs">(${item.rating}.0 דירוג מלא)</span>
+                    </div>
+
+                    <p class="text-slate-700 dark:text-slate-300 text-sm leading-relaxed whitespace-pre-line">${item.description}</p>
+
+                    <div class="pt-4 border-t border-slate-100 dark:border-slate-800">
+                        <h4 class="text-xs font-bold text-slate-900 dark:text-white mb-3">תגובות הקהילה (${item.comments ? item.comments.length : 0})</h4>
+                        <div class="space-y-2 max-h-48 overflow-y-auto pl-1">
+                            ${commentsHtml}
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-2 pt-4 border-t border-slate-100 dark:border-slate-800">
+                        <button onclick="shareRecommendation('${item.title}')" class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-xl text-xs font-bold hover:bg-slate-200 transition">
+                            <i class="fa-solid fa-share-nodes ml-1"></i> שתף
+                        </button>
+                        <button onclick="closeDetailsModal()" class="bg-rose-500 hover:bg-rose-600 text-white px-5 py-2 rounded-xl text-xs font-bold transition">
+                            סגור
+                        </button>
+                    </div>
+                </div>
+            `;
+
+            const modal = document.getElementById('detailsModal');
+            const containerEl = document.getElementById('detailsContainer');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                containerEl.classList.remove('scale-95', 'opacity-0');
+                containerEl.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeDetailsModal() {
+            const modal = document.getElementById('detailsModal');
+            const containerEl = document.getElementById('detailsContainer');
+            containerEl.classList.remove('scale-100', 'opacity-100');
+            containerEl.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Share Link Simulation
+        function shareRecommendation(title) {
+            const dummyUrl = window.location.href;
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(dummyUrl).then(() => {
+                    showToast(`הקישור להמלצה "${title}" הועתק ללוח! 🔗`);
+                }).catch(() => {
+                    showToast(`הקישור הועתק ללוח! 🔗`);
+                });
+            } else {
+                showToast(`הקישור הועתק ללוח! 🔗`);
+            }
+        }
+
+        // Reset Filters
+        function resetFilters() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('ratingFilter').value = 'all';
+            document.getElementById('sortSelect').value = 'newest';
+            setCategory('all');
+        }
+
+        function openModal() {
+            const modal = document.getElementById('recommendationModal');
+            const container = document.getElementById('modalContainer');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                container.classList.remove('scale-95', 'opacity-0');
+                container.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('recommendationModal');
+            const container = document.getElementById('modalContainer');
+            container.classList.remove('scale-100', 'opacity-100');
+            container.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                document.getElementById('recommendationForm').reset();
+            }, 300);
+        }
+
+        // Form Submission
+        function handleFormSubmit(event) {
+            event.preventDefault();
+
+            const category = document.getElementById('formCategory').value;
+            const title = document.getElementById('formTitle').value.trim();
+            const author = document.getElementById('formAuthor').value.trim();
+            const duration = document.getElementById('formDuration').value.trim();
+            const rating = parseInt(document.getElementById('formRating').value);
+            const image = document.getElementById('formImage').value.trim();
+            const rawTags = document.getElementById('formTags').value.trim();
+            const description = document.getElementById('formDescription').value.trim();
+
+            let tagsArray = rawTags ? rawTags.split(',').map(t => t.trim()).filter(t => t.length > 0) : ['מומלץ'];
+
+            const newRecommendation = {
+                id: Date.now(),
+                category,
+                title,
+                author,
+                duration,
+                rating,
+                image,
+                tags: tagsArray,
+                description,
+                likes: 1,
+                date: Date.now(),
+                comments: []
+            };
+
+            recommendations.unshift(newRecommendation);
+            saveToLocalStorage();
+            closeModal();
+            filterRecommendations();
+            showToast('ההמלצה החדשה נוספה בהצלחה! 🌟');
+        }
+
+        // Toast Notification System
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-24', 'opacity-0');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>

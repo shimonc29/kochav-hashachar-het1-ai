@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PlayStation Nexus - המלצות משחקים מובילים</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        playstation: {
+                            blue: '#003087',
+                            darkblue: '#001a4d',
+                            cyan: '#00f2fe',
+                            accent: '#3b82f6',
+                            darkbg: '#0b0f19',
+                            cardbg: '#131c2e',
+                            borderbg: '#1e293b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Gaming Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0f19;
+            color: #f8fafc;
+        }
+        .glow-effect {
+            box-shadow: 0 0 25px rgba(0, 48, 135, 0.4);
+        }
+        .glow-cyan {
+            box-shadow: 0 0 20px rgba(0, 242, 254, 0.2);
+        }
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 30px -10px rgba(0, 48, 135, 0.6);
+            border-color: rgba(0, 242, 254, 0.5);
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-playstation-darkbg flex flex-col selection:bg-blue-600 selection:text-white">
+
+    <!-- Header / Navigation -->
+    <header class="sticky top-0 z-50 backdrop-blur-md bg-playstation-darkbg/80 border-b border-playstation-borderbg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-playstation-blue to-playstation-cyan flex items-center justify-center glow-cyan shadow-lg">
+                    <i class="fa-solid fa-gamepad text-white text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-black tracking-wider bg-gradient-to-r from-blue-400 via-cyan-300 to-white bg-clip-text text-transparent">
+                        PS NEXUS
+                    </h1>
+                    <p class="text-xs text-slate-400">הפורטל המוביל למשחקי PlayStation</p>
+                </div>
+            </div>
+            <nav class="hidden md:flex items-center space-x-6 space-x-reverse text-sm font-medium text-slate-300">
+                <a href="#games" class="hover:text-cyan-400 transition-colors">משחקים מובילים</a>
+                <a href="#genres" class="hover:text-cyan-400 transition-colors">ז'אנרים</a>
+                <a href="#features" class="hover:text-cyan-400 transition-colors">למה אצלנו?</a>
+            </nav>
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <button onclick="openRandomGameModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white font-semibold text-sm shadow-md transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-dice"></i>
+                    <span>הגרל לי משחק!</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-playstation-darkblue/40 to-playstation-darkbg border-b border-playstation-borderbg">
+        <div class="absolute inset-0 opacity-15 pointer-events-none bg-[radial-gradient(#00f2fe_1px,transparent_1px)] [background-size:24px_24px]"></div>
+        <div class="max-w-5xl mx-auto text-center relative z-10">
+            <span class="inline-block py-1 px-3 rounded-full bg-blue-900/50 border border-blue-500/30 text-cyan-300 text-xs font-bold tracking-wider mb-4 uppercase">
+                עולם הגיימינג של סוני • PS4 & PS5
+            </span>
+            <h2 class="text-4xl sm:text-6xl font-extrabold tracking-tight text-white mb-6">
+                גלה את יצירות המופת הבאות <br class="hidden sm:inline">של <span class="bg-gradient-to-r from-blue-500 to-cyan-400 bg-clip-text text-transparent">PlayStation</span>
+            </h2>
+            <p class="text-lg text-slate-300 max-w-2xl mx-auto mb-8 font-light">
+                המלצות בלעדיות, סיקור מקיף, גראפיקה עוצרת נשימה ומשחקי חובה שחייבים להיות בכל ספריית גיימר.
+            </p>
+            
+            <!-- Genre Filter Buttons -->
+            <div id="genres" class="flex flex-wrap justify-center gap-2 sm:gap-3" role="toolbar" aria-label="סינון לפי ז'אנר">
+                <button onclick="filterGames('all')" class="genre-btn px-4 py-2 rounded-xl text-sm font-medium bg-blue-600 text-white shadow-lg transition-all" data-genre="all">
+                    הכל
+                </button>
+                <button onclick="filterGames('action')" class="genre-btn px-4 py-2 rounded-xl text-sm font-medium bg-playstation-cardbg border border-playstation-borderbg text-slate-300 hover:text-white hover:border-cyan-400 transition-all" data-genre="action">
+                    אקשן-הרפתקאות
+                </button>
+                <button onclick="filterGames('rpg')" class="genre-btn px-4 py-2 rounded-xl text-sm font-medium bg-playstation-cardbg border border-playstation-borderbg text-slate-300 hover:text-white hover:border-cyan-400 transition-all" data-genre="rpg">
+                    תפקידים (RPG)
+                </button>
+                <button onclick="filterGames('story')" class="genre-btn px-4 py-2 rounded-xl text-sm font-medium bg-playstation-cardbg border border-playstation-borderbg text-slate-300 hover:text-white hover:border-cyan-400 transition-all" data-genre="story">
+                    סיפורי ודרמה
+                </button>
+                <button onclick="filterGames('openworld')" class="genre-btn px-4 py-2 rounded-xl text-sm font-medium bg-playstation-cardbg border border-playstation-borderbg text-slate-300 hover:text-white hover:border-cyan-400 transition-all" data-genre="openworld">
+                    עולם פתוח
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Games Grid Section -->
+    <main id="games" class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
+        <div class="flex items-center justify-between mb-8">
+            <h3 class="text-2xl font-bold text-white flex items-center gap-3">
+                <i class="fa-solid fa-fire text-cyan-400"></i>
+                <span>משחקים מומלצים מובילים</span>
+            </h3>
+            <span id="game-count" class="text-xs text-slate-400 bg-slate-800 px-3 py-1.5 rounded-lg border border-slate-700">מציג 6 משחקים</span>
+        </div>
+
+        <div id="games-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            <!-- Game cards will be injected dynamically via JS -->
+        </div>
+    </main>
+
+    <!-- Game Details Modal -->
+    <div id="game-modal" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div id="modal-content" class="bg-playstation-cardbg border border-slate-700 rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl relative transform transition-all scale-95 opacity-0">
+            <!-- Modal Header with Image -->
+            <div class="relative h-64 sm:h-72 w-full overflow-hidden">
+                <img id="modal-img" src="" alt="" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-playstation-cardbg via-transparent to-black/40"></div>
+                <button onclick="closeModal()" class="absolute top-4 left-4 bg-black/60 hover:bg-black text-white w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md transition-all">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+                <div class="absolute bottom-4 right-4 left-4 flex justify-between items-end">
+                    <div>
+                        <span id="modal-badge" class="px-2.5 py-1 rounded-md bg-blue-600 text-white text-xs font-bold uppercase mb-2 inline-block"></span>
+                        <h3 id="modal-title" class="text-2xl sm:text-3xl font-extrabold text-white"></h3>
+                    </div>
+                    <div id="modal-rating" class="flex items-center gap-1.5 bg-black/60 px-3 py-1.5 rounded-xl backdrop-blur-md text-amber-400 font-bold text-sm"></div>
+                </div>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="p-6 space-y-6">
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm bg-slate-900/60 p-4 rounded-xl border border-slate-800">
+                    <div>
+                        <span class="block text-slate-400 text-xs">מפתח</span>
+                        <span id="modal-developer" class="font-semibold text-white"></span>
+                    </div>
+                    <div>
+                        <span class="block text-slate-400 text-xs">שנת השקה</span>
+                        <span id="modal-year" class="font-semibold text-white"></span>
+                    </div>
+                    <div>
+                        <span class="block text-slate-400 text-xs">פלטפורמה</span>
+                        <span id="modal-platform" class="font-semibold text-cyan-400"></span>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-2">על המשחק</h4>
+                    <p id="modal-desc" class="text-slate-300 text-sm leading-relaxed"></p>
+                </div>
+
+                <div>
+                    <h4 class="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3">תכונות בולטות</h4>
+                    <div id="modal-features" class="flex flex-wrap gap-2"></div>
+                </div>
+
+                <div class="pt-4 border-t border-slate-800 flex justify-end">
+                    <button onclick="closeModal()" class="px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-semibold text-sm transition-all">
+                        סגור
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-playstation-darkblue border-t border-playstation-borderbg py-8 px-4 text-center text-slate-400 text-sm">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-gamepad text-cyan-400"></i>
+                <span class="font-bold text-white">PlayStation Nexus</span>
+                <span>© 2026 כל הזכויות שמורות</span>
+            </div>
+            <p class="text-xs text-slate-500">כל זכויות היוצרים והסימנים המסחריים שייכים ל-Sony Interactive Entertainment.</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Database of PlayStation games with high quality thematic images and detailed info
+        const gamesData = [
+            {
+                id: 1,
+                title: "God of War Ragnarök",
+                genre: "action",
+                badge: "אקשן-הרפתקאות",
+                rating: 4.9,
+                developer: "Santa Monica Studio",
+                year: "2022",
+                platform: "PS4 / PS5",
+                image: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=1000&auto=format&fit=crop",
+                desc: "צאו למסע מיתולוגي מרגש עם קרייטוס ואטריוס לקראת הקרב המכריע שיביא לסוף העולם. פגשו אלים נורדיים, חקרו תשע ממלכות מרהיבות והלחמו במפלצות אימתניות.",
+                features: ["קרב מרהיב וזורם", "סיפור אב-בן מרגש", "גרפיקת הדור הבא"]
+            },
+            {
+                id: 2,
+                title: "Marvel's Spider-Man 2",
+                genre: "openworld",
+                badge: "עולם פתוח",
+                rating: 4.8,
+                developer: "Insomniac Games",
+                year: "2023",
+                platform: "PS5",
+                image: "https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?q=80&w=1000&auto=format&fit=crop",
+                desc: "שני ספיידרמנים, פיטר פארקר ומיילס מוראלס, חוזרים להרפתקה חדשה בניו יורק. התמודדו מול איומים חדשים וקטלניים כולל קראבן הצייד וונום המאנס את חליפת הסימביוט.",
+                features: ["תנועה מהירה עם כנפי עכביש", "החלפה חלקה בין הדמויות", "עולם פתוח מפורט להפליא"]
+            },
+            {
+                id: 3,
+                title: "Horizon Forbidden West",
+                genre: "openworld",
+                badge: "עולם פתוח",
+                rating: 4.7,
+                developer: "Guerrilla Games",
+                year: "2022",
+                platform: "PS4 / PS5",
+                image: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?q=80&w=1000&auto=format&fit=crop",
+                desc: "הצטרפו לאלוי במסע אל המערב האסור של אמריקה הפוסט-אפוקליפטית, שם יצורים מכניים קטלניים וקתסטרופות אקלימיות מאיימים על שרידי האנושות.",
+                features: ["עולם עשיר ומרהיב", "קרבות טקטיים מול מכונות ענק", "מערכת ציוד ושדרוגים עמוקה"]
+            },
+            {
+                id: 4,
+                title: "The Last of Us Part I",
+                genre: "story",
+                badge: "סיפורי ודרמה",
+                rating: 4.9,
+                developer: "Naughty Dog",
+                year: "2022",
+                platform: "PS5",
+                image: "https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=1000&auto=format&fit=crop",
+                desc: "חוו מחדש את יצירת המופת עטורת הפרסים שנבנתה מחדש מהיסוד עבור קונסולת ה-PS5. ליוו את ג'ואל ואלי במסע הישרדות מצמרר ובלתי נשכח באמריקה ההרוסה.",
+                features: ["נרטיב מהפנט ברמת קולנוע", "משחקיות מותחת ואינטנסיבית", "דמויות עמוקות ומרגשות"]
+            },
+            {
+                id: 5,
+                title: "Ghost of Tsushima Director's Cut",
+                genre: "action",
+                badge: "אקשן-הרפתקאות",
+                rating: 4.8,
+                developer: "Sucker Punch Productions",
+                year: "2021",
+                platform: "PS4 / PS5",
+                image: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?q=80&w=1000&auto=format&fit=crop",
+                desc: "היכנסו לנעליו של ג'ין סאקาย, סמוראי אמיץ הנלחם בפלישה המונגולית לאי צושימה. גלו עולם פתוח עוצר נשימה ביופיו ביפן הפאודלית.",
+                features: ["אסתטיקה וויזואלית מרהיבה", "מערכת קרב חרבות מדויקת ומספקת", "תוכן אי האיקי הנוסף כלול"]
+            },
+            {
+                id: 6,
+                title: "Final Fantasy VII Rebirth",
+                genre: "rpg",
+                badge: "תפקידים (RPG)",
+                rating: 4.9,
+                developer: "Square Enix",
+                year: "2024",
+                platform: "PS5",
+                image: "https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1000&auto=format&fit=crop",
+                desc: "קלאוד וחבריו יוצאים אל מעבר לחומות העיר מידגאר למסע חוצה עולם במרדף אחר ספירות. הרפתקת RPG ענקית עם עולם פתוח וקרבות דינמיים.",
+                features: ["עולם ענק לחקור", "מערכת קרב משולבת פעולה ואסטרטגיה", "פסקול מוזיקלי אגדי"]
+            }
+        ];
+
+        // Render games cards in grid
+        function renderGames(gamesToRender) {
+            const grid = document.getElementById('games-grid');
+            const countEl = document.getElementById('game-count');
+            grid.innerHTML = '';
+            
+            countEl.innerText = `מציג ${gamesToRender.length} משחקים`;
+
+            if (gamesToRender.length === 0) {
+                grid.innerHTML = `<div class="col-span-full text-center py-12 text-slate-400">לא נמצאו משחקים בקטגוריה זו.</div>`;
+                return;
+            }
+
+            gamesToRender.forEach(game => {
+                const card = document.createElement('div');
+                card.className = "card-hover bg-playstation-cardbg border border-playstation-borderbg rounded-2xl overflow-hidden flex flex-col group cursor-pointer shadow-lg";
+                card.onclick = () => openModal(game.id);
+
+                card.innerHTML = `
+                    <div class="relative h-52 overflow-hidden">
+                        <img src="${game.image}" alt="${game.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" onerror="this.src='https://placehold.co/600x400/0b0f19/00f2fe?text=PlayStation'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-playstation-cardbg via-transparent to-transparent"></div>
+                        <span class="absolute top-3 right-3 px-3 py-1 rounded-lg bg-black/60 backdrop-blur-md text-cyan-300 text-xs font-bold border border-slate-700">
+                            ${game.badge}
+                        </span>
+                    </div>
+                    <div class="p-6 flex flex-col flex-grow justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs text-slate-400 font-medium">${game.platform} • ${game.year}</span>
+                                <div class="flex items-center gap-1 text-amber-400 font-bold text-xs bg-amber-400/10 px-2 py-0.5 rounded-md border border-amber-400/20">
+                                    <i class="fa-solid fa-star"></i>
+                                    <span>${game.rating}</span>
+                                </div>
+                            </div>
+                            <h4 class="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors mb-2">${game.title}</h4>
+                            <p class="text-slate-300 text-sm line-clamp-2 leading-relaxed">${game.desc}</p>
+                        </div>
+                        <div class="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                            <span>מפתח: <strong class="text-slate-200">${game.developer}</strong></span>
+                            <span class="text-cyan-400 font-semibold group-hover:underline flex items-center gap-1">
+                                <span>לפרטים המלאים</span>
+                                <i class="fa-solid fa-arrow-left"></i>
+                            </span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Filter games by genre
+        function filterGames(genre) {
+            // Update active states on buttons
+            document.querySelectorAll('.genre-btn').forEach(btn => {
+                if(btn.dataset.genre === genre) {
+                    btn.className = "genre-btn px-4 py-2 rounded-xl text-sm font-medium bg-blue-600 text-white shadow-lg transition-all";
+                } else {
+                    btn.className = "genre-btn px-4 py-2 rounded-xl text-sm font-medium bg-playstation-cardbg border border-playstation-borderbg text-slate-300 hover:text-white hover:border-cyan-400 transition-all";
+                }
+            });
+
+            if (genre === 'all') {
+                renderGames(gamesData);
+            } else {
+                const filtered = gamesData.filter(g => g.genre === genre);
+                renderGames(filtered);
+            }
+        }
+
+        // Open Modal for Game Details
+        function openModal(gameId) {
+            const game = gamesData.find(g => g.id === gameId);
+            if (!game) return;
+
+            document.getElementById('modal-img').src = game.image;
+            document.getElementById('modal-badge').innerText = game.badge;
+            document.getElementById('modal-title').innerText = game.title;
+            document.getElementById('modal-rating').innerHTML = `<i class="fa-solid fa-star"></i><span>${game.rating}</span>`;
+            document.getElementById('modal-developer').innerText = game.developer;
+            document.getElementById('modal-year').innerText = game.year;
+            document.getElementById('modal-platform').innerText = game.platform;
+            document.getElementById('modal-desc').innerText = game.desc;
+
+            const featuresContainer = document.getElementById('modal-features');
+            featuresContainer.innerHTML = '';
+            game.features.forEach(feat => {
+                const span = document.createElement('span');
+                span.className = "px-3 py-1 rounded-lg bg-blue-950/60 border border-blue-500/30 text-cyan-300 text-xs font-medium";
+                span.innerHTML = `<i class="fa-solid fa-check ml-1.5 text-cyan-400"></i>${feat}`;
+                featuresContainer.appendChild(span);
+            });
+
+            const modal = document.getElementById('game-modal');
+            const content = document.getElementById('modal-content');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                content.classList.remove('scale-95', 'opacity-0');
+                content.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        // Close Modal
+        function closeModal() {
+            const modal = document.getElementById('game-modal');
+            const content = document.getElementById('modal-content');
+            content.classList.remove('scale-100', 'opacity-100');
+            content.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+        }
+
+        // Random game picker
+        function openRandomGameModal() {
+            const randomIndex = Math.floor(Math.random() * gamesData.length);
+            openModal(gamesData[randomIndex].id);
+        }
+
+        // Close modal on click outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('game-modal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Initial render on load
+        window.onload = function() {
+            renderGames(gamesData);
+        };
+    </script>
+</body>
+</html>

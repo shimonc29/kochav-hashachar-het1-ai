@@ -1,0 +1,145 @@
+[
+  {
+    "id": "googlemogel",
+    "title": "גוגלמוגל",
+    "description": "מותג משקאות דיגיטלי בעיצוב צבעוני ומקורי",
+    "category": "אתרים",
+    "icon": "🥤",
+    "color": "#fa6a9a",
+    "author": "אור דמארי",
+    "url": "projects/googlemogel.html",
+    "preview": "assets/previews/googlemogel.png"
+  },
+  {
+    "id": "barbermatch",
+    "title": "BarberMatch",
+    "description": "פלטפורמה למציאת מספרות, השוואה וקביעת תורים",
+    "category": "אפליקציות",
+    "icon": "✂️",
+    "color": "#c58f58",
+    "author": "אורי בוסקילה",
+    "url": "projects/barbermatch.html",
+    "preview": "assets/previews/barbermatch.png"
+  },
+  {
+    "id": "gold",
+    "title": "המלצות זהב",
+    "description": "עולם המלצות לספרים, מסעדות, סרטים וחוויות",
+    "category": "המלצות",
+    "icon": "🌟",
+    "color": "#ecb747",
+    "author": "משה לוי",
+    "url": "projects/gold.html",
+    "preview": "assets/previews/gold.png"
+  },
+  {
+    "id": "cityguide",
+    "title": "המדריך לנוער",
+    "description": "אטרקציות, אוכל וקניות במרכז ובירושלים",
+    "category": "תיירות ופנאי",
+    "icon": "🗺️",
+    "color": "#51b5f0",
+    "author": "שחר",
+    "url": "projects/cityguide.html",
+    "preview": "assets/previews/cityguide.png"
+  },
+  {
+    "id": "super",
+    "title": "סופר שוק",
+    "description": "חוויית קניות בסופרמרקט מקוון",
+    "category": "חנויות",
+    "icon": "🛒",
+    "color": "#5ec5a1",
+    "author": "צורי גילה",
+    "url": "projects/super.html",
+    "preview": "assets/previews/super.png"
+  },
+  {
+    "id": "piano",
+    "title": "פסנתר כיף",
+    "description": "משחק ללימוד פסנתר ונגינה אינטראקטיבית",
+    "category": "משחקים",
+    "icon": "🎹",
+    "color": "#b18cff",
+    "author": "משה לוי",
+    "url": "projects/piano.html",
+    "preview": "assets/previews/piano.png"
+  },
+  {
+    "id": "jerusalem",
+    "title": "ירושלים 3D",
+    "description": "עולם פתוח בתלת־ממד עם מערכת בנק",
+    "category": "משחקים",
+    "icon": "🏙️",
+    "color": "#7895f6",
+    "author": "עמיחי",
+    "url": "projects/jerusalem.html",
+    "preview": "assets/previews/jerusalem.png"
+  },
+  {
+    "id": "fortress",
+    "title": "מבצר הכוכב 3D",
+    "description": "משחק אסטרטגיה ופעולה בתלת־ממד",
+    "category": "משחקים",
+    "icon": "🏰",
+    "color": "#f28b77",
+    "author": "שחר רוזנפלד",
+    "url": "projects/fortress.html",
+    "preview": "assets/previews/fortress.png"
+  },
+  {
+    "id": "nexus",
+    "title": "NexusGames PRO",
+    "description": "המלצות למשחקי מחשב וקונסולות",
+    "category": "המלצות",
+    "icon": "🎮",
+    "color": "#9d92ff",
+    "author": "סיני אזארי",
+    "url": "projects/nexus.html",
+    "preview": "assets/previews/nexus.png"
+  },
+  {
+    "id": "videogen",
+    "title": "VideoGen AI",
+    "description": "ממשק יצירתי לרעיון של יצירת סרטונים בעזרת AI",
+    "category": "כלי AI",
+    "icon": "🎬",
+    "color": "#ed77b6",
+    "author": "עדן",
+    "url": "projects/videogen.html",
+    "preview": "assets/previews/videogen.png"
+  },
+  {
+    "id": "playstation",
+    "title": "PlayStation Nexus",
+    "description": "קטלוג המלצות למשחקי PlayStation",
+    "category": "המלצות",
+    "icon": "🕹️",
+    "color": "#56a5fc",
+    "author": "נוה בן דב",
+    "url": "projects/playstation.html",
+    "preview": "assets/previews/playstation.png"
+  },
+  {
+    "id": "trails",
+    "title": "בשביל הארץ",
+    "description": "מדריך למסלולים ולאטרקציות ברחבי ישראל",
+    "category": "תיירות ופנאי",
+    "icon": "🥾",
+    "color": "#7acb97",
+    "author": "אביחי דוכן",
+    "url": "projects/trails.html",
+    "preview": "assets/previews/trails.png"
+  },
+  {
+    "id": "cinema",
+    "title": "CinemaStream Israel",
+    "description": "חוויה מעוצבת של קטלוג וצפייה בסרטים",
+    "category": "בידור",
+    "icon": "🍿",
+    "color": "#ff9163",
+    "author": "עמיחי בן כליפא",
+    "url": "projects/cinema.html",
+    "preview": "assets/previews/cinema.png"
+  }
+]

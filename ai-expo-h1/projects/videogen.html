@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VideoGen AI - מחולל סרטונים חכם</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome for Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Heebo -->
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Heebo', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            900: '#4c1d95',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Heebo', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .dark-glass { background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        @keyframes pulse-glow {
+            0%, 100% { box-shadow: 0 0 15px rgba(139, 92, 246, 0.4); }
+            50% { box-shadow: 0 0 35px rgba(139, 92, 246, 0.8); }
+        }
+        .glow-effect { animation: pulse-glow 3s infinite; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col selection:bg-brand-500 selection:text-white">
+
+    <!-- Header -->
+    <header class="sticky top-0 z-50 dark-glass border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center shadow-lg shadow-brand-500/30">
+                    <i class="fa-solid fa-clapperboard text-white text-xl"></i>
+                </div>
+                <div>
+                    <span class="text-2xl font-black tracking-tight bg-gradient-to-r from-white via-slate-200 to-brand-400 bg-clip-text text-transparent">VideoGen <span class="text-brand-500">AI</span></span>
+                    <span class="block text-xs text-slate-400 font-medium">יצירת וידאו מתקדמת בבינה מלאכותית</span>
+                </div>
+            </div>
+            <nav class="hidden md:flex items-center space-x-6 space-x-reverse font-medium text-sm">
+                <a href="#create" class="hover:text-brand-400 transition-colors">יצירת וידאו</a>
+                <a href="#explore" class="hover:text-brand-400 transition-colors">גלריית הקהילה</a>
+                <a href="#pricing" class="hover:text-brand-400 transition-colors">מסלולים</a>
+                <a href="#faq" class="hover:text-brand-400 transition-colors">שאלות נפוצות</a>
+            </nav>
+            <div class="flex items-center space-x-3 space-x-reverse">
+                <button onclick="openModal('creditsModal')" class="hidden sm:flex items-center space-x-1.5 space-x-reverse bg-slate-900/80 hover:bg-slate-800 border border-slate-700/60 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all">
+                    <i class="fa-solid fa-bolt text-amber-400"></i>
+                    <span id="userCredits">150 קרדיטים</span>
+                </button>
+                <button onclick="scrollToCreate()" class="bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold px-5 py-2.5 rounded-xl shadow-lg shadow-brand-600/30 transition-all hover:scale-105 active:scale-95 text-sm flex items-center space-x-2 space-x-reverse">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <span>צור סרטון חדש</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden pt-12 pb-20 px-4 sm:px-6 lg:px-8">
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-brand-600/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute top-10 right-10 w-72 h-72 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none"></div>
+        
+        <div class="max-w-4xl mx-auto text-center relative z-10">
+            <div class="inline-flex items-center space-x-2 space-x-reverse bg-brand-950/80 border border-brand-500/30 text-brand-300 px-4 py-1.5 rounded-full text-xs font-semibold mb-6 shadow-inner">
+                <i class="fa-solid fa-fire text-amber-400 animate-pulse"></i>
+                <span>מודל יצירת הוידאו החדש ביותר גרסה 4.2 זמין כעת</span>
+            </div>
+            <h1 class="text-4xl sm:text-6xl font-black tracking-tight text-white mb-6 leading-tight">
+                הפוך כל <span class="bg-gradient-to-r from-brand-400 via-purple-300 to-indigo-400 bg-clip-text text-transparent">רעיון לוידאו קולנועי</span> בשניות
+            </h1>
+            <p class="text-slate-400 text-lg sm:text-xl font-normal max-w-2xl mx-auto mb-10 leading-relaxed">
+                הקלד הנחיה פשוטה (Prompt), בחר סגנון אמנותי, וצפה בבינה המלאכותית שלנו מייצרת עבורך סרטוני 4K מדהימים ללא צורך בידע מקדים.
+            </p>
+        </div>
+    </section>
+
+    <!-- Main Studio Section -->
+    <main id="create" class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 -mt-6 mb-24 relative z-20">
+        <div class="dark-glass rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-700/50 glow-effect">
+            <div class="flex items-center justify-between pb-6 mb-6 border-b border-slate-800">
+                <div class="flex items-center space-x-3 space-x-reverse">
+                    <div class="w-10 h-10 rounded-xl bg-brand-600/20 text-brand-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-terminal"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold text-white">אולפן יצירת הוידאו</h2>
+                        <p class="text-xs text-slate-400">תאר את הסרטון שלך בפירוט לקבלת התוצאה הטובה ביותר</p>
+                    </div>
+                </div>
+                <button onclick="insertSamplePrompt()" class="text-xs bg-slate-800 hover:bg-slate-700 text-brand-300 hover:text-white px-3.5 py-2 rounded-xl transition-all border border-slate-700 flex items-center space-x-1.5 space-x-reverse">
+                    <i class="fa-solid fa-lightbulb"></i>
+                    <span>הצעת דוגמה חכמה</span>
+                </button>
+            </div>
+
+            <!-- Form Control Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Left 2 Cols: Prompt & Settings -->
+                <div class="lg:col-span-2 space-y-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-300 mb-2 flex items-center justify-between">
+                            <span>תיאור הסרטון (Prompt)</span>
+                            <span id="charCount" class="text-xs text-slate-500 font-normal">0 / 500</span>
+                        </label>
+                        <div class="relative">
+                            <textarea id="promptInput" rows="4" oninput="updateCharCount()" placeholder="לדוגמה: חתול חמוד לובש חליפת אסטרונאוט צועד על הירח, רקע של כדור הארץ הזוהר, סגנון קולנועי ריאליסטי תאורת סטודיו..." class="w-full bg-slate-900/90 border border-slate-700 rounded-2xl p-4 text-slate-100 placeholder-slate-500 focus:outline-none focus:border-brand-500 focus:ring-2 focus:ring-brand-500/20 transition-all text-sm resize-none"></textarea>
+                            <button onclick="enhancePromptWithAI()" type="button" class="absolute bottom-3 left-3 bg-brand-900/60 hover:bg-brand-800 text-brand-300 hover:text-white text-xs px-3 py-1.5 rounded-lg border border-brand-500/40 transition-all flex items-center space-x-1 space-x-reverse">
+                                <i class="fa-solid fa-wand-magic"></i>
+                                <span>שפר עם AI</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Style Selector -->
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-300 mb-3">בחר סגנון אמנותי</label>
+                        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                            <div onclick="selectStyle(this, 'cinematic')" class="style-card cursor-pointer bg-slate-900/80 border-2 border-brand-500 rounded-2xl p-3 text-center transition-all hover:bg-slate-800/80">
+                                <i class="fa-solid fa-film text-brand-400 text-lg mb-1"></i>
+                                <div class="text-xs font-bold text-white">קולנועי</div>
+                            </div>
+                            <div onclick="selectStyle(this, 'anime')" class="style-card cursor-pointer bg-slate-900/80 border-2 border-slate-700/80 rounded-2xl p-3 text-center transition-all hover:bg-slate-800/80">
+                                <i class="fa-solid fa-palette text-pink-400 text-lg mb-1"></i>
+                                <div class="text-xs font-bold text-white">אנימה יפנית</div>
+                            </div>
+                            <div onclick="selectStyle(this, '3d')" class="style-card cursor-pointer bg-slate-900/80 border-2 border-slate-700/80 rounded-2xl p-3 text-center transition-all hover:bg-slate-800/80">
+                                <i class="fa-solid fa-cube text-cyan-400 text-lg mb-1"></i>
+                                <div class="text-xs font-bold text-white">תלת מימד Pixar</div>
+                            </div>
+                            <div onclick="selectStyle(this, 'cyberpunk')" class="style-card cursor-pointer bg-slate-900/80 border-2 border-slate-700/80 rounded-2xl p-3 text-center transition-all hover:bg-slate-800/80">
+                                <i class="fa-solid fa-city text-amber-400 text-lg mb-1"></i>
+                                <div class="text-xs font-bold text-white">סייברפאנק</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Aspect Ratio & Duration -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-300 mb-2">פורמט וידאו (יחס מימדים)</label>
+                            <select id="aspectRatio" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                                <option value="16:9">16:9 (יוטיוב / מסך רחב)</option>
+                                <option value="9:16">9:16 (טיקטוק / Reels / שורטס)</option>
+                                <option value="1:1">1:1 (פוסט מרובע לאינסטגרם)</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-300 mb-2">משך הסרטון</label>
+                            <select id="duration" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                                <option value="5">5 שניות (מהיר)</option>
+                                <option value="10" selected>10 שניות (מומלץ)</option>
+                                <option value="15">15 שניות (מורחב - 2 קרדיטים)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Col: Preview & Action Box -->
+                <div class="flex flex-col justify-between bg-slate-900/60 rounded-2xl p-5 border border-slate-800">
+                    <div>
+                        <h3 class="text-sm font-semibold text-slate-300 mb-3 flex items-center justify-between">
+                            <span>תצוגה מקדימה ומצב עבודה</span>
+                            <span class="text-xs text-brand-400 bg-brand-950 px-2.5 py-1 rounded-md border border-brand-500/30">עלות: 10 קרדיטים</span>
+                        </h3>
+                        
+                        <!-- Preview Box State Container -->
+                        <div id="previewContainer" class="w-full aspect-video rounded-xl bg-slate-950 border border-slate-800 flex flex-col items-center justify-center relative overflow-hidden group">
+                            <div id="placeholderState" class="text-center p-4">
+                                <div class="w-12 h-12 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center mx-auto mb-3 text-slate-500 text-lg">
+                                    <i class="fa-solid fa-video"></i>
+                                </div>
+                                <p class="text-xs text-slate-400">הזן תיאור ולחץ על "צור סרטון" להתחלת העיבוד</p>
+                            </div>
+
+                            <!-- Loading State (Hidden by default) -->
+                            <div id="loadingState" class="hidden absolute inset-0 bg-slate-950/90 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
+                                <div class="w-14 h-14 rounded-full border-4 border-brand-500/20 border-t-brand-500 animate-spin mb-4"></div>
+                                <h4 id="loadingStepText" class="text-sm font-bold text-white mb-1">מעבד את הבקשה שלך...</h4>
+                                <p class="text-xs text-slate-400" id="loadingSubText">מנתח הנחיה ומייצר שלדים תלת מימדיים</p>
+                                <div class="w-48 bg-slate-800 h-2 rounded-full mt-4 overflow-hidden">
+                                    <div id="progressBar" class="bg-gradient-to-r from-brand-600 to-indigo-400 h-full w-0 transition-all duration-300"></div>
+                                </div>
+                            </div>
+
+                            <!-- Success Result State (Hidden by default) -->
+                            <div id="resultState" class="hidden absolute inset-0 bg-slate-950 flex flex-col items-center justify-center">
+                                <video id="generatedVideoPreview" autoplay loop muted class="w-full h-full object-cover"></video>
+                                <div class="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-transparent to-transparent flex items-end justify-between p-4">
+                                    <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2.5 py-1 rounded-md border border-emerald-500/30 font-semibold">הושלם בהצלחה!</span>
+                                    <div class="flex space-x-2 space-x-reverse">
+                                        <button onclick="playResultModal()" class="w-9 h-9 bg-brand-600 hover:bg-brand-500 text-white rounded-lg flex items-center justify-center transition-all shadow-md">
+                                            <i class="fa-solid fa-play text-xs"></i>
+                                        </button>
+                                        <button onclick="downloadVideo()" class="w-9 h-9 bg-slate-800 hover:bg-slate-700 text-white rounded-lg flex items-center justify-center transition-all shadow-md">
+                                            <i class="fa-solid fa-download text-xs"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="mt-6">
+                        <button id="generateBtn" onclick="startGeneration()" class="w-full bg-gradient-to-r from-brand-600 via-purple-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold py-4 rounded-xl shadow-xl shadow-brand-600/30 transition-all hover:scale-[1.02] active:scale-[0.98] flex items-center justify-center space-x-2 space-x-reverse text-base">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                            <span>צור סרטון עכשיו</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Community Gallery Section -->
+    <section id="explore" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-10">
+            <div>
+                <div class="inline-flex items-center space-x-2 space-x-reverse bg-brand-950/80 border border-brand-500/30 text-brand-300 px-3.5 py-1 rounded-full text-xs font-semibold mb-3">
+                    <i class="fa-solid fa-earth-americas"></i>
+                    <span>היצירות המובילות</span>
+                </div>
+                <h2 class="text-3xl font-black text-white">גלריית הקהילה</h2>
+            </div>
+            <!-- Category Tabs -->
+            <div class="flex flex-wrap gap-2 mt-4 md:mt-0">
+                <button onclick="filterGallery('all')" class="gallery-tab active-tab bg-brand-600 text-white px-4 py-2 rounded-xl text-xs font-semibold transition-all">הכל</button>
+                <button onclick="filterGallery('cinematic')" class="gallery-tab bg-slate-900 hover:bg-slate-800 text-slate-300 px-4 py-2 rounded-xl text-xs font-semibold transition-all border border-slate-800">קולנועי</button>
+                <button onclick="filterGallery('anime')" class="gallery-tab bg-slate-900 hover:bg-slate-800 text-slate-300 px-4 py-2 rounded-xl text-xs font-semibold transition-all border border-slate-800">אנימה</button>
+                <button onclick="filterGallery('3d')" class="gallery-tab bg-slate-900 hover:bg-slate-800 text-slate-300 px-4 py-2 rounded-xl text-xs font-semibold transition-all border border-slate-800">תלת מימד</button>
+            </div>
+        </div>
+
+        <!-- Video Cards Grid -->
+        <div id="galleryGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Card 1 -->
+            <div class="gallery-item dark-glass rounded-2xl overflow-hidden border border-slate-800 hover:border-brand-500/50 transition-all group" data-category="cinematic">
+                <div class="relative aspect-video bg-slate-900 overflow-hidden cursor-pointer" onclick="openPlayerModal('רכבת עתידנית נוסעת דרך הרי אלפים מושלגים לאור שקיעה', 'https://assets.mixkit.co/videos/preview/mixkit-train-passing-through-a-mountain-valley-41484-large.mp4', 'דניאל כהן', '1.2K')">
+                    <video src="https://assets.mixkit.co/videos/preview/mixkit-train-passing-through-a-mountain-valley-41484-large.mp4" muted loop onmouseover="this.play()" onmouseout="this.pause(); this.currentTime=0;" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></video>
+                    <div class="absolute inset-0 bg-slate-950/20 group-hover:bg-slate-950/0 transition-colors flex items-center justify-center">
+                        <div class="w-12 h-12 rounded-full bg-brand-600/90 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
+                            <i class="fa-solid fa-play text-sm"></i>
+                        </div>
+                    </div>
+                    <span class="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md text-brand-300 text-[10px] font-bold px-2.5 py-1 rounded-lg border border-slate-700">קולנועי</span>
+                </div>
+                <div class="p-5">
+                    <p class="text-sm font-bold text-white mb-2 line-clamp-1">רכבת עתידנית נוסעת דרך הרי אלפים מושלגים לאור שקיעה</p>
+                    <div class="flex items-center justify-between text-xs text-slate-400">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-6 h-6 rounded-full bg-purple-600/30 text-purple-300 font-bold flex items-center justify-center text-[10px]">דק</div>
+                            <span>דניאל כהן</span>
+                        </div>
+                        <div class="flex items-center space-x-1 space-x-reverse text-brand-400">
+                            <i class="fa-solid fa-heart"></i>
+                            <span>1.2K</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="gallery-item dark-glass rounded-2xl overflow-hidden border border-slate-800 hover:border-brand-500/50 transition-all group" data-category="anime">
+                <div class="relative aspect-video bg-slate-900 overflow-hidden cursor-pointer" onclick="openPlayerModal('נערה צעירה עם שיער כחול מביטה על כוכבים נופלים בעיר עתידנית', 'https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-screens-with-code-31910-large.mp4', 'נועה לוי', '850')">
+                    <video src="https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-screens-with-code-31910-large.mp4" muted loop onmouseover="this.play()" onmouseout="this.pause(); this.currentTime=0;" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></video>
+                    <div class="absolute inset-0 bg-slate-950/20 group-hover:bg-slate-950/0 transition-colors flex items-center justify-center">
+                        <div class="w-12 h-12 rounded-full bg-brand-600/90 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
+                            <i class="fa-solid fa-play text-sm"></i>
+                        </div>
+                    </div>
+                    <span class="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md text-pink-300 text-[10px] font-bold px-2.5 py-1 rounded-lg border border-slate-700">אנימה</span>
+                </div>
+                <div class="p-5">
+                    <p class="text-sm font-bold text-white mb-2 line-clamp-1">נערה צעירה עם שיער כחול מביטה על כוכבים נופלים בעיר עתידנית</p>
+                    <div class="flex items-center justify-between text-xs text-slate-400">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-6 h-6 rounded-full bg-pink-600/30 text-pink-300 font-bold flex items-center justify-center text-[10px]">נל</div>
+                            <span>נועה לוי</span>
+                        </div>
+                        <div class="flex items-center space-x-1 space-x-reverse text-brand-400">
+                            <i class="fa-solid fa-heart"></i>
+                            <span>850</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="gallery-item dark-glass rounded-2xl overflow-hidden border border-slate-800 hover:border-brand-500/50 transition-all group" data-category="3d">
+                <div class="relative aspect-video bg-slate-900 overflow-hidden cursor-pointer" onclick="openPlayerModal('רובוט קטן וחביב מטפח צמח ירוק בתוך מעבדה עתידנית מוארת', 'https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-digital-globe-31911-large.mp4', 'תומר אברהם', '2.4K')">
+                    <video src="https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-digital-globe-31911-large.mp4" muted loop onmouseover="this.play()" onmouseout="this.pause(); this.currentTime=0;" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"></video>
+                    <div class="absolute inset-0 bg-slate-950/20 group-hover:bg-slate-950/0 transition-colors flex items-center justify-center">
+                        <div class="w-12 h-12 rounded-full bg-brand-600/90 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-lg">
+                            <i class="fa-solid fa-play text-sm"></i>
+                        </div>
+                    </div>
+                    <span class="absolute top-3 left-3 bg-slate-950/80 backdrop-blur-md text-cyan-300 text-[10px] font-bold px-2.5 py-1 rounded-lg border border-slate-700">תלת מימד</span>
+                </div>
+                <div class="p-5">
+                    <p class="text-sm font-bold text-white mb-2 line-clamp-1">רובוט קטן וחביב מטפח צמח ירוק בתוך מעבדה עתידנית מוארת</p>
+                    <div class="flex items-center justify-between text-xs text-slate-400">
+                        <div class="flex items-center space-x-2 space-x-reverse">
+                            <div class="w-6 h-6 rounded-full bg-cyan-600/30 text-cyan-300 font-bold flex items-center justify-center text-[10px]">תא</div>
+                            <span>תומר אברהם</span>
+                        </div>
+                        <div class="flex items-center space-x-1 space-x-reverse text-brand-400">
+                            <i class="fa-solid fa-heart"></i>
+                            <span>2.4K</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 border-t border-slate-800/80">
+        <div class="text-center max-w-3xl mx-auto mb-16">
+            <h2 class="text-3xl font-black text-white mb-4">מסלולים גמישים לכל יוצר תוכן</h2>
+            <p class="text-slate-400 text-sm">בחר את המסלול המתאים לך והתחל ליצור סרטונים ללא הגבלה</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <!-- Free Plan -->
+            <div class="dark-glass rounded-3xl p-8 border border-slate-800 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-2">מתחילים</h3>
+                    <p class="text-slate-400 text-xs mb-6">מושלם לבדיקת המערכת והתנסות ראשונית</p>
+                    <div class="text-3xl font-black text-white mb-6">₪0 <span class="text-xs text-slate-400 font-normal">/ חודש</span></div>
+                    <ul class="space-y-3 text-sm text-slate-300 mb-8">
+                        <li class="flex items-center space-x-2 space-x-reverse"><i class="fa-solid fa-check text-brand-400 text-xs"></i><span>150 קרדיטים לחודש</span></li>
+                        <li class="flex items-center space-x-2 space-x-reverse"><i class="fa-solid fa-check text-brand-400 text-xs"></i><span>איכות HD 720p</span></li>
+                        <li class="flex items-center space-x-2 space-x-reverse"><i class="fa-solid fa-check text-brand-400 text-xs"></i><span>סימן מים בסרטונים</span></li>
+                    </ul>
+                </div>
+                <button onclick="alertBox('החשבון החינמי שלך פעיל כבר!')" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl transition-all text-sm">המסלול הנוכחי</button>
+            </div>
+
+            <!-- Pro Plan -->
+            <div class="dark-glass rounded-3xl p-8 border-2 border-brand-500 relative flex flex-col justify-between shadow-xl shadow-brand-500/10">
+                <div class="absolute -top-3.5 right-1/2 translate-x-1/2 bg-gradient-to-r from-brand-600 to-indigo-600 text-white text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">הפופולרי ביותר</div>
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-2">יוצרים מקצועיים (Pro)</h3>
+                    <p class="text-slate-400 text-xs mb-6">ליוצרי תוכן, משווקים ומעצבים</p>
+                    <div class="text-3xl font-black text-white mb-6">₪49 <span class="text-xs text-slate-400 font-normal">/ חודש</span></div>
+                    <ul class="space-y-3 text-sm text-slate-300 mb-8">
+                        <li class="flex items-center space-x-2 space-x-reverse"><i class="fa-solid fa-check text-brand-400 text-xs"></i><span>2,000 קרדיטים לחודש</span></li>
+                        <li class="flex items-center space-x-2 space-x-reverse"><i class="fa-solid fa-check text-brand-400 text-xs"></i><span>איכות 4K אולטרה HD</span></li>
+                        <li class="flex items-center space-x-2 space-x-reverse"><i class="fa-solid fa-check text-brand-400 text-xs"></i><span>ללא סימן מים</span></li>
+                        <li class="flex items-center space-x-2 space-x-reverse"><i class="fa-solid fa-check text-brand-400 text-xs"></i><span>עדיפות גבוהה בשרתים</span></li>
+                    </ul>
+                </div>
+                <button onclick="alertBox('שדרגת בהצלחה למסלול Pro!')" class="w-full bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold py-3 rounded-xl transition-all text-sm shadow-lg shadow-brand-600/30">שדרג עכשיו</button>
+            </div>
+
+            <!-- Enterprise Plan -->
+            <div class="dark-glass rounded-3xl p-8 border border-slate-800 flex flex-col justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-white mb-2">עסקים וחברות</h3>
+                    <p class="text-slate-400 text-xs mb-6">לצוותים וארגונים הדורשים נפח עצום</p>
+                    <div class="text-3xl font-black text-white mb-6">₪199 <span class="text-xs text-slate-400 font-normal">/ חודש</span></div>
+                    <ul class="space-y-3 text-sm text-slate-300 mb-8">
+                        <li class="flex items-center space-x-2 space-x-reverse"><i class="fa-solid fa-check text-brand-400 text-xs"></i><span>קרדיטים ללא הגבלה</span></li>
+                        <li class="flex items-center space-x-2 space-x-reverse"><i class="fa-solid fa-check text-brand-400 text-xs"></i><span>גישה ל-API מלא</span></li>
+                        <li class="flex items-center space-x-2 space-x-reverse"><i class="fa-solid fa-check text-brand-400 text-xs"></i><span>תמיכה אישית 24/7</span></li>
+                    </ul>
+                </div>
+                <button onclick="alertBox('נציג מכירות יצור עמך קשר בקרוב!')" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl transition-all text-sm">צור קשר</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800/80 bg-slate-950 py-12 px-4 sm:px-6 lg:px-8 mt-auto">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between text-xs text-slate-500 space-y-4 sm:space-y-0">
+            <div class="flex items-center space-x-2 space-x-reverse">
+                <span class="font-bold text-slate-300">VideoGen AI</span>
+                <span>© 2026 כל הזכויות שמורות.</span>
+            </div>
+            <div class="flex space-x-6 space-x-reverse">
+                <a href="#" class="hover:text-slate-300 transition-colors">תנאי שימוש</a>
+                <a href="#" class="hover:text-slate-300 transition-colors">מדיניות פרטיות</a>
+                <a href="#" class="hover:text-slate-300 transition-colors">תמיכה טכנית</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Video Player Modal -->
+    <div id="playerModal" class="fixed inset-0 z-50 hidden bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="dark-glass rounded-3xl max-w-3xl w-full overflow-hidden border border-slate-700 shadow-2xl relative">
+            <button onclick="closePlayerModal()" class="absolute top-4 left-4 z-10 w-10 h-10 rounded-full bg-slate-900/80 hover:bg-slate-800 text-slate-300 hover:text-white flex items-center justify-center transition-all">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="aspect-video bg-black relative">
+                <video id="modalVideoPlayer" controls class="w-full h-full object-contain"></video>
+            </div>
+            <div class="p-6">
+                <h3 id="modalVideoTitle" class="text-base font-bold text-white mb-2"></h3>
+                <div class="flex items-center justify-between text-xs text-slate-400">
+                    <span id="modalVideoCreator"></span>
+                    <div class="flex items-center space-x-1 space-x-reverse text-brand-400">
+                        <i class="fa-solid fa-heart"></i>
+                        <span id="modalVideoLikes"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Alert Modal -->
+    <div id="customAlert" class="fixed inset-0 z-50 hidden bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="dark-glass rounded-2xl max-w-md w-full p-6 text-center border border-slate-700 shadow-2xl">
+            <div class="w-12 h-12 rounded-full bg-brand-600/20 text-brand-400 flex items-center justify-center mx-auto mb-4 text-xl">
+                <i class="fa-solid fa-circle-info"></i>
+            </div>
+            <p id="alertMessage" class="text-sm font-medium text-slate-200 mb-6"></p>
+            <button onclick="closeAlert()" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-bold py-2.5 rounded-xl text-sm transition-all">אישור</button>
+        </div>
+    </div>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        let userCreditsVal = 150;
+        let selectedStyleName = 'cinematic';
+        let currentGeneratedVideoUrl = '';
+
+        function alertBox(msg) {
+            document.getElementById('alertMessage').innerText = msg;
+            document.getElementById('customAlert').classList.remove('hidden');
+        }
+
+        function closeAlert() {
+            document.getElementById('customAlert').classList.add('hidden');
+        }
+
+        function updateCharCount() {
+            const val = document.getElementById('promptInput').value;
+            document.getElementById('charCount').innerText = `${val.length} / 500`;
+        }
+
+        function insertSamplePrompt() {
+            const samples = [
+                "דולפינים זוהרים בשלטי ניאון שוחים בתוך שונית אלמוגים עתידנית בלילה, אנימציית תלת מימד חלקה",
+                "טירה עתיקה מרחפת בעננים עם מפל מים הנופל מטה לחלל החירום, תאורת שקיעה קולנועית",
+                "רחוב בטוקיו בגשם שוטף בלילה, משאיות סייברפאנק חולפות והחזרת אורות על הכביש הרטוב"
+            ];
+            const randomSample = samples[Math.floor(Math.random() * samples.length)];
+            document.getElementById('promptInput').value = randomSample;
+            updateCharCount();
+        }
+
+        function selectStyle(el, styleKey) {
+            document.querySelectorAll('.style-card').forEach(card => {
+                card.classList.remove('border-brand-500');
+                card.classList.add('border-slate-700/80');
+            });
+            el.classList.remove('border-slate-700/80');
+            el.classList.add('border-brand-500');
+            selectedStyleName = styleKey;
+        }
+
+        function scrollToCreate() {
+            document.getElementById('create').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function enhancePromptWithAI() {
+            const input = document.getElementById('promptInput');
+            if (!input.value.trim()) {
+                alertBox('אנא הזן תיאור קצר תחילה כדי שה-AI יוכל לשפר אותו.');
+                return;
+            }
+            input.value = input.value + ", 4k resolution, hyper realistic cinematic lighting, intricate details, award winning production design, ray tracing.";
+            updateCharCount();
+            alertBox('ההנחיה שופרה בהצלחה באמצעות AI!');
+        }
+
+        function startGeneration() {
+            const prompt = document.getElementById('promptInput').value.trim();
+            if (!prompt) {
+                alertBox('נא להזין תיאור לסרטון לפני הלחיצה על יצירה.');
+                return;
+            }
+
+            if (userCreditsVal < 10) {
+                alertBox('אין לך מספיק קרדיטים בחשבון. שדרג את המסלול שלך כדי להמשיך ליצור.');
+                return;
+            }
+
+            // Deduct credits
+            userCreditsVal -= 10;
+            document.getElementById('userCredits').innerText = `${userCreditsVal} קרדיטים`;
+
+            // UI transitions
+            document.getElementById('placeholderState').classList.add('hidden');
+            document.getElementById('resultState').classList.add('hidden');
+            document.getElementById('loadingState').classList.remove('hidden');
+            document.getElementById('generateBtn').disabled = true;
+
+            let progress = 0;
+            const progressBar = document.getElementById('progressBar');
+            const stepText = document.getElementById('loadingStepText');
+            const subText = document.getElementById('loadingSubText');
+
+            const steps = [
+                { p: 20, title: "מנתח את ההנחיה ב-Gemini...", sub: "מפרק את התיאור לסצינות ומרכיבים ויזואליים" },
+                { p: 50, title: "מייצר שלדים תלת מימדיים...", sub: "בניית עומק, תאורה ופרספקטיבה מרחבית" },
+                { p: 80, title: "מעבד פריימים ומרנדר באיכות 4K...", sub: "הוספת אפקטים קולנועיים והחלקת תנועה" },
+                { p: 100, title: "הסרטון מוכן בהצלחה!", sub: "טוען את התוצאה הסופית לאבטחת איכות" }
+            ];
+
+            let stepIndex = 0;
+            const interval = setInterval(() => {
+                progress += 5;
+                progressBar.style.width = `${progress}%`;
+
+                if (progress >= steps[stepIndex].p && stepIndex < steps.length - 1) {
+                    stepIndex++;
+                    stepText.innerText = steps[stepIndex].title;
+                    subText.innerText = steps[stepIndex].sub;
+                }
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    setTimeout(() => {
+                        document.getElementById('loadingState').classList.add('hidden');
+                        document.getElementById('resultState').classList.remove('hidden');
+                        document.getElementById('generateBtn').disabled = false;
+                        
+                        // Select a sample stock video for preview demo
+                        const sampleVideos = [
+                            'https://assets.mixkit.co/videos/preview/mixkit-train-passing-through-a-mountain-valley-41484-large.mp4',
+                            'https://assets.mixkit.co/videos/preview/mixkit-digital-animation-of-screens-with-code-31910-large.mp4',
+                            'https://assets.mixkit.co/videos/preview/mixkit-hands-holding-a-digital-globe-31911-large.mp4'
+                        ];
+                        currentGeneratedVideoUrl = sampleVideos[Math.floor(Math.random() * sampleVideos.length)];
+                        document.getElementById('generatedVideoPreview').src = currentGeneratedVideoUrl;
+                    }, 500);
+                }
+            }, 100);
+        }
+
+        function playResultModal() {
+            if (currentGeneratedVideoUrl) {
+                openPlayerModal('הסרטון שנוצר על ידך (AI Generated)', currentGeneratedVideoUrl, 'אתה (יוצר ראשי)', '1');
+            }
+        }
+
+        function downloadVideo() {
+            if (currentGeneratedVideoUrl) {
+                alertBox('הקובץ מוכן להורדה! מתחיל בהורדת קובץ ה-MP4 למחשבך.');
+            }
+        }
+
+        function openPlayerModal(title, url, creator, likes) {
+            document.getElementById('modalVideoTitle').innerText = title;
+            document.getElementById('modalVideoCreator').innerText = `יוצר: ${creator}`;
+            document.getElementById('modalVideoLikes').innerText = likes;
+            const player = document.getElementById('modalVideoPlayer');
+            player.src = url;
+            document.getElementById('playerModal').classList.remove('hidden');
+            player.play();
+        }
+
+        function closePlayerModal() {
+            const player = document.getElementById('modalVideoPlayer');
+            player.pause();
+            player.src = '';
+            document.getElementById('playerModal').classList.add('hidden');
+        }
+
+        function filterGallery(category) {
+            document.querySelectorAll('.gallery-tab').forEach(tab => {
+                tab.classList.remove('bg-brand-600', 'text-white');
+                tab.classList.add('bg-slate-900', 'text-slate-300', 'border', 'border-slate-800');
+            });
+            event.target.classList.remove('bg-slate-900', 'text-slate-300', 'border', 'border-slate-800');
+            event.target.classList.add('bg-brand-600', 'text-white');
+
+            const items = document.querySelectorAll('.gallery-item');
+            items.forEach(item => {
+                if (category === 'all' || item.getAttribute('data-category') === category) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+    </script>
+</body>
+</html>

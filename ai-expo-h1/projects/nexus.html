@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>אתר המלצות למשחקי מחשב וקונסולות</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts - Heebo -->
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        darkBg: '#0b0f19',
+                        cardBg: '#131c2e',
+                        playstationBlue: '#003791',
+                    },
+                    fontFamily: {
+                        sans: ['Heebo', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Heebo', sans-serif;
+            background-color: #0b0f19;
+            color: #f3f4f6;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-cyan-500 selection:text-black">
+
+    <!-- Header / Navbar -->
+    <header class="sticky top-0 z-50 bg-darkBg/90 backdrop-blur-md border-b border-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3 cursor-pointer" onclick="router.navigate('home')">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg shadow-cyan-500/30">
+                    <i class="fa-solid fa-gamepad text-2xl text-black font-black"></i>
+                </div>
+                <div>
+                    <span class="text-xl font-black tracking-tight bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 bg-clip-text text-transparent">NexusGames PRO</span>
+                    <span class="block text-xs text-gray-400 font-medium">המלצות מחשב ופלייסטיישן (75+)</span>
+                </div>
+            </div>
+
+            <nav class="hidden md:flex items-center gap-1">
+                <button onclick="router.navigate('home')" data-route="home" class="nav-link px-4 py-2 rounded-xl text-sm font-bold transition-all hover:bg-gray-800">דף הבית</button>
+                <button onclick="router.navigate('library')" data-route="library" class="nav-link px-4 py-2 rounded-xl text-sm font-bold transition-all hover:bg-gray-800">ספרייה מלאה</button>
+                <button onclick="router.navigate('categories')" data-route="categories" class="nav-link px-4 py-2 rounded-xl text-sm font-bold transition-all hover:bg-gray-800">ז'אנרים</button>
+                <button onclick="router.navigate('surprise')" data-route="surprise" class="nav-link px-4 py-2 rounded-xl text-sm font-bold transition-all hover:bg-gray-800 text-purple-400 flex items-center gap-1.5"><i class="fa-solid fa-dice"></i> מחולל משחקים</button>
+            </nav>
+
+            <div class="flex items-center gap-3">
+                <button onclick="openUserModal('favorites')" class="relative p-2.5 rounded-xl bg-cardBg border border-gray-800 hover:border-pink-500 transition-all text-gray-300 hover:text-pink-500">
+                    <i class="fa-solid fa-heart text-lg"></i>
+                    <span id="fav-badge" class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-pink-500 text-black font-black text-xs rounded-full flex items-center justify-center">0</span>
+                </button>
+                <button onclick="openUserModal('played')" class="relative p-2.5 rounded-xl bg-cardBg border border-gray-800 hover:border-cyan-500 transition-all text-gray-300 hover:text-cyan-400">
+                    <i class="fa-solid fa-circle-check text-lg"></i>
+                    <span id="played-badge" class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-cyan-400 text-black font-black text-xs rounded-full flex items-center justify-center">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main id="app-content" class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+        <!-- Dynamic content injected here -->
+    </main>
+
+    <!-- User List Modal -->
+    <div id="user-list-modal" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+        <div class="bg-cardBg border border-gray-800 w-full max-w-2xl rounded-3xl p-6 shadow-2xl space-y-6 max-h-[80vh] flex flex-col">
+            <div class="flex items-center justify-between border-b border-gray-800 pb-4">
+                <h3 id="user-modal-title" class="text-xl font-black flex items-center gap-2">רשימת משחקים</h3>
+                <button onclick="closeUserModal()" class="w-9 h-9 rounded-full bg-darkBg text-gray-400 hover:text-white flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div id="user-modal-items" class="overflow-y-auto space-y-3 flex-grow pr-1">
+                <!-- Injected items -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 bg-cardBg border border-cyan-500/40 px-5 py-3.5 rounded-2xl shadow-2xl flex items-center gap-3 transform translate-y-20 opacity-0 transition-all duration-300">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-cyan-400 text-xl"></i>
+        <span id="toast-message" class="font-medium text-sm">הפעולה בוצעה בהצלחה!</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 bg-darkBg/50 py-8 mt-12 text-center text-sm text-gray-500 space-y-2">
+        <p>NexusGames PRO &copy; 2026 • כל הזכויות שמורות לממליצי הגיימינג המובילים ביוטיוב</p>
+        <p class="text-xs text-gray-600">דירוגים מבוססים על Metacritic (75+), יוטיוב וחשובי מבקרי הגיימינג בעולם עבור PC ו-PlayStation.</p>
+    </footer>
+
+    <script>
+        const GAMES = [
+            {
+                id: 'elden-ring',
+                title: 'Elden Ring',
+                genre: 'RPG',
+                platforms: ['PC', 'PS5', 'PS4'],
+                score: 96,
+                ageRating: 16,
+                year: 2022,
+                developer: 'FromSoftware',
+                image: 'https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1200&q=80',
+                shortDesc: 'משחק תפקידים עולם פתוח אגדי שפותח בשיתוף עם גורג ר. ר. מרטין.',
+                fullDesc: 'מככב במקום הראשון ברוב סרטוני ה-Top 10 RPGs ביוטיוב בזכות עיצוב עולם חסר תקדים וחופש פעולה טוטאלי.',
+                scoreReason: 'קיבל 96 מתוך 100 על חדשנות בעולם פתוח ואתגר מספק.',
+                youtubeRecommendation: 'מומלץ בחום בכל ערוצי הגיימינג המובילים ביוטיוב (כמו IGN ו-SkillUp) כמשחק חובה.',
+                requirements: { min: { os: 'Win 10', cpu: 'i5-8400', ram: '12 GB', gpu: 'GTX 1060' }, rec: { os: 'Win 11', cpu: 'i7-8700K', ram: '16 GB', gpu: 'GTX 1070' } },
+                stores: { steam: 'https://store.steampowered.com/app/1245620/Elden_Ring/', playstation: 'https://store.playstation.com' },
+                featured: true, trending: true
+            },
+            {
+                id: 'baldurs-gate-3',
+                title: 'Baldurs Gate 3',
+                genre: 'RPG',
+                platforms: ['PC', 'PS5'],
+                score: 96,
+                ageRating: 18,
+                year: 2023,
+                developer: 'Larian Studios',
+                image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80',
+                shortDesc: 'משחק תפקידים קולנועי מבוסס D&D עם אינספור בחירות.',
+                fullDesc: 'זוכה פרס משחק השנה (GOTY). מוביל ביוטיוב בכל רשימות הטופ 10 כמשחק ה-RPG העמוק ביותר שנבנה אי פעם.',
+                scoreReason: 'ציון 96 מוצדק בזכות תגובתיות עולם מושלמת לכל בחירה של השחקן.',
+                youtubeRecommendation: 'מופיע במקום הראשון במאות סרטוני Top 10 Turn-Based & RPG Games.',
+                requirements: { min: { os: 'Win 10', cpu: 'i5-4690', ram: '8 GB', gpu: 'GTX 970' }, rec: { os: 'Win 11', cpu: 'i7-8700K', ram: '16 GB', gpu: 'RTX 2060 S' } },
+                stores: { steam: 'https://store.steampowered.com/app/1086940/Baldurs_Gate_3/', playstation: 'https://store.playstation.com' },
+                featured: true, trending: true
+            },
+            {
+                id: 'witcher-3',
+                title: 'The Witcher 3: Wild Hunt',
+                genre: 'RPG',
+                platforms: ['PC', 'PS5', 'PS4'],
+                score: 93,
+                ageRating: 18,
+                year: 2015,
+                developer: 'CD Projekt Red',
+                image: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?auto=format&fit=crop&w=1200&q=80',
+                shortDesc: 'מסעו של גרט מריוויה בעולם פנטזיה עשיר וממכר.',
+                fullDesc: 'נחשב לאבן קנה מידה ביוטיוב לאיך בונים קווסטים צדדיים שמרגישים כמו סיפור ראשי.',
+                scoreReason: 'ציון 93 בזכות כתיבה מופתית ודמויות עמוקות.',
+                youtubeRecommendation: 'מככב קבוע בכל רשימות Top 10 Open World RPGs of All Time.',
+                requirements: { min: { os: 'Win 7', cpu: 'i5-2500K', ram: '6 GB', gpu: 'GTX 660' }, rec: { os: 'Win 10', cpu: 'i7-3770', ram: '8 GB', gpu: 'GTX 770' } },
+                stores: { steam: 'https://store.steampowered.com/app/292030/The_Witcher_3_Wild_Hunt/', playstation: 'https://store.playstation.com' },
+                featured: false, trending: false
+            },
+            {
+                id: 'cyberpunk-2077',
+                title: 'Cyberpunk 2077',
+                genre: 'RPG',
+                platforms: ['PC', 'PS5'],
+                score: 88,
+                ageRating: 18,
+                year: 2023,
+                developer: 'CD Projekt Red',
+                image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=1200&q=80',
+                shortDesc: 'אקשן-RPG עתידני במטרופולין Night City.',
+                fullDesc: 'עבר מהפך טכנולוגי אדיר והפך לאחד המשחקים המרשימים ביוטיוב מבחינה ויזואלית.',
+                scoreReason: 'ציון 88 על אטמוספירה מטריפה ועלילת ריגול קולנועית.',
+                youtubeRecommendation: 'מומלץ ביוטיוב כדוגמה לשדרוג מושלם עם Ray Tracing מלא.',
+                requirements: { min: { os: 'Win 10', cpu: 'i7-6700', ram: '12 GB', gpu: 'GTX 1060' }, rec: { os: 'Win 11', cpu: 'i7-12700', ram: '16 GB', gpu: 'RTX 2060 S' } },
+                stores: { steam: 'https://store.steampowered.com/app/1091500/Cyberpunk_2077/', playstation: 'https://store.playstation.com' },
+                featured: false, trending: true
+            },
+            {
+                id: 'god-of-war-ragnarok',
+                title: 'God of War Ragnarok',
+                genre: 'אקשן',
+                platforms: ['PS5', 'PS4', 'PC'],
+                score: 94,
+                ageRating: 18,
+                year: 2024,
+                developer: 'Santa Monica Studio',
+                image: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1200&q=80',
+                shortDesc: 'מסע קולנועי אפי במיתולוגיה הנורדית לקראת מלחמת הרגנארוק.',
+                fullDesc: 'מוביל ברוב סרטוני ה-Top 10 PlayStation Action Games ביוטיוב.',
+                scoreReason: 'ציון 94 בזכות קרבות גרזן עוצמתיים ועלילה מרגשת עד דמעות.',
+                youtubeRecommendation: 'זוכה למאות סקירות חיוביות ביוטיוב על ההפקה הקולנועית שלו.',
+                requirements: { min: { os: 'Win 10', cpu: 'i5-4670K', ram: '8 GB', gpu: 'GTX 1060' }, rec: { os: 'Win 11', cpu: 'i5-8600', ram: '16 GB', gpu: 'RTX 2060 S' } },
+                stores: { steam: 'https://store.steampowered.com/app/2322010/God_of_War_Ragnarok/', playstation: 'https://store.playstation.com' },
+                featured: true, trending: true
+            },
+            {
+                id: 'spider-man-2',
+                title: 'Marvels Spider-Man 2',
+                genre: 'אקשן',
+                platforms: ['PS5'],
+                score: 90,
+                ageRating: 16,
+                year: 2023,
+                developer: 'Insomniac Games',
+                image: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=1200&q=80',
+                shortDesc: 'שיוט מהיר ומרתק ברחבי ניו יורק כפיטר ומיילס נגד ונום.',
+                fullDesc: 'חווית האקשן החלקה ביותר על קונסולת ה-PS5 עם מעברים מיידיים בין גיבורים.',
+                scoreReason: 'ציון 90 הודות לשיפורים מדהימים במכניקות התעופה בעיר ובקרב.',
+                youtubeRecommendation: 'מומלץ ביוטיוב כמשחק שמנצל בצורה מושלמת את שלט ה-DualSense.',
+                requirements: { min: { os: 'PS5', cpu: 'Custom Zen 2', ram: '16 GB', gpu: 'Custom' }, rec: { os: 'PS5 Pro', cpu: 'Custom', ram: '16 GB', gpu: 'Ray Tracing' } },
+                stores: { steam: '#', playstation: 'https://store.playstation.com' },
+                featured: true, trending: true
+            },
+            {
+                id: 'hades-2',
+                title: 'Hades II',
+                genre: 'אקשן',
+                platforms: ['PC', 'PS5'],
+                score: 93,
+                ageRating: 16,
+                year: 2024,
+                developer: 'Supergiant Games',
+                image: 'https://images.unsplash.com/photo-1612287233302-3f1d06257177?auto=format&fit=crop&w=1200&q=80',
+                shortDesc: 'משחק רוג-לייט אקשן מרהיב במיתולוגיה היוונית נגד טיטאן הזמן.',
+                fullDesc: 'שליטה בנסיכת העולם התחתון במסע מהיר, קצבי ומלווה בפסקול אגדי.',
+                scoreReason: 'ציון 93 בזכות זורמות קרב מושלמת ועיצוב דמויות מדהים.',
+                youtubeRecommendation: 'מככב בסרטוני Top 10 Rogue-lite Games ביוטיוב.',
+                requirements: { min: { os: 'Win 10', cpu: 'Dual Core 3.0', ram: '8 GB', gpu: '1GB VRAM' }, rec: { os: 'Win 11', cpu: 'Quad Core', ram: '16 GB', gpu: '2GB VRAM' } },
+                stores: { steam: 'https://store.steampowered.com/app/1145350/Hades_II/', playstation: 'https://store.playstation.com' },
+                featured: false, trending: true
+            },
+            {
+                id: 'ghost-of-tsushima',
+                title: 'Ghost of Tsushima',
+                genre: 'אקשן',
+                platforms: ['PS5', 'PS4', 'PC'],
+                score: 88,
+                ageRating: 18,
+                year: 2021,
+                developer: 'Sucker Punch',
+                image: 'https://images.unsplash.com/photo-1579373903781-fd5c0c30c4cd?auto=format&fit=crop&w=1200&q=80',
+                shortDesc: 'קרבות חרב סמוראים פנומנליים ביפן הפאודלית.',
+                fullDesc: 'מסעו של גין סאקאי נקודת ציון בעיצוב קרבות חרב קצביים ועולם ויזואלי מרהיב.',
+                scoreReason: 'ציון 88 על אסתטיקה מדהימה ומערכת לחימה מתגמלת.',
+                youtubeRecommendation: 'מומלץ ביוטיוב בכל רשימת Top 10 Samurai & Open World Action Games.',
+                requirements: { min: { os: 'Win 10', cpu: 'i3-7100', ram: '8 GB', gpu: 'GTX 960' }, rec: { os: 'Win 11', cpu: 'i5-8600', ram: '16 GB', gpu: 'RTX 2060' } },
+                stores: { steam: 'https://store.steampowered.com/app/2215430/Ghost_of_Tsushima/', playstation: 'https://store.playstation.com' },
+                featured: false, trending: false
+            }
+        ];
+
+        let state = {
+            currentRoute: 'home',
+            selectedGameId: null,
+            favorites: JSON.parse(localStorage.getItem('nexus_favs_pro') || '[]'),
+            played: JSON.parse(localStorage.getItem('nexus_played_pro') || '[]'),
+            filters: {
+                search: '',
+                genre: 'הכול',
+                platform: 'הכול',
+                minScore: 75,
+                ageRating: 'הכול'
+            }
+        };
+
+        function saveState() {
+            localStorage.setItem('nexus_favs_pro', JSON.stringify(state.favorites));
+            localStorage.setItem('nexus_played_pro', JSON.stringify(state.played));
+            updateBadges();
+        }
+
+        function updateBadges() {
+            const favBadge = document.getElementById('fav-badge');
+            const playedBadge = document.getElementById('played-badge');
+            if(favBadge) favBadge.textContent = state.favorites.length;
+            if(playedBadge) playedBadge.textContent = state.played.length;
+        }
+
+        const router = {
+            navigate(route, gameId = null) {
+                state.currentRoute = route;
+                state.selectedGameId = gameId;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                render();
+            }
+        };
+
+        function render() {
+            const container = document.getElementById('app-content');
+            updateBadges();
+
+            document.querySelectorAll('.nav-link').forEach(btn => {
+                if (btn.dataset.route === state.currentRoute) {
+                    btn.classList.add('text-cyan-400');
+                    btn.classList.remove('text-gray-400');
+                } else {
+                    btn.classList.remove('text-cyan-400');
+                    btn.classList.add('text-gray-400');
+                }
+            });
+
+            if (state.currentRoute === 'home') {
+                container.innerHTML = renderHome();
+            } else if (state.currentRoute === 'library') {
+                container.innerHTML = renderLibrary();
+                initLibraryListeners();
+            } else if (state.currentRoute === 'categories') {
+                container.innerHTML = renderCategoriesView();
+            } else if (state.currentRoute === 'surprise') {
+                container.innerHTML = renderSurpriseGenerator();
+            } else if (state.currentRoute === 'detail' && state.selectedGameId) {
+                container.innerHTML = renderGameDetail(state.selectedGameId);
+            }
+        }
+
+        function renderHome() {
+            const featuredGames = GAMES.filter(g => g.featured && g.score >= 75);
+            const trendingGames = GAMES.filter(g => g.trending && g.score >= 75);
+
+            return `
+                <div class="space-y-12">
+                    <div class="relative rounded-3xl overflow-hidden border border-gray-800 bg-gradient-to-r from-gray-900 via-cardBg to-gray-900 p-8 md:p-12 shadow-2xl">
+                        <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#06b6d4_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                        <div class="relative z-10 max-w-2xl space-y-6">
+                            <span class="px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
+                                <i class="fa-solid fa-star ml-1"></i> משחקי חובה בדירוג 75+ (PC & PlayStation)
+                            </span>
+                            <h1 class="text-4xl md:text-6xl font-black leading-tight tracking-tight">
+                                המלצות משחקי מחשב וקונסולות <span class="bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-500 bg-clip-text text-transparent">ברמה הגבוהה ביותר</span>
+                            </h1>
+                            <p class="text-gray-400 text-lg">
+                                מאגר ענק המרכז את מיטב כותרי ה-PC ופלייסטיישן (PS4 / PS5), עם סינון לפי גיל, ציון מפורט, הסבר למה המשחק קיבל את הציון שלו, והמלצות מיוטיוב.
+                            </p>
+                            <div class="flex flex-wrap gap-4 pt-2">
+                                <button onclick="router.navigate('library')" class="px-8 py-3.5 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 font-bold text-black shadow-lg shadow-cyan-500/25 hover:opacity-90 transition-all flex items-center gap-2">
+                                    <i class="fa-solid fa-compass"></i> צפה בכל המאגר
+                                </button>
+                                <button onclick="router.navigate('surprise')" class="px-8 py-3.5 rounded-2xl bg-cardBg border border-gray-700 hover:border-cyan-500 font-bold text-white transition-all flex items-center gap-2">
+                                    <i class="fa-solid fa-dice text-purple-400"></i> מחולל משחקים חכם
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-6">
+                        <div class="flex items-center justify-between">
+                            <h2 class="text-2xl font-black flex items-center gap-3">
+                                <i class="fa-solid fa-award text-yellow-400"></i> משחקי חובה בהבלטה (מומלצים ביוטיוב)
+                            </h2>
+                            <button onclick="router.navigate('library')" class="text-sm text-cyan-400 hover:underline">הצג הכל <i class="fa-solid fa-arrow-left"></i></button>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            ${featuredGames.map(game => renderGameCard(game)).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderLibrary() {
+            return `
+                <div class="space-y-8">
+                    <div>
+                        <h1 class="text-3xl font-black mb-2">ספריית המשחקים (דירוג 75+)</h1>
+                        <p class="text-gray-400">סינון מתקדם לפי פלטפורמה, גיל משחק, ז'אנר וציון מבקרים.</p>
+                    </div>
+
+                    <div class="bg-cardBg p-6 rounded-3xl border border-gray-800 grid grid-cols-1 md:grid-cols-5 gap-4 items-end">
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium text-gray-300">חיפוש לפי שם</label>
+                            <div class="relative">
+                                <input type="text" id="filter-search" value="${state.filters.search}" oninput="updateFilters()" placeholder="למשל: Elden Ring..." class="w-full bg-darkBg border border-gray-700 rounded-xl px-4 py-3 pr-10 text-white focus:outline-none focus:border-cyan-500 transition-colors">
+                                <i class="fa-solid fa-magnifying-glass absolute right-3.5 top-4 text-gray-500"></i>
+                            </div>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium text-gray-300">ז'אנר</label>
+                            <select id="filter-genre" onchange="updateFilters()" class="w-full bg-darkBg border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500">
+                                <option value="הכול">כל הז'אנרים</option>
+                                <option value="RPG">RPG (תפקידים)</option>
+                                <option value="אקשן">אקשן</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium text-gray-300">פלטפורמה</label>
+                            <select id="filter-platform" onchange="updateFilters()" class="w-full bg-darkBg border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500">
+                                <option value="הכול">הכל (PC & PlayStation)</option>
+                                <option value="PC">מחשב (PC)</option>
+                                <option value="PS5">PlayStation 5</option>
+                                <option value="PS4">PlayStation 4</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium text-gray-300">הגבלת גיל (PEGI)</label>
+                            <select id="filter-age" onchange="updateFilters()" class="w-full bg-darkBg border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500">
+                                <option value="הכול">כל הגילאים</option>
+                                <option value="16">עד גיל 16+</option>
+                                <option value="18">מבוגרים בלבד (18+)</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium text-gray-300">ציון מינימלי: <span id="score-val" class="text-cyan-400 font-bold">${state.filters.minScore}</span></label>
+                            <input type="range" id="filter-score" min="75" max="98" step="1" value="${state.filters.minScore}" oninput="updateFilters()" class="w-full accent-cyan-400 cursor-pointer h-2 bg-gray-700 rounded-lg">
+                        </div>
+                    </div>
+
+                    <div id="library-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Injected via filtering -->
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderCategoriesView() {
+            const categories = [
+                { name: 'RPG', icon: 'fa-shield-halved', desc: 'משחקי תפקידים אפיים עם עולם עשיר והתפתחות דמות עמוקה.' },
+                { name: 'אקשן', icon: 'fa-crosshairs', desc: 'קרבות מהירים, תנועה חלקה ואדרנלין גבוה במיוחד.' }
+            ];
+
+            return `
+                <div class="space-y-8">
+                    <div>
+                        <h1 class="text-3xl font-black mb-2">ז'אנרים מרכזיים</h1>
+                        <p class="text-gray-400">בחר ז'אנר כדי לצפות מיידית בכל המשחקים שקיבלו ציון 75 ומעלה.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        ${categories.map(cat => `
+                            <div onclick="filterByCategory('${cat.name}')" class="bg-cardBg border border-gray-800 hover:border-cyan-500/50 p-6 rounded-3xl cursor-pointer transition-all duration-300 hover:-translate-y-1 group space-y-4">
+                                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 text-2xl group-hover:scale-110 transition-transform">
+                                    <i class="fa-solid ${cat.icon}"></i>
+                                </div>
+                                <div class="space-y-1">
+                                    <h3 class="text-xl font-bold text-white group-hover:text-cyan-400 transition-colors">${cat.name}</h3>
+                                    <p class="text-gray-400 text-sm leading-relaxed">${cat.desc}</p>
+                                </div>
+                                <div class="pt-2 text-xs font-bold text-cyan-400 flex items-center gap-1">
+                                    הצג משחקים בקטגוריה <i class="fa-solid fa-arrow-left"></i>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function filterByCategory(genreName) {
+            state.filters.genre = genreName;
+            state.filters.search = '';
+            router.navigate('library');
+        }
+
+        function renderSurpriseGenerator() {
+            return `
+                <div class="max-w-2xl mx-auto py-12 text-center space-y-8">
+                    <div class="space-y-4">
+                        <div class="w-20 h-20 mx-auto rounded-3xl bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center glow-cyan animate-bounce">
+                            <i class="fa-solid fa-wand-magic-sparkles text-3xl text-white"></i>
+                        </div>
+                        <h1 class="text-4xl font-black">מחולל המלצות חכם</h1>
+                        <p class="text-gray-400">לא יודע מה לשחק עכשיו? תן למחולל להגריל עבורך משחק מושלם למחשב או לסוני.</p>
+                    </div>
+
+                    <div class="bg-cardBg border border-gray-800 p-8 rounded-3xl shadow-2xl space-y-6 text-right">
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium text-gray-300">בחר פלטפורמה מועדפת להגריל ממנה</label>
+                            <select id="supr-platform" class="w-full bg-darkBg border border-gray-700 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-cyan-500">
+                                <option value="הכול">הכל (PC ופלייסטיישן)</option>
+                                <option value="PC">מחשב (PC)</option>
+                                <option value="PS5">PlayStation 5</option>
+                                <option value="PS4">PlayStation 4</option>
+                            </select>
+                        </div>
+                        <button onclick="triggerSurprise()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-cyan-500 to-blue-600 font-bold text-black shadow-lg shadow-cyan-500/25 hover:opacity-90 transition-all text-lg flex items-center justify-center gap-3">
+                            <i class="fa-solid fa-dice"></i> תפתיע אותי עכשיו!
+                        </button>
+                    </div>
+
+                    <div id="surprise-result" class="hidden">
+                        <!-- Result game card will show here -->
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderGameDetail(gameId) {
+            const game = GAMES.find(g => g.id === gameId);
+            if (!game) return `<div class="text-center py-20">המשחק לא נמצא</div>`;
+
+            const isFav = state.favorites.includes(game.id);
+            const isPlayed = state.played.includes(game.id);
+
+            return `
+                <div class="space-y-8 pb-12">
+                    <button onclick="router.navigate('home')" class="px-4 py-2 rounded-xl bg-cardBg border border-gray-800 text-gray-400 hover:text-white transition-all flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-right"></i> חזרה לדף הבית
+                    </button>
+
+                    <div class="relative rounded-3xl overflow-hidden border border-gray-800 h-[420px] flex items-end p-8 shadow-2xl">
+                        <div class="absolute inset-0 bg-cover bg-center filter brightness-50 scale-105 transition-all duration-700" style="background-image: url('${game.image}')"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-darkBg via-darkBg/50 to-transparent"></div>
+                        
+                        <div class="relative z-10 flex flex-col md:flex-row md:items-end justify-between w-full gap-6">
+                            <div class="space-y-3">
+                                <div class="flex items-center gap-3 flex-wrap">
+                                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/20 text-cyan-400 border border-cyan-500/40">${game.genre}</span>
+                                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-blue-500/20 text-blue-400 border border-blue-500/40">${game.platforms.join(', ')}</span>
+                                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-red-500/20 text-red-400 border border-red-500/40">גיל: ${game.ageRating}+</span>
+                                    <span class="px-3 py-1 rounded-full text-xs font-bold bg-gray-800 text-gray-300">שנה: ${game.year}</span>
+                                </div>
+                                <h1 class="text-4xl md:text-5xl font-black text-white">${game.title}</h1>
+                                <p class="text-gray-300 text-sm max-w-xl">${game.shortDesc}</p>
+                            </div>
+                            
+                            <div class="flex items-center gap-4">
+                                <div class="bg-gray-900/90 border border-green-500/50 px-4 py-2.5 rounded-2xl flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-green-500 text-black font-black text-lg flex items-center justify-center">${game.score}</div>
+                                    <div class="text-xs">
+                                        <div class="text-gray-400">דירוג מבקרים</div>
+                                        <div class="font-bold text-green-400">מצוין (75+)</div>
+                                    </div>
+                                </div>
+
+                                <button onclick="toggleFavorite('${game.id}')" class="p-3.5 rounded-2xl bg-cardBg border border-gray-700 hover:border-pink-500 transition-all ${isFav ? 'text-pink-500 border-pink-500 bg-pink-500/10' : 'text-gray-400'}">
+                                    <i class="fa-solid fa-heart text-xl"></i>
+                                </button>
+                                <button onclick="togglePlayed('${game.id}')" class="p-3.5 rounded-2xl bg-cardBg border border-gray-700 hover:border-cyan-500 transition-all ${isPlayed ? 'text-cyan-400 border-cyan-500 bg-cyan-500/10' : 'text-gray-400'}">
+                                    <i class="fa-solid fa-check-circle text-xl"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                        <div class="lg:col-span-2 space-y-8">
+                            <div class="bg-cardBg p-8 rounded-3xl border border-gray-800 space-y-4">
+                                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                    <i class="fa-solid fa-circle-info text-cyan-400"></i> סקירה מורחבת
+                                </h3>
+                                <p class="text-gray-300 leading-relaxed text-lg">${game.fullDesc}</p>
+                            </div>
+
+                            <div class="bg-cardBg p-8 rounded-3xl border border-gray-800 space-y-4">
+                                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                    <i class="fa-solid fa-award text-yellow-400"></i> למה המשחק קיבל את הציון (${game.score}) הזה?
+                                </h3>
+                                <p class="text-gray-300 leading-relaxed bg-darkBg/60 p-5 rounded-2xl border border-gray-800">
+                                    ${game.scoreReason}
+                                </p>
+                            </div>
+
+                            <div class="bg-cardBg p-8 rounded-3xl border border-gray-800 space-y-4">
+                                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                                    <i class="fa-brands fa-youtube text-red-500"></i> המלצות מיוטיוב ומאתרים מובילים
+                                </h3>
+                                <p class="text-gray-300 leading-relaxed bg-darkBg/60 p-5 rounded-2xl border border-gray-800">
+                                    ${game.youtubeRecommendation}
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="bg-cardBg p-6 rounded-3xl border border-gray-800 space-y-4">
+                                <h3 class="text-lg font-bold text-white">חנויות רשמיות והורדה</h3>
+                                <div class="space-y-3">
+                                    ${game.stores.steam !== '#' ? `
+                                    <a href="${game.stores.steam}" target="_blank" class="w-full py-3.5 px-4 rounded-xl bg-blue-950/40 border border-blue-500/40 hover:bg-blue-900/40 text-white font-medium flex items-center justify-between transition-all">
+                                        <span class="flex items-center gap-3"><i class="fa-brands fa-steam text-xl text-cyan-400"></i> Steam (PC)</span>
+                                        <i class="fa-solid fa-arrow-up-right-from-square text-xs text-gray-400"></i>
+                                    </a>` : ''}
+                                    ${game.stores.playstation !== '#' ? `
+                                    <a href="${game.stores.playstation}" target="_blank" class="w-full py-3.5 px-4 rounded-xl bg-blue-900/30 border border-playstationBlue/50 hover:bg-playstationBlue/30 text-white font-medium flex items-center justify-between transition-all">
+                                        <span class="flex items-center gap-3"><i class="fa-brands fa-playstation text-xl text-blue-400"></i> PlayStation Store</span>
+                                        <i class="fa-solid fa-arrow-up-right-from-square text-xs text-gray-400"></i>
+                                    </a>` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderGameCard(game) {
+            const isFav = state.favorites.includes(game.id);
+            const isPlayed = state.played.includes(game.id);
+
+            return `
+                <div class="bg-cardBg border border-gray-800 hover:border-cyan-500/50 rounded-3xl overflow-hidden transition-all duration-300 hover:-translate-y-1.5 flex flex-col group shadow-xl">
+                    <div class="relative h-48 overflow-hidden cursor-pointer" onclick="router.navigate('detail', '${game.id}')">
+                        <img src="${game.image}" alt="${game.title}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <div class="absolute inset-0 bg-gradient-to-t from-cardBg via-transparent to-transparent"></div>
+                        <div class="absolute top-3 right-3 flex items-center gap-2">
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-darkBg/80 backdrop-blur-md text-cyan-400 border border-gray-700">${game.genre}</span>
+                            <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-red-900/80 text-red-200 border border-red-700">גיל ${game.ageRating}+</span>
+                        </div>
+                        <div class="absolute top-3 left-3 bg-green-500 text-black font-black text-xs px-2.5 py-1 rounded-lg shadow-md flex items-center gap-1">
+                            <i class="fa-solid fa-star text-[10px]"></i> ${game.score}
+                        </div>
+                    </div>
+
+                    <div class="p-6 flex flex-col flex-grow justify-between space-y-4">
+                        <div class="space-y-2">
+                            <div class="text-xs text-blue-400 font-medium">${game.platforms.join(' • ')}</div>
+                            <h3 onclick="router.navigate('detail', '${game.id}')" class="text-xl font-black text-white hover:text-cyan-400 cursor-pointer transition-colors">${game.title}</h3>
+                            <p class="text-gray-400 text-xs line-clamp-2 leading-relaxed">${game.shortDesc}</p>
+                        </div>
+
+                        <div class="flex items-center justify-between pt-4 border-t border-gray-800/80">
+                            <button onclick="router.navigate('detail', '${game.id}')" class="text-xs font-bold text-cyan-400 hover:underline flex items-center gap-1.5">
+                                צפה בפרטים וביקורות <i class="fa-solid fa-arrow-left"></i>
+                            </button>
+                            <div class="flex items-center gap-2">
+                                <button onclick="toggleFavorite('${game.id}')" class="p-2 rounded-xl bg-darkBg border border-gray-800 hover:border-pink-500 transition-all ${isFav ? 'text-pink-500 border-pink-500' : 'text-gray-400'}">
+                                    <i class="fa-solid fa-heart"></i>
+                                </button>
+                                <button onclick="togglePlayed('${game.id}')" class="p-2 rounded-xl bg-darkBg border border-gray-800 hover:border-cyan-500 transition-all ${isPlayed ? 'text-cyan-400 border-cyan-500' : 'text-gray-400'}">
+                                    <i class="fa-solid fa-check-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateFilters() {
+            const searchEl = document.getElementById('filter-search');
+            const genreEl = document.getElementById('filter-genre');
+            const platformEl = document.getElementById('filter-platform');
+            const ageEl = document.getElementById('filter-age');
+            const scoreEl = document.getElementById('filter-score');
+
+            if (searchEl) state.filters.search = searchEl.value.toLowerCase();
+            if (genreEl) state.filters.genre = genreEl.value;
+            if (platformEl) state.filters.platform = platformEl.value;
+            if (ageEl) state.filters.ageRating = ageEl.value;
+            if (scoreEl) state.filters.minScore = parseInt(scoreEl.value);
+            
+            const scoreVal = document.getElementById('score-val');
+            if (scoreVal) scoreVal.textContent = state.filters.minScore;
+
+            renderLibraryGrid();
+        }
+
+        function initLibraryListeners() {
+            const searchEl = document.getElementById('filter-search');
+            const genreEl = document.getElementById('filter-genre');
+            const platformEl = document.getElementById('filter-platform');
+            const ageEl = document.getElementById('filter-age');
+            const scoreEl = document.getElementById('filter-score');
+
+            if (searchEl) searchEl.value = state.filters.search;
+            if (genreEl) genreEl.value = state.filters.genre;
+            if (platformEl) platformEl.value = state.filters.platform;
+            if (ageEl) ageEl.value = state.filters.ageRating;
+            if (scoreEl) scoreEl.value = state.filters.minScore;
+            
+            const scoreVal = document.getElementById('score-val');
+            if (scoreVal) scoreVal.textContent = state.filters.minScore;
+
+            renderLibraryGrid();
+        }
+
+        function renderLibraryGrid() {
+            const grid = document.getElementById('library-grid');
+            if (!grid) return;
+
+            const filtered = GAMES.filter(game => {
+                const matchSearch = game.title.toLowerCase().includes(state.filters.search) || game.shortDesc.toLowerCase().includes(state.filters.search);
+                const matchGenre = state.filters.genre === 'הכול' || game.genre === state.filters.genre;
+                const matchPlatform = state.filters.platform === 'הכול' || game.platforms.includes(state.filters.platform);
+                const matchScore = game.score >= state.filters.minScore;
+                const matchAge = state.filters.ageRating === 'הכול' || game.ageRating <= parseInt(state.filters.ageRating);
+
+                return matchSearch && matchGenre && matchPlatform && matchScore && matchAge;
+            });
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-16 text-center space-y-3">
+                        <i class="fa-solid fa-ghost text-4xl text-gray-600"></i>
+                        <p class="text-gray-400 text-lg">לא נמצאו משחקים העונים על תנאי הסינון (ציון מינימלי 75+).</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(game => renderGameCard(game)).join('');
+        }
+
+        function toggleFavorite(gameId) {
+            const index = state.favorites.indexOf(gameId);
+            if (index > -1) {
+                state.favorites.splice(index, 1);
+                showToast('המשחק הוסר מרשימת האהובים', 'info');
+            } else {
+                state.favorites.push(gameId);
+                showToast('המשחק נוסף לרשימת האהובים! ❤️');
+            }
+            saveState();
+            render();
+        }
+
+        function togglePlayed(gameId) {
+            const index = state.played.indexOf(gameId);
+            if (index > -1) {
+                state.played.splice(index, 1);
+                showToast('המשחק הוסר מרשימת המשחקים ששיחקת', 'info');
+            } else {
+                state.played.push(gameId);
+                showToast('המשחק סומן כ"שיחקתי"! 🎮');
+            }
+            saveState();
+            render();
+        }
+
+        function triggerSurprise() {
+            const platform = document.getElementById('supr-platform').value;
+            let pool = GAMES.filter(g => g.score >= 75);
+            if (platform !== 'הכול') {
+                pool = pool.filter(g => g.platforms.includes(platform));
+            }
+            if (pool.length === 0) pool = GAMES;
+
+            const randomGame = pool[Math.floor(Math.random() * pool.length)];
+            const resultArea = document.getElementById('surprise-result');
+            resultArea.classList.remove('hidden');
+            resultArea.innerHTML = `
+                <div class="space-y-4 animate-in fade-in zoom-in duration-300">
+                    <div class="text-sm font-bold text-cyan-400">✨ ההמלצה עבורך (דירוג ${randomGame.score}):</div>
+                    ${renderGameCard(randomGame)}
+                </div>
+            `;
+            showToast(`נבחר באקראי: ${randomGame.title}`);
+        }
+
+        function openUserModal(type) {
+            const modal = document.getElementById('user-list-modal');
+            const title = document.getElementById('user-modal-title');
+            const itemsContainer = document.getElementById('user-modal-items');
+
+            const ids = type === 'favorites' ? state.favorites : state.played;
+            const items = GAMES.filter(g => ids.includes(g.id));
+
+            if (type === 'favorites') {
+                title.innerHTML = `<i class="fa-solid fa-heart text-pink-500"></i> המשחקים שאהבתי (${items.length})`;
+            } else {
+                title.innerHTML = `<i class="fa-solid fa-check-circle text-cyan-400"></i> משחקים ששיחקתי (${items.length})`;
+            }
+
+            if (items.length === 0) {
+                itemsContainer.innerHTML = `<p class="text-gray-500 text-center py-8">הרישום ריק כרגע. התחל לסמן משחקים!</p>`;
+            } else {
+                itemsContainer.innerHTML = items.map(game => `
+                    <div class="flex items-center justify-between p-4 bg-darkBg rounded-2xl border border-gray-800">
+                        <div class="flex items-center gap-4 cursor-pointer" onclick="closeUserModal(); router.navigate('detail', '${game.id}')">
+                            <img src="${game.image}" class="w-16 h-12 object-cover rounded-xl">
+                            <div>
+                                <h4 class="font-bold text-white hover:text-cyan-400">${game.title}</h4>
+                                <span class="text-xs text-gray-400">${game.genre} | ציון: ${game.score} | ${game.platforms.join(', ')}</span>
+                            </div>
+                        </div>
+                        <button onclick="${type === 'favorites' ? `toggleFavorite('${game.id}')` : `togglePlayed('${game.id}')`}; openUserModal('${type}')" class="text-gray-500 hover:text-red-400 p-2">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                `).join('');
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeUserModal() {
+            document.getElementById('user-list-modal').classList.add('hidden');
+        }
+
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const msgEl = document.getElementById('toast-message');
+            const iconEl = document.getElementById('toast-icon');
+
+            msgEl.textContent = message;
+            if (type === 'success') {
+                iconEl.className = 'fa-solid fa-circle-check text-cyan-400 text-xl';
+            } else {
+                iconEl.className = 'fa-solid fa-circle-info text-blue-400 text-xl';
+            }
+
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        window.onload = function() {
+            render();
+        };
+    </script>
+</body>
+</html>

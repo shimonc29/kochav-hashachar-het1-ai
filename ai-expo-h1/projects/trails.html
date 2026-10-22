@@ -1,0 +1,2122 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ישראל בשבילכם - מסלולים ואטרקציות בישראל</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts - Heebo & Assistant -->
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;600;700;800&family=Heebo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Assistant', 'Heebo', 'sans-serif'],
+                        heading: ['Heebo', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#166534',
+                            900: '#14532d',
+                        },
+                        desert: {
+                            100: '#fef3c7',
+                            500: '#f59e0b',
+                            700: '#b45309',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Assistant', sans-serif;
+            background-color: #f8fafc;
+        }
+        .hero-gradient {
+            background: linear-gradient(180deg, rgba(15, 23, 42, 0.7) 0%, rgba(15, 23, 42, 0.45) 50%, rgba(248, 250, 252, 1) 100%), 
+                        url('https://images.unsplash.com/photo-1544971587-b842c27f8c14?auto=format&fit=crop&w=1920&q=80') center/cover no-repeat;
+        }
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Toast Notification -->
+    <div id="toast-notification" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-slate-900 text-white px-6 py-3 rounded-2xl shadow-2xl z-50 transition-all duration-300 opacity-0 pointer-events-none flex items-center gap-2 border border-slate-700 text-sm font-bold">
+        <i class="fa-solid fa-circle-check text-emerald-400"></i>
+        <span id="toast-msg">הקישור הועתק בהצלחה!</span>
+    </div>
+
+    <!-- Header -->
+    <header class="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-slate-100 shadow-sm transition-all">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Logo -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('trails')">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-600 to-emerald-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/30">
+                        <i class="fa-solid font-bold text-2xl fa-compass"></i>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-black text-slate-900 tracking-tight font-heading block leading-none">בשביל<span class="text-brand-600">ארץ</span></span>
+                        <span class="text-xs text-slate-500 font-medium">המנהל האישי לטיולים ואטרקציות</span>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation Tabs -->
+                <nav class="hidden md:flex items-center gap-2 font-bold text-slate-600 text-sm bg-slate-100 p-1.5 rounded-2xl">
+                    <button id="nav-trails" onclick="switchView('trails')" class="px-5 py-2 rounded-xl transition-all flex items-center gap-2 bg-white text-brand-700 shadow-sm">
+                        <i class="fa-solid fa-map-location-dot"></i> מסלולי טיול
+                    </button>
+                    <button id="nav-attractions" onclick="switchView('attractions')" class="px-5 py-2 rounded-xl transition-all flex items-center gap-2 hover:text-brand-600">
+                        <i class="fa-solid fa-ticket text-amber-500"></i> אטרקציות וחוויות
+                    </button>
+                    <button id="nav-planner" onclick="switchView('planner')" class="px-5 py-2 rounded-xl transition-all flex items-center gap-2 hover:text-brand-600">
+                        <i class="fa-solid fa-list-check text-sky-500"></i> מחשבון ציוד
+                    </button>
+                </nav>
+
+                <!-- Action Buttons -->
+                <div class="hidden sm:flex items-center gap-2 sm:gap-3">
+                    <button onclick="openAppRatingModal()" class="p-3 rounded-xl border border-slate-200 text-amber-500 hover:bg-amber-50 transition-all flex items-center gap-1.5 text-sm font-bold" title="דרגו את האפליקציה">
+                        <i class="fa-solid fa-star"></i>
+                        <span id="app-avg-rating-badge" class="text-slate-700">4.9</span>
+                    </button>
+                    <button onclick="toggleFavoritesModal()" class="relative p-3 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 transition-all">
+                        <i class="fa-solid fa-heart text-rose-500"></i>
+                        <span id="fav-count-badge" class="absolute -top-1 -right-1 bg-rose-500 text-white text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center hidden">0</span>
+                    </button>
+                    <button onclick="shareApp()" class="p-3 rounded-xl border border-slate-200 text-sky-600 hover:bg-sky-50 transition-all flex items-center gap-1.5 text-xs font-bold" title="שתפו את האפליקציה">
+                        <i class="fa-solid fa-share-nodes text-base"></i>
+                        <span>שיתוף</span>
+                    </button>
+                </div>
+
+                <!-- Mobile menu button -->
+                <div class="md:hidden flex items-center gap-2">
+                    <button onclick="shareApp()" class="p-2.5 rounded-lg text-sky-600 hover:bg-sky-50">
+                        <i class="fa-solid fa-share-nodes text-lg"></i>
+                    </button>
+                    <button onclick="openAppRatingModal()" class="p-2.5 rounded-lg text-amber-500 hover:bg-amber-50">
+                        <i class="fa-solid fa-star text-lg"></i>
+                    </button>
+                    <button onclick="toggleFavoritesModal()" class="p-2.5 rounded-lg text-slate-700 hover:bg-slate-100 relative">
+                        <i class="fa-solid fa-heart text-rose-500 text-xl"></i>
+                    </button>
+                    <button id="mobile-menu-btn" class="p-2.5 rounded-lg text-slate-700 hover:bg-slate-100 focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Mobile Navigation Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-slate-200 px-4 pt-2 pb-6 space-y-3">
+            <button onclick="switchView('trails'); toggleMobileMenu();" class="w-full text-right py-2.5 px-3 rounded-xl text-slate-700 font-bold hover:bg-slate-50 flex items-center gap-2">
+                <i class="fa-solid fa-map-location-dot text-brand-500"></i> מסלולי טיול
+            </button>
+            <button onclick="switchView('attractions'); toggleMobileMenu();" class="w-full text-right py-2.5 px-3 rounded-xl text-slate-700 font-bold hover:bg-slate-50 flex items-center gap-2">
+                <i class="fa-solid fa-ticket text-amber-500"></i> אטרקציות וחוויות
+            </button>
+            <button onclick="switchView('planner'); toggleMobileMenu();" class="w-full text-right py-2.5 px-3 rounded-xl text-slate-700 font-bold hover:bg-slate-50 flex items-center gap-2">
+                <i class="fa-solid fa-list-check text-sky-500"></i> מחשבון ציוד
+            </button>
+            <button onclick="shareApp(); toggleMobileMenu();" class="w-full text-right py-2.5 px-3 rounded-xl text-sky-600 font-bold hover:bg-sky-50 flex items-center gap-2 border-t border-slate-100 pt-3">
+                <i class="fa-solid fa-share-nodes"></i> שתפו את האפליקציה
+            </button>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-gradient pt-16 pb-24 px-4 text-center text-white relative overflow-hidden">
+        <div class="max-w-4xl mx-auto space-y-6 relative z-10">
+            <span class="inline-flex items-center gap-2 bg-white/20 backdrop-blur-md px-4 py-1.5 rounded-full text-xs sm:text-sm font-semibold tracking-wide border border-white/30 text-emerald-200">
+                <i class="fa-solid fa-sparkles text-amber-300"></i> הפורטל המקיף לטיולים, אטרקציות וחוויות בישראל
+            </span>
+            <h1 id="hero-title" class="text-4xl sm:text-6xl font-black font-heading leading-tight tracking-wide drop-shadow-md">
+                לגלות את ישראל <br><span class="text-emerald-400">במסלולים ואטרקציות לכל המשפחה</span>
+            </h1>
+            <p id="hero-subtitle" class="text-lg sm:text-xl text-slate-200 max-w-2xl mx-auto font-light leading-relaxed">
+                מנחלים זורמים וקניונים מוצלים ועד פארקי חבלים, מוזיאונים, טיולי שטח ואטרקציות מים בכל רחבי הארץ.
+            </p>
+
+            <!-- Search Bar Floating Container -->
+            <div class="pt-4 max-w-2xl mx-auto">
+                <div class="bg-white/95 backdrop-blur-lg p-2 rounded-2xl shadow-2xl border border-white/50 flex items-center gap-2 text-slate-800">
+                    <i class="fa-solid fa-magnifying-glass text-slate-400 text-xl pr-3"></i>
+                    <input type="text" id="global-search-input" onkeyup="handleSearch()" placeholder="חפשו שם מסלול, אטרקציה, פארק או עיר..." class="w-full py-3 bg-transparent text-slate-800 placeholder-slate-400 font-medium focus:outline-none text-base">
+                    <button onclick="handleSearch()" class="bg-brand-600 hover:bg-brand-700 text-white font-bold px-6 py-3 rounded-xl transition-all flex items-center gap-2 shrink-0">
+                        <span>חפש</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-12 relative z-20 space-y-16 pb-20">
+
+        <!-- ================= VIEW 1: TRAILS SECTION ================= -->
+        <section id="view-trails" class="bg-white rounded-3xl p-6 sm:p-8 card-shadow border border-slate-100">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-100">
+                <div>
+                    <h2 class="text-2xl sm:text-3xl font-black text-slate-900 font-heading">איפה מטיילים היום?</h2>
+                    <p class="text-slate-500 text-sm mt-1">סננו לפי העדפות אישיות ומצאו את המסלול האידיאלי</p>
+                </div>
+
+                <!-- Quick Tags / Pills -->
+                <div class="flex flex-wrap gap-2 text-xs font-semibold">
+                    <button onclick="setQuickFilter('water')" class="quick-btn bg-slate-100 hover:bg-emerald-50 text-slate-700 border border-slate-200 hover:border-emerald-300 hover:text-emerald-700 px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-droplet text-blue-500"></i> מסלולי מים
+                    </button>
+                    <button onclick="setQuickFilter('family')" class="quick-btn bg-slate-100 hover:bg-emerald-50 text-slate-700 border border-slate-200 hover:border-emerald-300 hover:text-emerald-700 px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-child text-amber-500"></i> מתאים למשפחות
+                    </button>
+                    <button onclick="setQuickFilter('accessible')" class="quick-btn bg-slate-100 hover:bg-emerald-50 text-slate-700 border border-slate-200 hover:border-emerald-300 hover:text-emerald-700 px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-wheelchair text-purple-500"></i> נגיש לעגלות
+                    </button>
+                    <button onclick="setQuickFilter('dogs')" class="quick-btn bg-slate-100 hover:bg-emerald-50 text-slate-700 border border-slate-200 hover:border-emerald-300 hover:text-emerald-700 px-3.5 py-2 rounded-xl transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-dog text-orange-500"></i> ידידותי לכלבים
+                    </button>
+                    <button onclick="resetFilters()" class="bg-rose-50 text-rose-600 hover:bg-rose-100 px-3 py-2 rounded-xl transition-all font-bold">
+                        איפוס סינונים
+                    </button>
+                </div>
+            </div>
+
+            <!-- Detailed Filters Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-6">
+                <!-- Region Selector -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">אזור בארץ</label>
+                    <select id="region-select" onchange="filterTrails()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl p-3 font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <option value="all">כל האזורים (הכל)</option>
+                        <option value="north">צפון והגליל</option>
+                        <option value="center">מרכז והשרון</option>
+                        <option value="jerusalem">ירושלים והסביבה</option>
+                        <option value="south">דרום והנגב</option>
+                    </select>
+                </div>
+
+                <!-- Difficulty Selector -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">דרגת קושי</label>
+                    <select id="difficulty-select" onchange="filterTrails()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl p-3 font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <option value="all">כל הרמות</option>
+                        <option value="קלה">קל (מתאים לכולם)</option>
+                        <option value="בינונית">בינוני (למיטיבי לכת קלים)</option>
+                        <option value="מאתגרת">מאתגר (למיטיבי לכת)</option>
+                    </select>
+                </div>
+
+                <!-- Season Selector -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">עונה מומלצת</label>
+                    <select id="season-select" onchange="filterTrails()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl p-3 font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <option value="all">כל העונות</option>
+                        <option value="אביב">אביב (פריחה ומזג אוויר נעים)</option>
+                        <option value="קיץ">קיץ (טיולי מים ומוצלים)</option>
+                        <option value="סתיו">סתיו (שקטים וקרירים)</option>
+                        <option value="חורף">חורף (זרימות ושיטפונות)</option>
+                    </select>
+                </div>
+
+                <!-- Duration Selector -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">משך הטיול</label>
+                    <select id="duration-select" onchange="filterTrails()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl p-3 font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <option value="all">כל אורך</option>
+                        <option value="short">קצר (עד שבועיים / 1-2 שעות)</option>
+                        <option value="medium">בינוני (חצי יום / 2-4 שעות)</option>
+                        <option value="long">יום שלם (4+ שעות)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Result Count -->
+            <div class="mt-8 flex justify-between items-center text-sm text-slate-500">
+                <div>נמצאו <span id="results-count" class="font-bold text-brand-600 text-base">0</span> מסלולים מתאימים</div>
+            </div>
+
+            <!-- Trails Cards Grid -->
+            <div id="trails-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+                <!-- Dynamic Trails -->
+            </div>
+
+            <!-- Empty State Message -->
+            <div id="empty-state" class="hidden text-center py-16 space-y-4">
+                <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-slate-400 text-3xl">
+                    <i class="fa-solid fa-compass-slash"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-700">לא נמצאו מסלולים המתאימים לחיפוש</h3>
+                <p class="text-slate-500 max-w-md mx-auto text-sm">נסו להסיר חלק מהמסננים או לחפש מילת מפתח אחרת.</p>
+                <button onclick="resetFilters()" class="bg-brand-600 text-white font-bold px-6 py-2.5 rounded-xl text-sm shadow-md hover:bg-brand-700">
+                    איפוס כל המסננים
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= VIEW 2: ATTRACTIONS SECTION ================= -->
+        <section id="view-attractions" class="bg-white rounded-3xl p-6 sm:p-8 card-shadow border border-slate-100 hidden">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-slate-100">
+                <div>
+                    <span class="text-amber-500 text-xs font-bold uppercase tracking-wider"><i class="fa-solid fa-ticket ml-1"></i> חוויות ואתרים</span>
+                    <h2 class="text-2xl sm:text-3xl font-black text-slate-900 font-heading">אטרקציות וחוויות ברחבי הארץ</h2>
+                    <p class="text-slate-500 text-sm mt-1">פארקי מים, מוזיאונים, טיולי שטח, פינות חי, סדנאות ואתרי מורשת למשפחות וקבוצות</p>
+                </div>
+
+                <!-- Attraction Quick Category Pills -->
+                <div class="flex flex-wrap gap-2 text-xs font-semibold">
+                    <button onclick="setAttractionCategory('all')" class="attr-cat-btn bg-amber-500 text-white px-3.5 py-2 rounded-xl transition-all shadow-sm">
+                        הכל
+                    </button>
+                    <button onclick="setAttractionCategory('extreme')" class="attr-cat-btn bg-slate-100 hover:bg-amber-50 text-slate-700 border border-slate-200 hover:border-amber-300 hover:text-amber-700 px-3.5 py-2 rounded-xl transition-all">
+                        <i class="fa-solid fa-car-side text-amber-500"></i> שטח ואקסטרים
+                    </button>
+                    <button onclick="setAttractionCategory('museum')" class="attr-cat-btn bg-slate-100 hover:bg-amber-50 text-slate-700 border border-slate-200 hover:border-amber-300 hover:text-amber-700 px-3.5 py-2 rounded-xl transition-all">
+                        <i class="fa-solid fa-landmark text-sky-500"></i> מוזיאונים ומדע
+                    </button>
+                    <button onclick="setAttractionCategory('animals')" class="attr-cat-btn bg-slate-100 hover:bg-amber-50 text-slate-700 border border-slate-200 hover:border-amber-300 hover:text-amber-700 px-3.5 py-2 rounded-xl transition-all">
+                        <i class="fa-solid fa-hippo text-emerald-500"></i> חיות וטבע
+                    </button>
+                    <button onclick="setAttractionCategory('heritage')" class="attr-cat-btn bg-slate-100 hover:bg-amber-50 text-slate-700 border border-slate-200 hover:border-amber-300 hover:text-amber-700 px-3.5 py-2 rounded-xl transition-all">
+                        <i class="fa-solid fa-archway text-purple-500"></i> אתרי מורשת
+                    </button>
+                </div>
+            </div>
+
+            <!-- Detailed Attraction Filters Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-6">
+                <!-- Region Selector -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">אזור בארץ</label>
+                    <select id="attr-region-select" onchange="filterAttractions()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl p-3 font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <option value="all">כל האזורים (הכל)</option>
+                        <option value="north">צפון והגליל</option>
+                        <option value="center">מרכז והשרון</option>
+                        <option value="jerusalem">ירושלים והסביבה</option>
+                        <option value="south">דרום, ים המלח ואילת</option>
+                    </select>
+                </div>
+
+                <!-- Category Selector -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">סוג אטרקציה</label>
+                    <select id="attr-category-select" onchange="filterAttractions()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl p-3 font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <option value="all">כל הסוגים</option>
+                        <option value="extreme">אקסטרים, רייזרים ושטח</option>
+                        <option value="museum">מוזיאונים, מדע וחלל</option>
+                        <option value="animals">גני חיות, אקווריום וקטיף</option>
+                        <option value="heritage">אתרי היסטוריה ומורשת</option>
+                        <option value="water_park">פארקי מים ושיט</option>
+                    </select>
+                </div>
+
+                <!-- Target Audience -->
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">קהל יעד</label>
+                    <select id="attr-target-select" onchange="filterAttractions()" class="w-full bg-slate-50 border border-slate-200 text-slate-800 rounded-xl p-3 font-semibold focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        <option value="all">כולם</option>
+                        <option value="family">משפחות וילדים</option>
+                        <option value="couples">זוגות ורומנטיקה</option>
+                        <option value="groups">קבוצות וחברים</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Result Count -->
+            <div class="mt-8 flex justify-between items-center text-sm text-slate-500">
+                <div>נמצאו <span id="attr-results-count" class="font-bold text-amber-600 text-base">0</span> אטרקציות מומלצות</div>
+            </div>
+
+            <!-- Attractions Cards Grid -->
+            <div id="attractions-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+                <!-- Dynamic Attractions -->
+            </div>
+
+            <!-- Empty State for Attractions -->
+            <div id="attr-empty-state" class="hidden text-center py-16 space-y-4">
+                <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto text-slate-400 text-3xl">
+                    <i class="fa-solid fa-ticket-simple"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-700">לא נמצאו אטרקציות המתאימות לסננים אלו</h3>
+                <p class="text-slate-500 max-w-md mx-auto text-sm">נסו לבחור קטגוריה או אזור אחר בארץ.</p>
+                <button onclick="resetAttractionFilters()" class="bg-amber-500 text-white font-bold px-6 py-2.5 rounded-xl text-sm shadow-md hover:bg-amber-600">
+                    איפוס סינונים
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= VIEW 3: PLANNER SECTION ================= -->
+        <section id="planner" class="bg-gradient-to-br from-slate-900 to-slate-800 rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden">
+            <div class="absolute -right-20 -top-20 w-80 h-80 bg-brand-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="max-w-3xl space-y-3 relative z-10">
+                <span class="text-brand-400 text-xs font-bold tracking-widest uppercase"><i class="fa-solid fa-backpack ml-1"></i> מחשבון ציוד חכם</span>
+                <h2 class="text-3xl sm:text-4xl font-black font-heading">מה לקחת בתיק? מחשבון ציוד לטיול ולבילוי</h2>
+                <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                    תכנון ציוד נכון הוא המפתח לטיול בטוח ומהנה. סמנו את פרטי הטיול שלכם וקבלו רשימת ציוד מותאמת אישית!
+                </p>
+            </div>
+
+            <!-- Form Options -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-8 relative z-10">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-2">סוג הטיול</label>
+                    <select id="gear-type" onchange="generateGearList()" class="w-full bg-slate-800/80 border border-slate-700 text-white rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <option value="day">טיול יומי קל</option>
+                        <option value="water">טיול מים / נחלים</option>
+                        <option value="trek">קמפינג / טיול יומיים+</option>
+                        <option value="attraction">יום אטרקציות ופארקים</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-2">עונת השנה</label>
+                    <select id="gear-season" onchange="generateGearList()" class="w-full bg-slate-800/80 border border-slate-700 text-white rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <option value="summer">קיץ / חם</option>
+                        <option value="winter">חורף / קריר</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-2">מספר מטיילים</label>
+                    <select id="gear-people" onchange="generateGearList()" class="w-full bg-slate-800/80 border border-slate-700 text-white rounded-xl p-3 text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        <option value="1">מטייל יחיד</option>
+                        <option value="2">זוג / 2 חברים</option>
+                        <option value="family">משפחה / קבוצה (4+)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Gear Checklist Container -->
+            <div class="mt-8 bg-slate-800/50 backdrop-blur-md rounded-2xl p-6 border border-slate-700/60 relative z-10">
+                <div class="flex justify-between items-center mb-4 pb-3 border-b border-slate-700">
+                    <h3 class="font-bold text-lg text-emerald-400 flex items-center gap-2">
+                        <i class="fa-solid fa-list-check"></i> רשימת הציוד המומלצת שלך
+                    </h3>
+                    <span id="gear-progress" class="text-xs font-mono bg-brand-500/20 text-brand-300 px-3 py-1 rounded-full border border-brand-500/30">0/0 הושלמו</span>
+                </div>
+
+                <div id="gear-checklist" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <!-- Checkbox items populated by JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Weather & Trail Safety Section -->
+        <section id="weather" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Regional Weather Info Box -->
+            <div class="lg:col-span-2 bg-white rounded-3xl p-6 sm:p-8 card-shadow border border-slate-100 flex flex-col justify-between">
+                <div>
+                    <div class="flex items-center justify-between mb-6">
+                        <div>
+                            <span class="text-xs font-bold text-brand-600 uppercase tracking-wider">מזג אוויר בזמן אמת</span>
+                            <h3 class="text-2xl font-black text-slate-900 font-heading">תחזית לפי אזורים בארץ</h3>
+                        </div>
+                        <i class="fa-solid fa-sun-cloud text-amber-500 text-3xl"></i>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <div class="bg-slate-50 p-4 rounded-2xl text-center border border-slate-100">
+                            <span class="text-xs text-slate-500 font-semibold block mb-1">רמת הגולן והצפון</span>
+                            <i class="fa-solid fa-sun text-amber-500 text-2xl my-1"></i>
+                            <span class="text-lg font-bold text-slate-800 block">24°C</span>
+                            <span class="text-[11px] text-emerald-600 font-semibold">אידיאלי לטיול</span>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-2xl text-center border border-slate-100">
+                            <span class="text-xs text-slate-500 font-semibold block mb-1">אזור המרכז</span>
+                            <i class="fa-solid fa-cloud-sun text-amber-400 text-2xl my-1"></i>
+                            <span class="text-lg font-bold text-slate-800 block">26°C</span>
+                            <span class="text-[11px] text-emerald-600 font-semibold">נפלא בחוץ</span>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-2xl text-center border border-slate-100">
+                            <span class="text-xs text-slate-500 font-semibold block mb-1">ירושלים וההרים</span>
+                            <i class="fa-solid fa-wind text-sky-400 text-2xl my-1"></i>
+                            <span class="text-lg font-bold text-slate-800 block">21°C</span>
+                            <span class="text-[11px] text-emerald-600 font-semibold">נעים וקריר</span>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-2xl text-center border border-slate-100">
+                            <span class="text-xs text-slate-500 font-semibold block mb-1">מדבר יהודה והנגב</span>
+                            <i class="fa-solid fa-temperature-high text-orange-500 text-2xl my-1"></i>
+                            <span class="text-lg font-bold text-slate-800 block">31°C</span>
+                            <span class="text-[11px] text-amber-600 font-semibold">שתייה מרובה!</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3 text-amber-900 text-xs sm:text-sm">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-600 text-lg shrink-0 mt-0.5"></i>
+                    <div>
+                        <strong class="font-bold">דגשי בטיחות:</strong> הקפידו להצטייד במים בשפע, לחבוש כובע, ולא לסטות משבילים מסומנים. באטרקציות שטח יש לפעול לפי הנחיות המדריכים.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Numbers & Rules -->
+            <div class="bg-brand-900 text-white rounded-3xl p-6 sm:p-8 card-shadow flex flex-col justify-between relative overflow-hidden">
+                <div class="space-y-4 relative z-10">
+                    <h3 class="text-xl font-bold font-heading flex items-center gap-2 text-emerald-400">
+                        <i class="fa-solid fa-phone-volume"></i> טלפונים חיוניים
+                    </h3>
+                    <p class="text-xs text-slate-300">שמרו את המספרים לשעת חירום בשטח:</p>
+
+                    <div class="space-y-2 text-sm">
+                        <div class="flex justify-between items-center p-2.5 bg-white/10 rounded-xl">
+                            <span>משטרת ישראל (חילוץ)</span>
+                            <span class="font-mono font-bold text-emerald-300">100</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2.5 bg-white/10 rounded-xl">
+                            <span>מד"א (עזרה ראשונה)</span>
+                            <span class="font-mono font-bold text-emerald-300">101</span>
+                        </div>
+                        <div class="flex justify-between items-center p-2.5 bg-white/10 rounded-xl">
+                            <span>רשות הטבע והגנים</span>
+                            <span class="font-mono font-bold text-emerald-300">*3639</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-6 border-t border-brand-800 relative z-10">
+                    <p class="text-xs text-slate-300 text-center">
+                        שומרים על הטבע! קחו את כל האשפה איתכם בחזרה. 🌿
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- SHARE MODAL -->
+    <div id="share-modal" onclick="if(event.target === this) closeShareModal()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-6 relative text-center">
+            <button onclick="closeShareModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-600 p-2">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <div class="w-16 h-16 bg-sky-100 text-sky-600 rounded-2xl flex items-center justify-center mx-auto text-2xl shadow-inner">
+                <i class="fa-solid fa-share-nodes"></i>
+            </div>
+
+            <div>
+                <h3 class="text-2xl font-black font-heading text-slate-900" id="share-modal-title">שתפו עם חברים</h3>
+                <p class="text-slate-500 text-xs mt-1" id="share-modal-subtitle">בחרו את האפליקציה שבה תרצו לשתף</p>
+            </div>
+
+            <!-- Social Media Buttons Grid -->
+            <div class="grid grid-cols-2 gap-3 text-sm font-bold">
+                <!-- WhatsApp -->
+                <button onclick="shareToWhatsApp()" class="flex items-center justify-center gap-2.5 bg-emerald-500 hover:bg-emerald-600 text-white py-3 px-4 rounded-2xl shadow-md transition-all">
+                    <i class="fa-brands fa-whatsapp text-xl"></i>
+                    <span>WhatsApp</span>
+                </button>
+
+                <!-- Facebook -->
+                <button onclick="shareToFacebook()" class="flex items-center justify-center gap-2.5 bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-2xl shadow-md transition-all">
+                    <i class="fa-brands fa-facebook-f text-lg"></i>
+                    <span>Facebook</span>
+                </button>
+
+                <!-- Telegram -->
+                <button onclick="shareToTelegram()" class="flex items-center justify-center gap-2.5 bg-sky-500 hover:bg-sky-600 text-white py-3 px-4 rounded-2xl shadow-md transition-all">
+                    <i class="fa-brands fa-telegram text-xl"></i>
+                    <span>Telegram</span>
+                </button>
+
+                <!-- X (Twitter) -->
+                <button onclick="shareToX()" class="flex items-center justify-center gap-2.5 bg-slate-900 hover:bg-black text-white py-3 px-4 rounded-2xl shadow-md transition-all">
+                    <i class="fa-brands fa-x-twitter text-lg"></i>
+                    <span>X (Twitter)</span>
+                </button>
+            </div>
+
+            <div class="space-y-3 pt-2 border-t border-slate-100">
+                <!-- Native Share API Button if supported -->
+                <button id="native-share-btn" onclick="shareNative()" class="w-full flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-3 rounded-2xl transition-all text-xs">
+                    <i class="fa-solid fa-arrow-up-from-bracket"></i> אפשרויות שיתוף נוספות במכשיר
+                </button>
+
+                <!-- Copy Link Input Bar -->
+                <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-2xl p-1.5">
+                    <input type="text" id="share-link-input" readonly class="w-full bg-transparent text-xs text-slate-600 px-3 font-mono focus:outline-none">
+                    <button onclick="copyShareLink()" class="bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-4 py-2 rounded-xl shrink-0 transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-copy"></i>
+                        <span>העתק</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Detail Modal (Reusable for Trails & Attractions) -->
+    <div id="detail-modal" onclick="closeModalOnBackdrop(event)" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+        <div onclick="event.stopPropagation()" class="bg-white w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl transform transition-transform duration-300 scale-95 max-h-[90vh] flex flex-col relative">
+            <!-- Modal Header / Image -->
+            <div class="relative h-64 sm:h-72">
+                <img id="modal-img" src="" alt="תמונה" class="w-full h-full object-cover">
+                <button onclick="closeModal()" class="absolute top-4 left-4 bg-white/90 hover:bg-white text-slate-800 w-10 h-10 rounded-full flex items-center justify-center shadow-md transition-all z-20 cursor-pointer">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+                <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black/80 via-black/40 to-transparent text-white">
+                    <span id="modal-badge" class="bg-brand-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider"></span>
+                    <h2 id="modal-title" class="text-2xl sm:text-3xl font-black font-heading mt-2"></h2>
+                </div>
+            </div>
+
+            <!-- Modal Body Scrollable -->
+            <div class="p-6 overflow-y-auto space-y-6 flex-1 text-slate-700">
+                <!-- Dynamic Quick Stats Grid -->
+                <div id="modal-stats-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-center text-xs">
+                </div>
+
+                <!-- Features Badges -->
+                <div class="flex flex-wrap gap-2" id="modal-tags">
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <h4 class="font-bold text-slate-900 text-base mb-2">תיאור ופרטים:</h4>
+                    <p id="modal-description" class="text-sm leading-relaxed text-slate-600"></p>
+                </div>
+
+                <!-- Highlights & Tips -->
+                <div class="bg-amber-50 border border-amber-100 rounded-2xl p-4 space-y-2">
+                    <h4 class="font-bold text-amber-900 text-sm flex items-center gap-2">
+                        <i class="fa-solid fa-lightbulb text-amber-500"></i> טיפים ומידע חיוני:
+                    </h4>
+                    <ul id="modal-tips" class="text-xs sm:text-sm text-amber-900 space-y-1 list-disc list-inside">
+                    </ul>
+                </div>
+
+                <!-- Section: Rating & Comments for Item -->
+                <div class="border-t border-slate-200 pt-6 space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-black text-slate-900 text-base flex items-center gap-2">
+                            <i class="fa-solid fa-comments text-brand-600"></i> תגובות ודירוגי מטיילים
+                        </h4>
+                        <div id="item-rating-summary" class="text-xs font-bold bg-amber-50 text-amber-700 px-3 py-1 rounded-full border border-amber-200">
+                            ⭐ 0.0 (0 תגובות)
+                        </div>
+                    </div>
+
+                    <!-- Add Comment Form -->
+                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-3">
+                        <span class="text-xs font-bold text-slate-700 block">הוסיפו דירוג ותגובה למסלול:</span>
+                        <div class="flex items-center gap-3">
+                            <input type="text" id="comment-author-input" placeholder="השם שלכם..." class="w-1/2 p-2.5 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500">
+                            <div class="flex items-center gap-1 text-amber-400 text-lg cursor-pointer" id="item-star-rating">
+                                <i class="fa-solid fa-star" onclick="setFormRating(1)"></i>
+                                <i class="fa-solid fa-star" onclick="setFormRating(2)"></i>
+                                <i class="fa-solid fa-star" onclick="setFormRating(3)"></i>
+                                <i class="fa-solid fa-star" onclick="setFormRating(4)"></i>
+                                <i class="fa-solid fa-star" onclick="setFormRating(5)"></i>
+                            </div>
+                        </div>
+                        <textarea id="comment-text-input" rows="2" placeholder="ספרו משהו על המסלול, טיפים מיוחדים או חוויה אישית..." class="w-full p-2.5 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-brand-500"></textarea>
+                        <div class="flex justify-between items-center">
+                            <span id="comment-error" class="text-[11px] text-rose-500 hidden font-bold">אנא מלאו שם, דירוג ותגובה</span>
+                            <button onclick="submitItemComment()" class="mr-auto bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs px-4 py-2 rounded-xl transition-all">
+                                פרסם תגובה
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Comments List -->
+                    <div id="item-comments-list" class="space-y-3 max-h-60 overflow-y-auto pr-1">
+                        <!-- Dynamic Comments -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-4 bg-slate-50 border-t border-slate-100 flex flex-wrap gap-2 justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <button id="modal-fav-btn" onclick="" class="px-3.5 py-2 rounded-xl border border-slate-200 text-slate-700 font-semibold hover:bg-slate-100 text-xs flex items-center gap-1.5">
+                        <i class="fa-regular fa-heart text-rose-500"></i> שמור
+                    </button>
+                    <button id="modal-like-btn" onclick="" class="px-3.5 py-2 rounded-xl border border-slate-200 text-slate-700 font-semibold hover:bg-slate-100 text-xs flex items-center gap-1.5">
+                        <i class="fa-regular fa-thumbs-up text-sky-500"></i> לייק (<span id="modal-like-count">0</span>)
+                    </button>
+                    <button id="modal-share-item-btn" onclick="" class="px-3.5 py-2 rounded-xl border border-slate-200 text-slate-700 font-semibold hover:bg-slate-100 text-xs flex items-center gap-1.5">
+                        <i class="fa-solid fa-share-nodes text-emerald-600"></i> שתף
+                    </button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="closeModal()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-4 py-2 rounded-xl text-xs transition-all">
+                        סגור
+                    </button>
+                    <a id="modal-waze-btn" href="#" target="_blank" class="bg-brand-600 hover:bg-brand-700 text-white font-bold px-5 py-2 rounded-xl text-xs shadow-md transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-location-arrow"></i> ניווט ב-Waze
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Rating Modal -->
+    <div id="app-rating-modal" onclick="if(event.target === this) closeAppRatingModal()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl space-y-5 text-center relative">
+            <button onclick="closeAppRatingModal()" class="absolute top-4 left-4 text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            
+            <div class="w-16 h-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto text-amber-500 text-2xl">
+                <i class="fa-solid fa-star animate-bounce"></i>
+            </div>
+
+            <div>
+                <h3 class="text-2xl font-black font-heading text-slate-900">מה דעתכם על האפליקציה?</h3>
+                <p class="text-slate-500 text-xs mt-1">נשמח לשמוע את פידבק המטיילים כדי להמשיך ולשפר!</p>
+            </div>
+
+            <!-- Stars Picker -->
+            <div class="flex justify-center items-center gap-2 text-3xl text-slate-300 cursor-pointer" id="app-star-picker">
+                <i class="fa-solid fa-star hover:text-amber-400" onclick="setAppUserRating(1)"></i>
+                <i class="fa-solid fa-star hover:text-amber-400" onclick="setAppUserRating(2)"></i>
+                <i class="fa-solid fa-star hover:text-amber-400" onclick="setAppUserRating(3)"></i>
+                <i class="fa-solid fa-star hover:text-amber-400" onclick="setAppUserRating(4)"></i>
+                <i class="fa-solid fa-star hover:text-amber-400" onclick="setAppUserRating(5)"></i>
+            </div>
+
+            <textarea id="app-feedback-text" rows="3" placeholder="כתובי לנו כמה מילים על חווית השימוש..." class="w-full p-3 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
+
+            <button onclick="submitAppRating()" class="w-full bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 rounded-xl text-sm shadow-md transition-all">
+                שלח דירוג ומשוב
+            </button>
+        </div>
+    </div>
+
+    <!-- Favorites Modal -->
+    <div id="fav-modal" onclick="if(event.target === this) toggleFavoritesModal()" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl space-y-4">
+            <div class="flex justify-between items-center border-b border-slate-100 pb-3">
+                <h3 class="text-xl font-bold font-heading text-slate-900 flex items-center gap-2">
+                    <i class="fa-solid fa-heart text-rose-500"></i> המועדפים שלי
+                </h3>
+                <button onclick="toggleFavoritesModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            
+            <div id="fav-list" class="space-y-3 max-h-80 overflow-y-auto pr-1">
+            </div>
+
+            <div class="pt-2 text-left">
+                <button onclick="toggleFavoritesModal()" class="bg-slate-100 text-slate-700 font-bold px-5 py-2 rounded-xl text-sm">
+                    סגור
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800 mt-auto">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-brand-600 flex items-center justify-center text-white font-bold">
+                    <i class="fa-solid fa-compass text-xl"></i>
+                </div>
+                <span class="text-xl font-black text-white font-heading">בשביל<span class="text-brand-500">ארץ</span></span>
+            </div>
+
+            <p class="text-xs text-center md:text-right">
+                © 2026 ישראל בשבילכם - המדריך הפיסגתי למסלולים ואטרקציות בישראל.
+            </p>
+
+            <div class="flex gap-4 text-lg">
+                <button onclick="shareToFacebook()" class="hover:text-white transition-colors" title="שתפו בפייסבוק"><i class="fa-brands fa-facebook"></i></button>
+                <button onclick="shareToWhatsApp()" class="hover:text-white transition-colors" title="שתפו בווצאפ"><i class="fa-brands fa-whatsapp"></i></button>
+                <button onclick="shareApp()" class="hover:text-white transition-colors" title="שתף"><i class="fa-solid fa-share-nodes"></i></button>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Database of Trails
+        const trailsData = [
+            {
+                id: 19,
+                typeKey: 'trail',
+                name: "נחל קיבוצים (פארק המעיינות)",
+                region: "north",
+                regionName: "צפון והגליל",
+                difficulty: "קלה",
+                duration: "medium",
+                durationText: "2-3 שעות",
+                season: "קיץ",
+                type: "מעגלי / הלוך חזור",
+                likes: 124,
+                isWater: true,
+                isFamily: true,
+                isAccessible: true,
+                isDogFriendly: true,
+                image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+                description: "חוויית מים מושלמת בעמק המעיינות! הליכה או שחייה בתוך נחל מים מתוקים, צלולים ועמוקים הזורמים לאורך כל השנה. במסלול יש צינורות בטון שניתן לגלוש בהם כמגלשות מים טבעיות.",
+                tips: ["המים עמוקים בחלקם - חובה להשגיח על ילדים או להביא מצופים", "ניתן לשכור במקום רכבים ירוקים או אופניים להתניידות בפארק", "הכניסה רגלית בחינם"],
+                wazeQuery: "פארק המעיינות נחל קיבוצים"
+            },
+            {
+                id: 20,
+                typeKey: 'trail',
+                name: "עין מודע ופארק המעיינות",
+                region: "north",
+                regionName: "צפון והגליל",
+                difficulty: "קלה",
+                duration: "short",
+                durationText: "1-2 שעות",
+                season: "קיץ",
+                type: "מעגלי",
+                likes: 89,
+                isWater: true,
+                isFamily: true,
+                isAccessible: true,
+                isDogFriendly: true,
+                image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80",
+                description: "בריכת מעיין ענקית וצלולה המוקפת חורשת עצי איקליפטוס מוצלת ושולחנות פיקניק. המים רדודים ונעימים, ומתאימים מאוד למשפחות עם ילדים.",
+                tips: ["המקום מונגש ונוח מאוד לעגלות", "מומלץ להביא מחצלת ושולחן פיקניק", "הכניסה חופשית"],
+                wazeQuery: "עין מודע"
+            },
+            {
+                id: 21,
+                typeKey: 'trail',
+                name: "נחל השופט ופארק רמת מנשה",
+                region: "north",
+                regionName: "צפון והגליל",
+                difficulty: "קלה",
+                duration: "short",
+                durationText: "1-2 שעות",
+                season: "אביב",
+                type: "מעגלי",
+                likes: 156,
+                isWater: true,
+                isFamily: true,
+                isAccessible: true,
+                isDogFriendly: true,
+                image: "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=800&q=80",
+                description: "אחד המסלולים היפים והמונגשים בישראל. שביל עץ מסודר העובר לצד נחל זורם, בריכות שכשוך, טחנת קמח עתיקה ומערות קסומות בחורש ירוק.",
+                tips: ["נגיש במלאו לכיסאות גלגלים ועגלות ילדים", "מומלץ להגיע באמצע השבוע בשל עומס בסופי שבוע"],
+                wazeQuery: "נחל השופט"
+            },
+            {
+                id: 22,
+                typeKey: 'trail',
+                name: "נחל תנינים והסכר הרומי",
+                region: "center",
+                regionName: "מרכז והשרון",
+                difficulty: "קלה",
+                duration: "short",
+                durationText: "1.5-2 שעות",
+                season: "אביב",
+                type: "מעגלי",
+                likes: 67,
+                isWater: true,
+                isFamily: true,
+                isAccessible: true,
+                isDogFriendly: false,
+                image: "https://images.unsplash.com/photo-1511497584788-876761c119ef?auto=format&fit=crop&w=800&q=80",
+                description: "שמורת טבע מרהיבה ליד ג'סר א-זרקא ובנימינה. הליכה לצד נחל תנינים, סכר רומי מרשים, מתקני מים עתיקים ותצפית מרהיבה לבריכות הדגים והים.",
+                tips: ["כולל סרטון קצר והדגמה של מפעל המים העתיק", "כניסה בתשלום (שמורת טבע)"],
+                wazeQuery: "גן לאומי נחל תנינים"
+            },
+            {
+                id: 1,
+                typeKey: 'trail',
+                name: "נחל זוויתן ומפל זוויתן",
+                region: "north",
+                regionName: "צפון והגליל",
+                difficulty: "בינונית",
+                duration: "medium",
+                durationText: "3-4 שעות",
+                season: "קיץ",
+                type: "מעגלי",
+                likes: 98,
+                isWater: true,
+                isFamily: true,
+                isAccessible: false,
+                isDogFriendly: false,
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c5/PikiWiki_Israel_17062_Geography_of_Israel.JPG/800px-PikiWiki_Israel_17062_Geography_of_Israel.JPG",
+                description: "מסלול מרהיב במרכז רמת הגולן העובר בקניון בזלת מרשים, בריכות מים קרירות ומים זורמים לאורך כל השנה. בסוף המסלול תיהנו ממפל זוויתן העוצמתי.",
+                tips: ["יש להביא נעליים מתאימות להליכה במים", "המים עמוקים - מומלץ ידע בשחייה", "כניסה בתשלום (שמורת טבע)"],
+                wazeQuery: "שמורת טבע נחל זוויתן"
+            },
+            {
+                id: 7,
+                typeKey: 'trail',
+                name: "נחל עמוד עליון ובריכות שכווי",
+                region: "north",
+                regionName: "צפון והגליל",
+                difficulty: "בינונית",
+                duration: "medium",
+                durationText: "3-4 שעות",
+                season: "אביב",
+                type: "מעגלי",
+                likes: 74,
+                isWater: true,
+                isFamily: true,
+                isAccessible: false,
+                isDogFriendly: false,
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/IHM_%D7%94%D7%A2%D7%9E%D7%95%D7%93_%D7%A9%D7%9C_%D7%A0%D7%97%D7%9C_%D7%A2%D7%9E%D7%95%D7%93_1.jpeg/800px-IHM_%D7%94%D7%A2%D7%9E%D7%95%D7%93_%D7%A9%D7%9C_%D7%A0%D7%97%D7%9C_%D7%A2%D7%9E%D7%95%D7%93_1.jpeg",
+                description: "מסלול מוצל וקלאסי בגליל העליון, העובר לצד טחנות קמח עתיקות, בוסתנים ירוקים ובריכות מים צלולות בבריכות שכווי.",
+                tips: ["העלייה חזרה לחניה עשויה להיות מעייפת", "מומלץ להביא בגדים להחלפה למים", "כניסה בתשלום של רשות הטבע והגנים"],
+                wazeQuery: "שמורת טבע נחל עמוד"
+            },
+            {
+                id: 8,
+                typeKey: 'trail',
+                name: "נחל אל על והמפל הלבן",
+                region: "north",
+                regionName: "צפון והגליל",
+                difficulty: "בינונית",
+                duration: "medium",
+                durationText: "3-5 שעות",
+                season: "אביב",
+                type: "קווי / מעגלי",
+                likes: 112,
+                isWater: true,
+                isFamily: true,
+                isAccessible: false,
+                isDogFriendly: true,
+                image: "https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?auto=format&fit=crop&w=800&q=80",
+                description: "מהיפים שבמסלולי הגולן. קניון עמוק המציע שני מפלים מרהיבים: המפל הלבן והמפל השחור, הזורמים לתוך בריכות טבעיות נהדרות לשחייה.",
+                tips: ["נדרש תיאום רכבים אם עושים את המסלול הקווי", "המסלול חשוף לשמש בחלקו - חובה כובע ומים"],
+                wazeQuery: "נחל אל על אבני איתן"
+            },
+            {
+                id: 9,
+                typeKey: 'trail',
+                name: "שמורת טבע נחל שניר (חצבני)",
+                region: "north",
+                regionName: "צפון והגליל",
+                difficulty: "קלה",
+                duration: "short",
+                durationText: "1-2 שעות",
+                season: "קיץ",
+                type: "מעגלי",
+                likes: 85,
+                isWater: true,
+                isFamily: true,
+                isAccessible: true,
+                isDogFriendly: false,
+                image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+                description: "הארוך במקורות הירדן. שמורה יפהפייה הכוללת הליכה בתוך ג'ונגל של צמחיית נחלים ומים קרים הזורמים בעוצמה לאורך כל השנה.",
+                tips: ["מסלול מעולה למשפחות עם ילדים", "יש מסלול נגיש קצר ומסלול רטוב במים", "כניסה בתשלום"],
+                wazeQuery: "שמורת טבע נחל שניר"
+            },
+            {
+                id: 10,
+                typeKey: 'trail',
+                name: "שביל הקיסר וחרבת חנות",
+                region: "jerusalem",
+                regionName: "ירושלים והסביבה",
+                difficulty: "קלה",
+                duration: "short",
+                durationText: "1.5-2 שעות",
+                season: "אביב",
+                type: "קווי",
+                likes: 43,
+                isWater: false,
+                isFamily: true,
+                isAccessible: false,
+                isDogFriendly: true,
+                image: "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=800&q=80",
+                description: "דרך רומית עתיקה בהרי ירושלים הכוללת מדרגות סלע חצובות, פסיפס ביזנטי מרשים בחורבת חנות ותצפית מרהיבה לכיוון השפלה.",
+                tips: ["מומלץ להשאיר רכב מאסף בתחתית השביל", "בעונת האביב יש פריחה מדהימה"],
+                wazeQuery: "חורבת חנות"
+            },
+            {
+                id: 11,
+                typeKey: 'trail',
+                name: "שביל המעיינות בהר עמינדב",
+                region: "jerusalem",
+                regionName: "ירושלים והסביבה",
+                difficulty: "קלה",
+                duration: "medium",
+                durationText: "2-3 שעות",
+                season: "סתיו",
+                type: "מעגלי",
+                likes: 91,
+                isWater: true,
+                isFamily: true,
+                isAccessible: false,
+                isDogFriendly: true,
+                image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=800&q=80",
+                description: "מסלול מוצל בחורש ירושלמי העובר בין מספר מעיינות נקבה יפים (עין עוזי, עין תמר, עין חנדק). מומלץ להיכנס לנקבות עם פנסים.",
+                tips: ["חובה להביא פנסים לכניסה לנקבות المים", "המים מתאימים לשכשוך"],
+                wazeQuery: "חורבת סעדים"
+            },
+            {
+                id: 12,
+                typeKey: 'trail',
+                name: "שמורת אפולוניה וחוף הים",
+                region: "center",
+                regionName: "מרכז והשרון",
+                difficulty: "קלה",
+                duration: "short",
+                durationText: "1-2 שעות",
+                season: "אביב",
+                type: "מעגלי",
+                likes: 58,
+                isWater: false,
+                isFamily: true,
+                isAccessible: true,
+                isDogFriendly: false,
+                image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+                description: "מבצר צלבני מרשים הניצב על מצוק כורכר מעל הים בהרצליה. מסלול טיול נוח עם תצפיות מרהיבות לים התיכון ושקיעות מדהימות.",
+                tips: ["מתאים מאוד לעגלות ילדים", "כניסה בתשלום (שמורת טבע)"],
+                wazeQuery: "גן לאומי אפולוניה"
+            },
+            {
+                id: 13,
+                typeKey: 'trail',
+                name: "מקורות הירקון ותל אפק",
+                region: "center",
+                regionName: "מרכז והשרון",
+                difficulty: "קלה",
+                duration: "medium",
+                durationText: "2-3 שעות",
+                season: "אביב",
+                type: "מעגלי",
+                likes: 104,
+                isWater: true,
+                isFamily: true,
+                isAccessible: true,
+                isDogFriendly: false,
+                image: "https://images.unsplash.com/photo-1511497584788-876761c119ef?auto=format&fit=crop&w=800&q=80",
+                description: "שמורה ירוקה ומפתיעה בלב המרכז, הכוללת אגם קסום, מבצר עות'מאני עתיק (אנטיפטריס), בריכות שכשוך מוסדרות לילדים ומדשאות רחבות.",
+                tips: ["מקום מושלם לפיקניק משפחתי", "יש בריכות שכשוך מיוחדות לילדים", "כניסה בתשלום"],
+                wazeQuery: "גן לאומי תל אפק"
+            },
+            {
+                id: 14,
+                typeKey: 'trail',
+                name: "עין עבדת וקניון צין",
+                region: "south",
+                regionName: "דרום והנגב",
+                difficulty: "קלה",
+                duration: "short",
+                durationText: "1.5-2 שעות",
+                season: "חורף",
+                type: "קווי / מעגלי קצר",
+                likes: 82,
+                isWater: true,
+                isFamily: true,
+                isAccessible: true,
+                isDogFriendly: false,
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/%D7%9E%D7%A9%D7%A4%D7%97%D7%94_%D7%91%D7%A2%D7%99%D7%9F_%D7%A2%D7%91%D7%93%D7%AA.jpg/800px-%D7%9E%D7%A9%D7%A4%D7%97%D7%94_%D7%91%D7%A2%D7%99%D7%9F_%D7%A2%D7%91%D7%93%D7%AA.jpg",
+                description: "קניון סלע גיר לבן ומרשים בלב הנגב, עם מעיין זורם, גבים, וחורשת עצי צפצפת הפרת. לאורך המסלול ניתן לראות יעלים ונשרים.",
+                tips: ["הכניסה למים אסורה לשמירה על הטבע", "כולל טיפוס קצר בסולם סלע עם אחיזות", "כניסה בתשלום"],
+                wazeQuery: "גן לאומי עין עבדת"
+            },
+            {
+                id: 15,
+                typeKey: 'trail',
+                name: "הקניון האדום - הרי אילת",
+                region: "south",
+                regionName: "דרום והנגב",
+                difficulty: "קלה",
+                duration: "short",
+                durationText: "1-2 שעות",
+                season: "חורף",
+                type: "מעגלי",
+                likes: 135,
+                isWater: false,
+                isFamily: true,
+                isAccessible: false,
+                isDogFriendly: false,
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/PikiWiki_Israel_19740_Geography_of_Israel.jpg/800px-PikiWiki_Israel_19740_Geography_of_Israel.jpg",
+                description: "אחד המסלולים המרשימים והפופולריים בדרום. הליכה בתוך נקיק אבן חול אדומה ויפהפייה, כולל ירידה בסולמות ומאחזי יד בתוך הקניון.",
+                tips: ["מתאים מאוד למשפחות עם ילדים", "כניסה חינם, פתוח לאורך כל היום", "לא להגיע בימי חשש לשיטפונות"],
+                wazeQuery: "הקניון האדום אילת"
+            },
+            {
+                id: 2,
+                typeKey: 'trail',
+                name: "נחל ערוגות - שמורת עין גדי",
+                region: "south",
+                regionName: "דרום והנגב",
+                difficulty: "קלה",
+                duration: "medium",
+                durationText: "2-3 שעות",
+                season: "אביב",
+                type: "הלוך וחזור",
+                likes: 140,
+                isWater: true,
+                isFamily: true,
+                isAccessible: false,
+                isDogFriendly: false,
+                image: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=800&q=80",
+                description: "אחד הנחלים היפים בישראל. הליכה בתוך נחל זורם במדבר יהודה, המובילה למפל הנסתר ולבריכות מים מתוקים וצלולות.",
+                tips: ["חובה להזמין מקום מראש באתר רשות הטבע והגנים", "מומלץ להתחיל מוקדם בבוקר בימים חמים"],
+                wazeQuery: "שמורת עין גדי נחל ערוגות"
+            },
+            {
+                id: 16,
+                typeKey: 'trail',
+                name: "נחל דוד - מדבר יהודה",
+                region: "south",
+                regionName: "דרום והנגב",
+                difficulty: "קלה",
+                duration: "short",
+                durationText: "1.5-2 שעות",
+                season: "סתיו",
+                type: "מעגלי",
+                likes: 118,
+                isWater: true,
+                isFamily: true,
+                isAccessible: true,
+                isDogFriendly: false,
+                image: "https://images.unsplash.com/photo-1544971587-b842c27f8c14?auto=format&fit=crop&w=800&q=80",
+                description: "נווה מדבר קסום הצופה אל ים המלח. מסלול קל ופופולרי העובר בין בריכות מים, מפלים זורמים, ומפגשים מקרוב עם יעלים ושפני סלע.",
+                tips: ["חלקו הראשון של המסלול נגיש עד למפל הראשון", "מומלץ להגיע מוקדם בבוקר"],
+                wazeQuery: "שמורת עין גדי נחל דוד"
+            },
+            {
+                id: 17,
+                typeKey: 'trail',
+                name: "נחל דרגות (דרג'ה) - למיטיבי לכת",
+                region: "south",
+                regionName: "דרום והנגב",
+                difficulty: "מאתגרת",
+                duration: "long",
+                durationText: "5-7 שעות",
+                season: "סתיו",
+                type: "קווי",
+                likes: 64,
+                isWater: true,
+                isFamily: false,
+                isAccessible: false,
+                isDogFriendly: false,
+                image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80",
+                description: "מהאתגריים והמרהיבים שבמסלולי מדבר יהודה! קניון תלול ועמוק הכולל מעבר בגבים עמוקים, ירידה בחבלים ומפלי סלע גבוהים.",
+                tips: ["מיועד למיטיבי לכת בלבד! חובה חבל של 30 מטר", "חובה לבדוק תחזית מזג אוויר וחשש לשיטפונות"],
+                wazeQuery: "מצוקי דרגות"
+            },
+            {
+                id: 18,
+                typeKey: 'trail',
+                name: "מכתש רמון - שביל המגרסה והמנסרה",
+                region: "south",
+                regionName: "דרום והנגב",
+                difficulty: "קלה",
+                duration: "short",
+                durationText: "1-2 שעות",
+                season: "חורף",
+                type: "מעגלי",
+                likes: 77,
+                isWater: false,
+                isFamily: true,
+                isAccessible: true,
+                isDogFriendly: true,
+                image: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=800&q=80",
+                description: "תופעה גיאולוגית ייחודית בלב מכתש רמון - גבעת אבן חול שבה נוצרו עמודי בזלת מנסרתיים כהים הנראים כמו לוחות עץ צפופים.",
+                tips: ["כולל גשר עץ מונגש ונוח להליכה", "תצפית מרהיבה על צבעי המכתש"],
+                wazeQuery: "המנסרה מכתש רמון"
+            }
+        ];
+
+        // Database of Attractions
+        const attractionsData = [
+            {
+                id: 101,
+                typeKey: 'attraction',
+                name: "אגמון החולה - פארק טבע וצפרות",
+                region: "north",
+                regionName: "צפון והגליל",
+                category: "animals",
+                categoryName: "חיות וטבע",
+                target: "family",
+                targetName: "משפחות וזוגות",
+                price: "בתשלום קל",
+                hours: "08:00 - 17:00",
+                likes: 189,
+                image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=800&q=80",
+                description: "אחד מאתרי הצפרות המובילים בעולם! חוויית טבע מרהיבה בעמק החולה הכוללת השכרת אופניים, רכבים חשמליים וסיורי עגלת מסתור בין מאות אלפי ציפורים וצפרדעים.",
+                tips: ["מומלץ להגיע בשעות השקיעה או הזריחה לסיור עגלת מסתור", "אפשר לשכור אופניים משפחתיים במקום"],
+                wazeQuery: "אגמון החולה"
+            },
+            {
+                id: 102,
+                typeKey: 'attraction',
+                name: "פארק הירדן וטיולי רייזרים",
+                region: "north",
+                regionName: "צפון והגליל",
+                category: "extreme",
+                categoryName: "שטח ואקסטרים",
+                target: "groups",
+                targetName: "קבוצות ומשפחות",
+                price: "בתשלום",
+                hours: "09:00 - 18:00",
+                likes: 142,
+                image: "https://images.unsplash.com/photo-1544971587-b842c27f8c14?auto=format&fit=crop&w=800&q=80",
+                description: "פארק אתגרי ענק בצפון הכנרת המציע מסלולי נסיעה ברייזרים וטרקטורונים בלב מעיינות הירדן, לצד מסלול לילה אורקולי ייחודי 'תופעות טבע'.",
+                tips: ["נהיגה ברייזר מותנית ברשיון נהיגה בתוקף", "מומלץ להזמין מקום מראש לסוף השבוע"],
+                wazeQuery: "פארק הירדן"
+            },
+            {
+                id: 103,
+                typeKey: 'attraction',
+                name: "קטיף עצמי - בוסתן בראשית בעין זיוון",
+                region: "north",
+                regionName: "צפון והגליל",
+                category: "animals",
+                categoryName: "חיות וטבע",
+                target: "family",
+                targetName: "משפחות וילדים",
+                price: "תשלום סמלי",
+                hours: "09:00 - 16:00 (עונתי)",
+                likes: 95,
+                image: "https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=800&q=80",
+                description: "חוויית קטיף עצמי נהדרת בלב רמת הגולן! קטיף דובדבנים, פטל, תפוחים וענבים בהתאם לעונה, לצד פינות ליטוף, מתנפחים ופארק חבלים לילדים.",
+                tips: ["פתוח בעיקר באביב ובקיץ - מומלץ להתעדכן בימי הפעילות", "כל הילדים נהנים מאכילה חופשית בשטח"],
+                wazeQuery: "בוסתן בראשית עין זיוון"
+            },
+            {
+                id: 104,
+                typeKey: 'attraction',
+                name: "אקווריום ישראל בירושלים",
+                region: "jerusalem",
+                regionName: "ירושלים והסביבה",
+                category: "animals",
+                categoryName: "חיות וטבע",
+                target: "family",
+                targetName: "משפחות וילדים",
+                price: "בתשלום",
+                hours: "09:00 - 17:00",
+                likes: 210,
+                image: "https://images.unsplash.com/photo-1511497584788-876761c119ef?auto=format&fit=crop&w=800&q=80",
+                description: "האקווריום הלאומי של ישראל העוסק בשימור המגוון הימי של הימים בישראל (הים התיכון, ים סוף, ים המלח והכנרת). מנהרת כרישים מרהיבה ותצוגות מרהיבות.",
+                tips: ["חובה לרכוש כרטיסים מראש באינטרנט בלבד!", "מתחם מקורה וממוזג לחלוטין"],
+                wazeQuery: "אקווריום ישראל ירושלים"
+            },
+            {
+                id: 105,
+                typeKey: 'attraction',
+                name: "מוזיאון המדע ע\"ש בלומפילד",
+                region: "jerusalem",
+                regionName: "ירושלים והסביבה",
+                category: "museum",
+                categoryName: "מוזיאונים ומדע",
+                target: "family",
+                targetName: "ילדים ומשפחות",
+                price: "בתשלום",
+                hours: "10:00 - 18:00",
+                likes: 115,
+                image: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80",
+                description: "מוזיאון אינטראקטיבי חווייתי המציע עשרות מוצגים המופעלים על ידי המבקרים, ניסויים, סדנאות בנייה והדגמות מדעיות מרתקות לכל הגילאים.",
+                tips: ["אידיאלי לימים גשומים או חמים במיוחד", "מתאים מגיל 3 ומעלה"],
+                wazeQuery: "מוזיאון המדע ירושלים"
+            },
+            {
+                id: 106,
+                typeKey: 'attraction',
+                name: "המצפה התת ימי באילת",
+                region: "south",
+                regionName: "דרום, ים המלח ואילת",
+                category: "animals",
+                categoryName: "חיות וטבע",
+                target: "family",
+                targetName: "משפחות וילדים",
+                price: "בתשלום",
+                hours: "09:00 - 16:00",
+                likes: 245,
+                image: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=800&q=80",
+                description: "אטרקציית החובה של אילת! מצפה תת-ימי בעומק 6 מטרים בלב שונית האלמוגים של ים סוף, לצד בריכת כרישים ענקית, האכלת חתולי ים ושיט בסירת זכוכית.",
+                tips: ["הכרטיס תקף ל-3 ימים רצופים!", "מומלץ לבדוק את שעות האכלת הכרישים והצבים"],
+                wazeQuery: "המצפה התת ימי אילת"
+            },
+            {
+                id: 107,
+                typeKey: 'attraction',
+                name: "גן לאומי מצדה - חיזיון אור קולי",
+                region: "south",
+                regionName: "דרום, ים המלח ואילת",
+                category: "heritage",
+                categoryName: "אתרי מורשת",
+                target: "couples",
+                targetName: "משפחות וזוגות",
+                price: "בתשלום",
+                hours: "08:00 - 17:00 (חיזיון בלילה)",
+                likes: 168,
+                image: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/PikiWiki_Israel_19740_Geography_of_Israel.jpg/800px-PikiWiki_Israel_19740_Geography_of_Israel.jpg",
+                description: "אתר מורשת עולמי מרהיב בלב המדבר. עלייה ברכבל או טיפוס בשביל הנחש, סיור בארמונות הורדוס ומופע אורקולי מרהיב בלילה במערב ההר.",
+                tips: ["בקיץ מומלץ לעלות ברכבל מוקדם בבוקר בשל החום", "המופע האורקולי מתקיים בימי שלישי וחמישי בערב"],
+                wazeQuery: "גן לאומי מצדה"
+            },
+            {
+                id: 108,
+                typeKey: 'attraction',
+                name: "פלנתניה - מרכז מדע, חלל ותרבות",
+                region: "center",
+                regionName: "מרכז והשרון",
+                category: "museum",
+                categoryName: "מוזיאונים ומדע",
+                target: "family",
+                targetName: "משפחות וילדים",
+                price: "בתשלום",
+                hours: "09:00 - 16:00",
+                likes: 88,
+                image: "https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=800&q=80",
+                description: "מתחם אסטרונומיה וחלל מתקדם בנתניה הכולל פלנטריום דיגיטלי נדיר, גן מדע אינטראקטיבי, מתחם אסטרופיזיקה ומופע כוכבים מרתק.",
+                tips: ["חובה להזמין סיור מראש באתר", "חוויה מעצימה ומלמדת במיוחד לילדים"],
+                wazeQuery: "פלנתניה נתניה"
+            },
+            {
+                id: 109,
+                typeKey: 'attraction',
+                name: "גלישת חולות בדיונת האמבטיה - נגב",
+                region: "south",
+                regionName: "דרום, ים המלח ואילת",
+                category: "extreme",
+                categoryName: "שטח ואקסטרים",
+                target: "family",
+                targetName: "משפחות וקבוצות",
+                price: "בתשלום קל / עצמאי",
+                hours: "פתוח תמיד",
+                likes: 103,
+                image: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=800&q=80",
+                description: "חוויית אקסטרים ייחודית בפתחת הנגב ליד ניצנה! גלישה במגלשות חול מיוחדות בדיונות החול הרכות. חוויה מצחיקה ומהנה לילדים ולמבוגרים כאחד.",
+                tips: ["להביא מגלשות חול או לשכור ביישובי הסביבה", "מומלץ להגיע בשעות אחה\"כ כשחול הדיונה נעים"],
+                wazeQuery: "דיונת האמבטיה ניצנה"
+            }
+        ];
+
+        let currentView = 'trails';
+        let currentAttrCategory = 'all';
+        let favorites = JSON.parse(localStorage.getItem('trail_favs') || '[]');
+        let userLikes = JSON.parse(localStorage.getItem('user_likes') || '{}');
+        let itemComments = JSON.parse(localStorage.getItem('item_comments') || '{}');
+        let appRatings = JSON.parse(localStorage.getItem('app_ratings') || '[5, 5, 4, 5, 5, 5, 4]');
+        
+        let currentFormRating = 5;
+        let activeModalItemId = null;
+        let activeModalItemType = null;
+        let currentAppUserRating = 5;
+
+        // Sharing State Variables
+        let currentShareData = {
+            title: "בשביל ארץ - מסלולים ואטרקציות בישראל",
+            text: "גיליתי את אפליקציית בשביל ארץ! המדריך המלא למסלולי טיול ואטרקציות בישראל. מומלץ בחום!",
+            url: window.location.href
+        };
+
+        // Mock Initial Comments
+        if (Object.keys(itemComments).length === 0) {
+            itemComments = {
+                "trail_19": [
+                    { author: "גלעד ס.", rating: 5, text: "אחד המסלולים הכי כיפיים בקיץ! המים עמוקים ומרעננים.", date: "12/05/2026" },
+                    { author: "מיכל פ.", rating: 5, text: "ילדים עפו על מגלשות הצינור! מומלץ להביא מזרני ים.", date: "02/06/2026" }
+                ],
+                "trail_21": [
+                    { author: "אורן מ.", rating: 5, text: "מסלול מושלם לעגלות תינוק, צל לאורך כל הדרך.", date: "15/04/2026" }
+                ],
+                "attraction_106": [
+                    { author: "דנה כ.", rating: 5, text: "המצפה מדהים, ראינו האכלת כרישים חוויה לכל המשפחה!", date: "10/01/2026" }
+                ]
+            };
+            localStorage.setItem('item_comments', JSON.stringify(itemComments));
+        }
+
+        // Initialize Page
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTrails(trailsData);
+            renderAttractions(attractionsData);
+            generateGearList();
+            updateFavBadge();
+            updateAppRatingBadge();
+
+            document.getElementById('mobile-menu-btn').addEventListener('click', toggleMobileMenu);
+
+            // Check Web Share API capability
+            if (!navigator.share) {
+                const nativeBtn = document.getElementById('native-share-btn');
+                if(nativeBtn) nativeBtn.style.display = 'none';
+            }
+
+            // Close Modal on Escape Key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeModal();
+                    closeAppRatingModal();
+                    closeShareModal();
+                    const favModal = document.getElementById('fav-modal');
+                    if (!favModal.classList.contains('hidden')) toggleFavoritesModal();
+                }
+            });
+        });
+
+        // VIEW SWITCHING
+        function switchView(viewName) {
+            currentView = viewName;
+
+            const trailsView = document.getElementById('view-trails');
+            const attractionsView = document.getElementById('view-attractions');
+            const plannerView = document.getElementById('planner');
+
+            const navTrails = document.getElementById('nav-trails');
+            const navAttraction = document.getElementById('nav-attractions');
+            const navPlanner = document.getElementById('nav-planner');
+
+            // Reset navigation active styles
+            [navTrails, navAttraction, navPlanner].forEach(btn => {
+                btn.className = "px-5 py-2 rounded-xl transition-all flex items-center gap-2 hover:text-brand-600";
+            });
+
+            if (viewName === 'trails') {
+                trailsView.classList.remove('hidden');
+                attractionsView.classList.add('hidden');
+                navTrails.className = "px-5 py-2 rounded-xl transition-all flex items-center gap-2 bg-white text-brand-700 shadow-sm font-bold";
+            } else if (viewName === 'attractions') {
+                trailsView.classList.add('hidden');
+                attractionsView.classList.remove('hidden');
+                navAttraction.className = "px-5 py-2 rounded-xl transition-all flex items-center gap-2 bg-white text-amber-600 shadow-sm font-bold";
+            } else if (viewName === 'planner') {
+                trailsView.classList.add('hidden');
+                attractionsView.classList.add('hidden');
+                navPlanner.className = "px-5 py-2 rounded-xl transition-all flex items-center gap-2 bg-white text-sky-600 shadow-sm font-bold";
+                plannerView.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        }
+
+        // FILTER TRAILS
+        function filterTrails() {
+            const region = document.getElementById('region-select').value;
+            const difficulty = document.getElementById('difficulty-select').value;
+            const season = document.getElementById('season-select').value;
+            const duration = document.getElementById('duration-select').value;
+
+            let filtered = trailsData.filter(trail => {
+                if (region !== 'all' && trail.region !== region) return false;
+                if (difficulty !== 'all' && trail.difficulty !== difficulty) return false;
+                if (season !== 'all' && trail.season !== season) return false;
+                if (duration !== 'all' && trail.duration !== duration) return false;
+                return true;
+            });
+
+            renderTrails(filtered);
+        }
+
+        function setQuickFilter(type) {
+            let filtered = trailsData.filter(trail => {
+                if (type === 'water') return trail.isWater;
+                if (type === 'family') return trail.isFamily;
+                if (type === 'accessible') return trail.isAccessible;
+                if (type === 'dogs') return trail.isDogFriendly;
+                return true;
+            });
+            renderTrails(filtered);
+        }
+
+        function resetFilters() {
+            document.getElementById('region-select').value = 'all';
+            document.getElementById('difficulty-select').value = 'all';
+            document.getElementById('season-select').value = 'all';
+            document.getElementById('duration-select').value = 'all';
+            document.getElementById('global-search-input').value = '';
+            renderTrails(trailsData);
+        }
+
+        // FILTER ATTRACTIONS
+        function filterAttractions() {
+            const region = document.getElementById('attr-region-select').value;
+            const category = document.getElementById('attr-category-select').value;
+            const target = document.getElementById('attr-target-select').value;
+
+            let filtered = attractionsData.filter(item => {
+                if (region !== 'all' && item.region !== region) return false;
+                if (category !== 'all' && item.category !== category) return false;
+                if (target !== 'all' && item.target !== target) return false;
+                return true;
+            });
+
+            renderAttractions(filtered);
+        }
+
+        function setAttractionCategory(cat) {
+            document.getElementById('attr-category-select').value = cat;
+            filterAttractions();
+        }
+
+        function resetAttractionFilters() {
+            document.getElementById('attr-region-select').value = 'all';
+            document.getElementById('attr-category-select').value = 'all';
+            document.getElementById('attr-target-select').value = 'all';
+            renderAttractions(attractionsData);
+        }
+
+        // GLOBAL SEARCH
+        function handleSearch() {
+            const query = document.getElementById('global-search-input').value.trim().toLowerCase();
+            if (!query) {
+                renderTrails(trailsData);
+                renderAttractions(attractionsData);
+                return;
+            }
+
+            if (currentView === 'trails') {
+                const filtered = trailsData.filter(t => t.name.toLowerCase().includes(query) || t.description.toLowerCase().includes(query) || t.regionName.toLowerCase().includes(query));
+                renderTrails(filtered);
+            } else if (currentView === 'attractions') {
+                const filtered = attractionsData.filter(a => a.name.toLowerCase().includes(query) || a.description.toLowerCase().includes(query) || a.regionName.toLowerCase().includes(query));
+                renderAttractions(filtered);
+            }
+        }
+
+        // Render Trails Grid
+        function renderTrails(list) {
+            const grid = document.getElementById('trails-grid');
+            const emptyState = document.getElementById('empty-state');
+            const countEl = document.getElementById('results-count');
+
+            countEl.textContent = list.length;
+            grid.innerHTML = '';
+
+            if (list.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            list.forEach(trail => {
+                const isFav = favorites.some(f => f.id === trail.id && f.typeKey === 'trail');
+                const likesCount = (trail.likes || 0) + (userLikes[`trail_${trail.id}`] ? 1 : 0);
+
+                const card = document.createElement('div');
+                card.className = "bg-slate-50 rounded-2xl overflow-hidden border border-slate-200 card-shadow flex flex-col hover:shadow-lg transition-all transform hover:-translate-y-1 group";
+                
+                card.innerHTML = `
+                    <div class="relative h-48 overflow-hidden cursor-pointer" onclick="openItemModal(${trail.id}, 'trail')">
+                        <img src="${trail.image}" alt="${trail.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <span class="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-slate-800 font-bold text-xs px-3 py-1 rounded-full shadow-sm">
+                            ${trail.regionName}
+                        </span>
+                        <button onclick="event.stopPropagation(); toggleFavorite(${trail.id}, 'trail')" class="absolute top-3 left-3 bg-white/90 hover:bg-white text-rose-500 w-9 h-9 rounded-full flex items-center justify-center shadow-md transition-all">
+                            <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart text-base"></i>
+                        </button>
+                    </div>
+
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                                <span class="bg-brand-100 text-brand-800 px-2.5 py-0.5 rounded-md font-bold">${trail.difficulty}</span>
+                                <span>•</span>
+                                <span><i class="fa-regular fa-clock ml-1"></i>${trail.durationText}</span>
+                                <span>•</span>
+                                <span>${trail.type}</span>
+                            </div>
+                            <h3 onclick="openItemModal(${trail.id}, 'trail')" class="text-xl font-bold font-heading text-slate-900 group-hover:text-brand-600 transition-colors cursor-pointer">${trail.name}</h3>
+                            <p class="text-slate-600 text-xs line-clamp-2 leading-relaxed">${trail.description}</p>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
+                            <button onclick="openItemModal(${trail.id}, 'trail')" class="font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1">
+                                לכל הפרטים והתגובות <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                            </button>
+                            <div class="flex items-center gap-2">
+                                <button onclick="shareItem(${trail.id}, 'trail')" class="text-slate-400 hover:text-brand-600 p-1" title="שתף מסלול">
+                                    <i class="fa-solid fa-share-nodes text-sm"></i>
+                                </button>
+                                <span class="text-slate-400 flex items-center gap-1">
+                                    <i class="fa-solid fa-thumbs-up text-sky-500"></i> ${likesCount}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Render Attractions Grid
+        function renderAttractions(list) {
+            const grid = document.getElementById('attractions-grid');
+            const emptyState = document.getElementById('attr-empty-state');
+            const countEl = document.getElementById('attr-results-count');
+
+            countEl.textContent = list.length;
+            grid.innerHTML = '';
+
+            if (list.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            } else {
+                emptyState.classList.add('hidden');
+            }
+
+            list.forEach(attr => {
+                const isFav = favorites.some(f => f.id === attr.id && f.typeKey === 'attraction');
+                const likesCount = (attr.likes || 0) + (userLikes[`attraction_${attr.id}`] ? 1 : 0);
+
+                const card = document.createElement('div');
+                card.className = "bg-slate-50 rounded-2xl overflow-hidden border border-slate-200 card-shadow flex flex-col hover:shadow-lg transition-all transform hover:-translate-y-1 group";
+
+                card.innerHTML = `
+                    <div class="relative h-48 overflow-hidden cursor-pointer" onclick="openItemModal(${attr.id}, 'attraction')">
+                        <img src="${attr.image}" alt="${attr.name}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                        <span class="absolute top-3 right-3 bg-amber-500 text-white font-bold text-xs px-3 py-1 rounded-full shadow-sm">
+                            ${attr.categoryName}
+                        </span>
+                        <button onclick="event.stopPropagation(); toggleFavorite(${attr.id}, 'attraction')" class="absolute top-3 left-3 bg-white/90 hover:bg-white text-rose-500 w-9 h-9 rounded-full flex items-center justify-center shadow-md transition-all">
+                            <i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart text-base"></i>
+                        </button>
+                    </div>
+
+                    <div class="p-5 flex-1 flex flex-col justify-between space-y-4">
+                        <div class="space-y-2">
+                            <div class="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                                <span class="bg-amber-100 text-amber-800 px-2.5 py-0.5 rounded-md font-bold">${attr.regionName}</span>
+                                <span>•</span>
+                                <span><i class="fa-solid fa-users text-slate-400 ml-1"></i>${attr.targetName}</span>
+                            </div>
+                            <h3 onclick="openItemModal(${attr.id}, 'attraction')" class="text-xl font-bold font-heading text-slate-900 group-hover:text-amber-600 transition-colors cursor-pointer">${attr.name}</h3>
+                            <p class="text-slate-600 text-xs line-clamp-2 leading-relaxed">${attr.description}</p>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-200 flex items-center justify-between text-xs">
+                            <button onclick="openItemModal(${attr.id}, 'attraction')" class="font-bold text-amber-600 hover:text-amber-700 flex items-center gap-1">
+                                לכל הפרטים והתגובות <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                            </button>
+                            <div class="flex items-center gap-2">
+                                <button onclick="shareItem(${attr.id}, 'attraction')" class="text-slate-400 hover:text-amber-600 p-1" title="שתף אטרקציה">
+                                    <i class="fa-solid fa-share-nodes text-sm"></i>
+                                </button>
+                                <span class="text-slate-400 flex items-center gap-1">
+                                    <i class="fa-solid fa-thumbs-up text-sky-500"></i> ${likesCount}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Open Modal Item Details
+        function openItemModal(id, type) {
+            activeModalItemId = id;
+            activeModalItemType = type;
+
+            const item = type === 'trail' 
+                ? trailsData.find(t => t.id === id) 
+                : attractionsData.find(a => a.id === id);
+
+            if (!item) return;
+
+            const modal = document.getElementById('detail-modal');
+            const img = document.getElementById('modal-img');
+            const badge = document.getElementById('modal-badge');
+            const title = document.getElementById('modal-title');
+            const statsGrid = document.getElementById('modal-stats-grid');
+            const tags = document.getElementById('modal-tags');
+            const desc = document.getElementById('modal-description');
+            const tips = document.getElementById('modal-tips');
+            const wazeBtn = document.getElementById('modal-waze-btn');
+            const favBtn = document.getElementById('modal-fav-btn');
+            const likeBtn = document.getElementById('modal-like-btn');
+            const shareItemBtn = document.getElementById('modal-share-item-btn');
+
+            img.src = item.image;
+            title.textContent = item.name;
+            desc.textContent = item.description;
+
+            // Share button inside detail modal
+            shareItemBtn.onclick = () => shareItem(item.id, type);
+
+            if (type === 'trail') {
+                badge.textContent = item.regionName;
+                badge.className = "bg-brand-600 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider";
+                
+                statsGrid.innerHTML = `
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100"><span class="text-slate-400 block">דרגת קושי</span><strong class="text-slate-800 font-bold">${item.difficulty}</strong></div>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100"><span class="text-slate-400 block">משך זמן</span><strong class="text-slate-800 font-bold">${item.durationText}</strong></div>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100"><span class="text-slate-400 block">עונה מומלצת</span><strong class="text-slate-800 font-bold">${item.season}</strong></div>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100"><span class="text-slate-400 block">סוג מסלול</span><strong class="text-slate-800 font-bold">${item.type}</strong></div>
+                `;
+
+                tags.innerHTML = `
+                    ${item.isWater ? '<span class="bg-blue-50 text-blue-700 px-2.5 py-1 rounded-lg font-bold text-xs"><i class="fa-solid fa-droplet ml-1"></i>מסלול מים</span>' : ''}
+                    ${item.isFamily ? '<span class="bg-amber-50 text-amber-700 px-2.5 py-1 rounded-lg font-bold text-xs"><i class="fa-solid fa-child ml-1"></i>מתאים למשפחות</span>' : ''}
+                    ${item.isAccessible ? '<span class="bg-purple-50 text-purple-700 px-2.5 py-1 rounded-lg font-bold text-xs"><i class="fa-solid fa-wheelchair ml-1"></i>נגיש</span>' : ''}
+                    ${item.isDogFriendly ? '<span class="bg-orange-50 text-orange-700 px-2.5 py-1 rounded-lg font-bold text-xs"><i class="fa-solid fa-dog ml-1"></i>כלבים מותרים</span>' : ''}
+                `;
+            } else {
+                badge.textContent = item.categoryName;
+                badge.className = "bg-amber-500 text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider";
+
+                statsGrid.innerHTML = `
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100"><span class="text-slate-400 block">אזור</span><strong class="text-slate-800 font-bold">${item.regionName}</strong></div>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100"><span class="text-slate-400 block">קהל יעד</span><strong class="text-slate-800 font-bold">${item.targetName}</strong></div>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100"><span class="text-slate-400 block">מחיר כניסה</span><strong class="text-slate-800 font-bold">${item.price}</strong></div>
+                    <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100"><span class="text-slate-400 block">שעות פעילות</span><strong class="text-slate-800 font-bold">${item.hours}</strong></div>
+                `;
+
+                tags.innerHTML = `<span class="bg-amber-50 text-amber-700 px-2.5 py-1 rounded-lg font-bold text-xs"><i class="fa-solid fa-ticket ml-1"></i>${item.categoryName}</span>`;
+            }
+
+            // Tips list
+            tips.innerHTML = item.tips ? item.tips.map(t => `<li>${t}</li>`).join('') : '<li>הקפידו על ניקיון הסביבה והביאו מים.</li>';
+
+            // Waze button link
+            wazeBtn.href = `https://waze.com/ul?q=${encodeURIComponent(item.wazeQuery || item.name)}`;
+
+            // Favorites & Like button state
+            updateModalActionButtons(id, type);
+
+            // Load Comments for this item
+            renderItemComments(id, type);
+
+            // Show Modal
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.querySelector('div').classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('detail-modal');
+            modal.classList.add('opacity-0');
+            modal.querySelector('div').classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        function closeModalOnBackdrop(e) {
+            if (e.target.id === 'detail-modal') closeModal();
+        }
+
+        // FAVORITES SYSTEM
+        function toggleFavorite(id, typeKey) {
+            const index = favorites.findIndex(f => f.id === id && f.typeKey === typeKey);
+            if (index > -1) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push({ id, typeKey });
+            }
+            localStorage.setItem('trail_favs', JSON.stringify(favorites));
+
+            updateFavBadge();
+            renderTrails(trailsData);
+            renderAttractions(attractionsData);
+
+            if (activeModalItemId === id && activeModalItemType === typeKey) {
+                updateModalActionButtons(id, typeKey);
+            }
+        }
+
+        function updateFavBadge() {
+            const badge = document.getElementById('fav-count-badge');
+            badge.textContent = favorites.length;
+            if (favorites.length > 0) {
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        }
+
+        function toggleFavoritesModal() {
+            const modal = document.getElementById('fav-modal');
+            const list = document.getElementById('fav-list');
+
+            if (modal.classList.contains('hidden')) {
+                list.innerHTML = '';
+                if (favorites.length === 0) {
+                    list.innerHTML = `<p class="text-center text-slate-400 py-8 text-sm">עדיין לא שמרתם מועדפים ברשימה.</p>`;
+                } else {
+                    favorites.forEach(fav => {
+                        const item = fav.typeKey === 'trail' 
+                            ? trailsData.find(t => t.id === fav.id) 
+                            : attractionsData.find(a => a.id === fav.id);
+                        
+                        if (!item) return;
+
+                        const row = document.createElement('div');
+                        row.className = "flex items-center justify-between p-3 bg-slate-50 rounded-2xl border border-slate-100";
+                        row.innerHTML = `
+                            <div class="flex items-center gap-3 cursor-pointer" onclick="toggleFavoritesModal(); openItemModal(${item.id}, '${fav.typeKey}')">
+                                <img src="${item.image}" class="w-12 h-12 rounded-xl object-cover">
+                                <div>
+                                    <h4 class="font-bold text-slate-900 text-sm">${item.name}</h4>
+                                    <span class="text-xs text-slate-500">${item.regionName}</span>
+                                </div>
+                            </div>
+                            <button onclick="toggleFavorite(${item.id}, '${fav.typeKey}'); toggleFavoritesModal(); toggleFavoritesModal();" class="text-rose-500 p-2 hover:bg-rose-50 rounded-xl">
+                                <i class="fa-solid fa-trash text-sm"></i>
+                            </button>
+                        `;
+                        list.appendChild(row);
+                    });
+                }
+                modal.classList.remove('hidden');
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+
+        // LIKES & BUTTON STATES
+        function toggleLike(id, typeKey) {
+            const key = `${typeKey}_${id}`;
+            if (userLikes[key]) {
+                delete userLikes[key];
+            } else {
+                userLikes[key] = true;
+            }
+            localStorage.setItem('user_likes', JSON.stringify(userLikes));
+
+            updateModalActionButtons(id, typeKey);
+            renderTrails(trailsData);
+            renderAttractions(attractionsData);
+        }
+
+        function updateModalActionButtons(id, typeKey) {
+            const favBtn = document.getElementById('modal-fav-btn');
+            const likeBtn = document.getElementById('modal-like-btn');
+            const likeCountEl = document.getElementById('modal-like-count');
+
+            const item = typeKey === 'trail' 
+                ? trailsData.find(t => t.id === id) 
+                : attractionsData.find(a => a.id === id);
+
+            const isFav = favorites.some(f => f.id === id && f.typeKey === typeKey);
+            const isLiked = !!userLikes[`${typeKey}_${id}`];
+            const likesCount = (item.likes || 0) + (isLiked ? 1 : 0);
+
+            favBtn.innerHTML = `<i class="${isFav ? 'fa-solid' : 'fa-regular'} fa-heart text-rose-500"></i> ${isFav ? 'שמור' : 'שמור'}`;
+            favBtn.onclick = () => toggleFavorite(id, typeKey);
+
+            likeBtn.className = isLiked 
+                ? "px-3.5 py-2 rounded-xl bg-sky-50 border border-sky-200 text-sky-700 font-bold text-xs flex items-center gap-1.5"
+                : "px-3.5 py-2 rounded-xl border border-slate-200 text-slate-700 font-semibold hover:bg-slate-100 text-xs flex items-center gap-1.5";
+            
+            likeCountEl.textContent = likesCount;
+            likeBtn.onclick = () => toggleLike(id, typeKey);
+        }
+
+        // ITEM COMMENTS & RATINGS
+        function renderItemComments(id, typeKey) {
+            const itemKey = `${typeKey}_${id}`;
+            const comments = itemComments[itemKey] || [];
+            const listEl = document.getElementById('item-comments-list');
+            const summaryEl = document.getElementById('item-rating-summary');
+
+            listEl.innerHTML = '';
+
+            if (comments.length === 0) {
+                summaryEl.textContent = '⭐ אין דירוגים עדיין';
+                listEl.innerHTML = `<p class="text-slate-400 text-xs text-center py-4">היו הראשונים לדרג ולרשום תגובה!</p>`;
+                return;
+            }
+
+            const avg = (comments.reduce((acc, c) => acc + c.rating, 0) / comments.length).toFixed(1);
+            summaryEl.textContent = `⭐ ${avg} (${comments.length} תגובות)`;
+
+            comments.forEach(c => {
+                const commentEl = document.createElement('div');
+                commentEl.className = "bg-slate-50 p-3 rounded-xl border border-slate-100 space-y-1";
+                
+                let starsHtml = '';
+                for (let i = 1; i <= 5; i++) {
+                    starsHtml += `<i class="fa-solid fa-star ${i <= c.rating ? 'text-amber-400' : 'text-slate-200'}"></i>`;
+                }
+
+                commentEl.innerHTML = `
+                    <div class="flex justify-between items-center text-xs">
+                        <span class="font-bold text-slate-800">${c.author}</span>
+                        <div class="text-[10px] text-amber-400">${starsHtml}</div>
+                    </div>
+                    <p class="text-xs text-slate-600">${c.text}</p>
+                    <span class="text-[10px] text-slate-400 block text-left">${c.date || ''}</span>
+                `;
+                listEl.appendChild(commentEl);
+            });
+        }
+
+        function setFormRating(stars) {
+            currentFormRating = stars;
+            const container = document.getElementById('item-star-rating');
+            const iconList = container.querySelectorAll('i');
+            iconList.forEach((icon, index) => {
+                if (index < stars) {
+                    icon.className = "fa-solid fa-star text-amber-400";
+                } else {
+                    icon.className = "fa-solid fa-star text-slate-300";
+                }
+            });
+        }
+
+        function submitItemComment() {
+            const nameInput = document.getElementById('comment-author-input');
+            const textInput = document.getElementById('comment-text-input');
+            const errorEl = document.getElementById('comment-error');
+
+            const name = nameInput.value.trim();
+            const text = textInput.value.trim();
+
+            if (!name || !text) {
+                errorEl.classList.remove('hidden');
+                return;
+            }
+            errorEl.classList.add('hidden');
+
+            const itemKey = `${activeModalItemType}_${activeModalItemId}`;
+            if (!itemComments[itemKey]) itemComments[itemKey] = [];
+
+            const dateStr = new Date().toLocaleDateString('he-IL');
+
+            itemComments[itemKey].unshift({
+                author: name,
+                rating: currentFormRating,
+                text: text,
+                date: dateStr
+            });
+
+            localStorage.setItem('item_comments', JSON.stringify(itemComments));
+
+            nameInput.value = '';
+            textInput.value = '';
+            setFormRating(5);
+
+            renderItemComments(activeModalItemId, activeModalItemType);
+            showToast("תגובתך פורסמה בהצלחה!");
+        }
+
+        // APP RATING SYSTEM
+        function openAppRatingModal() {
+            document.getElementById('app-rating-modal').classList.remove('hidden');
+            setAppUserRating(5);
+        }
+
+        function closeAppRatingModal() {
+            document.getElementById('app-rating-modal').classList.add('hidden');
+        }
+
+        function setAppUserRating(stars) {
+            currentAppUserRating = stars;
+            const picker = document.getElementById('app-star-picker');
+            const iconList = picker.querySelectorAll('i');
+            iconList.forEach((icon, index) => {
+                if (index < stars) {
+                    icon.className = "fa-solid fa-star text-amber-400 hover:text-amber-400";
+                } else {
+                    icon.className = "fa-solid fa-star text-slate-300 hover:text-amber-400";
+                }
+            });
+        }
+
+        function submitAppRating() {
+            appRatings.push(currentAppUserRating);
+            localStorage.setItem('app_ratings', JSON.stringify(appRatings));
+            updateAppRatingBadge();
+            closeAppRatingModal();
+            showToast("תודה רבה על הדירוג והמשוב!");
+        }
+
+        function updateAppRatingBadge() {
+            const avg = (appRatings.reduce((a, b) => a + b, 0) / appRatings.length).toFixed(1);
+            document.getElementById('app-avg-rating-badge').textContent = avg;
+        }
+
+        // ================= SHARING SYSTEM (WHATSAPP, FACEBOOK, TELEGRAM, ETC) =================
+
+        // Share Application (General Link)
+        function shareApp() {
+            currentShareData = {
+                title: "בשביל ארץ - מסלולים ואטרקציות בישראל",
+                text: "ממליץ בחום על אפליקציית 'בשביל ארץ' - המדריך המלא למסלולי טיול, מים ואטרקציות בישראל!",
+                url: window.location.href
+            };
+            openShareModal("שתפו את האפליקציה", "העבירו לחברים ולמשפחה שתמיד מחפשים איפה לטייל!");
+        }
+
+        // Share Specific Item (Trail or Attraction)
+        function shareItem(id, typeKey) {
+            const item = typeKey === 'trail' 
+                ? trailsData.find(t => t.id === id) 
+                : attractionsData.find(a => a.id === id);
+
+            if (!item) return;
+
+            const categoryText = typeKey === 'trail' ? `מסלול טיול: ${item.name}` : `אטרקציה: ${item.name}`;
+            
+            currentShareData = {
+                title: `${item.name} - בשביל ארץ`,
+                text: `תראו את ה${categoryText} (${item.regionName})! ${item.description.substring(0, 80)}...`,
+                url: window.location.href
+            };
+
+            openShareModal(`שתפו את ${item.name}`, "שתפו את המסלול או האטרקציה ישירות עם השותפים לטיול");
+        }
+
+        function openShareModal(title, subtitle) {
+            document.getElementById('share-modal-title').textContent = title;
+            document.getElementById('share-modal-subtitle').textContent = subtitle;
+            document.getElementById('share-link-input').value = currentShareData.url;
+            
+            document.getElementById('share-modal').classList.remove('hidden');
+        }
+
+        function closeShareModal() {
+            document.getElementById('share-modal').classList.add('hidden');
+        }
+
+        // WhatsApp Share
+        function shareToWhatsApp() {
+            const message = `${currentShareData.text}\n${currentShareData.url}`;
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Facebook Share
+        function shareToFacebook() {
+            const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentShareData.url)}`;
+            window.open(facebookUrl, '_blank', 'width=600,height=400');
+        }
+
+        // Telegram Share
+        function shareToTelegram() {
+            const telegramUrl = `https://t.me/share/url?url=${encodeURIComponent(currentShareData.url)}&text=${encodeURIComponent(currentShareData.text)}`;
+            window.open(telegramUrl, '_blank');
+        }
+
+        // X (Twitter) Share
+        function shareToX() {
+            const xUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(currentShareData.text)}&url=${encodeURIComponent(currentShareData.url)}`;
+            window.open(xUrl, '_blank');
+        }
+
+        // Native Device Share
+        function shareNative() {
+            if (navigator.share) {
+                navigator.share({
+                    title: currentShareData.title,
+                    text: currentShareData.text,
+                    url: currentShareData.url
+                }).then(() => {
+                    closeShareModal();
+                }).catch(() => {});
+            }
+        }
+
+        // Copy Link to Clipboard
+        function copyShareLink() {
+            const input = document.getElementById('share-link-input');
+            input.select();
+            document.execCommand('copy');
+            showToast("הקישור הועתק ללוח!");
+            closeShareModal();
+        }
+
+        // Toast Helper
+        function showToast(msg) {
+            const toast = document.getElementById('toast-notification');
+            const msgEl = document.getElementById('toast-msg');
+            msgEl.textContent = msg;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                toast.classList.add('opacity-0', 'pointer-events-none');
+            }, 3000);
+        }
+
+        // GEAR PLANNER LIST GENERATOR
+        function generateGearList() {
+            const type = document.getElementById('gear-type').value;
+            const season = document.getElementById('gear-season').value;
+            const people = document.getElementById('gear-people').value;
+
+            let gearList = [
+                { id: 'water', text: 'מים (לפחות 2-3 ליטר לאדם)', default: true },
+                { id: 'hat', text: 'כובע רחב שוליים', default: true },
+                { id: 'shoes', text: 'נעלי הליכה נוחות / סגורות', default: true },
+                { id: 'phone', text: 'טלפון נייד טעון במלואו', default: true },
+                { id: 'sunscreen', text: 'קרם הגנה מהשמש', default: true }
+            ];
+
+            if (type === 'water') {
+                gearList.push(
+                    { id: 'water_shoes', text: 'סנדלי שורש / נעלי מים אטומות', default: true },
+                    { id: 'towel', text: 'מגבת דריי-פיט קלה', default: true },
+                    { id: 'dry_bag', text: 'שקית אטומה למים לטלפון/ארנק', default: true },
+                    { id: 'clothes', text: 'בגדים יבשים להחלפה ברכב', default: true }
+                );
+            } else if (type === 'trek') {
+                gearList.push(
+                    { id: 'tent', text: 'אוהל / שק שינה', default: true },
+                    { id: 'flashlight', text: 'פנס ראש + סוללות רזרבה', default: true },
+                    { id: 'first_aid', text: 'ערכת עזרה ראשונה מורחבת', default: true },
+                    { id: 'powerbank', text: 'מטען נייד (PowerBank)', default: true },
+                    { id: 'cooking', text: 'ערכת קפה / גזיה + מזון', default: true }
+                );
+            } else if (type === 'attraction') {
+                gearList.push(
+                    { id: 'tickets', text: 'כרטיסי כניסה מוזמנים מראש', default: true },
+                    { id: 'cash', text: 'מזומן / כרטיס אשראי', default: true },
+                    { id: 'snacks', text: 'חטיפים ופירות לדרך', default: true }
+                );
+            }
+
+            if (season === 'winter') {
+                gearList.push(
+                    { id: 'coat', text: 'מעיל גשם / ערדליים', default: true },
+                    { id: 'warm_clothes', text: 'לבוש חם בשיטת הבצל', default: true }
+                );
+            }
+
+            if (people === 'family') {
+                gearList.push(
+                    { id: 'kid_snacks', text: 'חטיפים נגישים לילדים', default: true },
+                    { id: 'wipes', text: 'מגבונים לחים ושקיות אשפה', default: true },
+                    { id: 'stroller', text: 'מנשא גב / עגלת שטח', default: true }
+                );
+            }
+
+            const container = document.getElementById('gear-checklist');
+            container.innerHTML = '';
+
+            gearList.forEach((item, idx) => {
+                const div = document.createElement('label');
+                div.className = "flex items-center gap-3 p-3 bg-slate-800/80 hover:bg-slate-700/80 rounded-xl cursor-pointer border border-slate-700 transition-all";
+                div.innerHTML = `
+                    <input type="checkbox" onchange="updateGearProgress()" class="w-4 h-4 accent-brand-500 rounded cursor-pointer">
+                    <span class="text-xs font-semibold text-slate-200 select-none">${item.text}</span>
+                `;
+                container.appendChild(div);
+            });
+
+            updateGearProgress();
+        }
+
+        function updateGearProgress() {
+            const container = document.getElementById('gear-checklist');
+            const checkboxes = container.querySelectorAll('input[type="checkbox"]');
+            const checked = container.querySelectorAll('input[type="checkbox"]:checked');
+            const progress = document.getElementById('gear-progress');
+
+            progress.textContent = `${checked.length}/${checkboxes.length} הושלמו`;
+        }
+    </script>
+</body>
+</html>

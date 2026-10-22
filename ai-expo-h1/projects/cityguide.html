@@ -1,0 +1,762 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>המדריך האולטימטיבי: אטרקציות, אוכל וקניות לנוער במרכז וירושלים</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Heebo', sans-serif;
+            background-color: #090d16;
+            color: #f8fafc;
+        }
+        .card-hover {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 15px 30px -5px rgba(56, 189, 248, 0.35);
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #334155;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between">
+
+    <!-- Header -->
+    <header class="bg-slate-900/95 border-b border-slate-800 sticky top-0 z-50 backdrop-blur-md px-4 md:px-8 py-4 shadow-2xl">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div>
+                <span class="bg-cyan-500/20 text-cyan-400 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">מדריך פרימיום לבני נוער (13-14)</span>
+                <h1 class="text-2xl md:text-3xl font-black text-white mt-1">🚀 אטרקציות, בשרים, פיצות, סושי וקניות במרכז וירושלים</h1>
+                <p class="text-xs text-slate-400">הפורטל המקיף ביותר לבילויים, אקשן, גיימינג, מסעדות מכל הסוגים וחנויות ששוות כל רגע!</p>
+            </div>
+            
+            <div class="flex items-center gap-2.5 flex-wrap justify-center">
+                <button onclick="openFavoritesModal()" class="bg-slate-800 hover:bg-slate-700 text-cyan-400 border border-slate-700 font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition shadow">
+                    <span>⭐ המועדפים שלי (<span id="favCount">0</span>)</span>
+                </button>
+                <button onclick="shareWebsite()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition shadow-lg">
+                    <span>💬 שתף בוואטסאפ</span>
+                </button>
+                <button onclick="copyLink()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold px-3 py-2 rounded-xl text-xs flex items-center gap-1.5 transition">
+                    <span>📋 העתק קישור</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 py-8 flex flex-col gap-12 flex-grow w-full">
+        
+        <!-- Smart Mood Advisor Banner -->
+        <section class="bg-gradient-to-r from-cyan-950 via-slate-900 to-indigo-950 border border-cyan-500/30 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
+            <div class="absolute -left-10 -bottom-10 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div>
+                    <h2 class="text-xl md:text-2xl font-black text-cyan-300 mb-2">🤖 יועץ הבילויים וההמלצות החכם לנוער</h2>
+                    <p class="text-xs md:text-sm text-slate-300 max-w-xl leading-relaxed">
+                        מתלבטים מה לעשות היום? בחרו את מצב הרוח שלכם ונגלה לכם מיד את האטרקציה, האוכל (בשרים, פיצה, סושי) והחנות המושלמת עבורכם ועבור החברים!
+                    </p>
+                </div>
+                <div class="flex flex-wrap gap-2.5 w-full md:w-auto justify-end">
+                    <button onclick="recommendByMood('action')" class="bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs transition shadow">🔥 בא לי אקשן טירוף</button>
+                    <button onclick="recommendByMood('chill')" class="bg-purple-600 hover:bg-purple-500 text-white font-bold px-4 py-2.5 rounded-xl text-xs transition shadow">😎 בא לי צ׳יל וגיימינג</button>
+                    <button onclick="recommendByMood('hungry')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2.5 rounded-xl text-xs transition shadow">🍕🍔 בא לי לאכול טעים</button>
+                </div>
+            </div>
+            <!-- Recommendation Result Box -->
+            <div id="moodResultBox" class="hidden mt-4 pt-4 border-t border-cyan-500/20 text-xs md:text-sm text-cyan-200">
+                <span class="font-bold text-amber-300">ההמלצה היומית שלנו:</span> <span id="moodResultText"></span>
+            </div>
+        </section>
+
+        <!-- Recommendations Showcase Strip -->
+        <section class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
+            <h3 class="text-lg font-bold text-cyan-300 mb-4 flex items-center gap-2">
+                <span>🌟 המלצות חמות, מבצעים וטיפים לבני נוער</span>
+            </h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl">
+                    <span class="text-[10px] bg-cyan-500/20 text-cyan-400 font-bold px-2 py-0.5 rounded">טיפ חם לקבוצות</span>
+                    <h4 class="font-bold text-sm text-white mt-2 mb-1">הנחות יום הולדת וקבוצות</h4>
+                    <p class="text-xs text-slate-300 leading-relaxed">רוב מתחמי הלייזר טאג, באולינג ואולמות הגיימינג מציעים חבילות מיוחדות לחבורות של 5+ בני נוער. כדאי להתקשר מראש ולשאול על מבצעי אמצע שבוע!</p>
+                </div>
+                <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl">
+                    <span class="text-[10px] bg-amber-500/20 text-amber-400 font-bold px-2 py-0.5 rounded">המלצת קולינריה מגוונת</span>
+                    <h4 class="font-bold text-sm text-white mt-2 mb-1">איפה הכי משתלם לאכול?</h4>
+                    <p class="text-xs text-slate-300 leading-relaxed">בנוסף למסעדות בשרים, יש במרכז ובירושלים פיצריות שוות, רשתות סושי מעולות ודוכני פסטה וגלידות שמתאימים בדיוק לתקציב של בני נוער.</p>
+                </div>
+                <div class="bg-slate-950 border border-slate-800 p-4 rounded-xl">
+                    <span class="text-[10px] bg-purple-500/20 text-purple-400 font-bold px-2 py-0.5 rounded">התניידות קלה</span>
+                    <h4 class="font-bold text-sm text-white mt-2 mb-1">הגעה נוחה בתחבורה ציבורית</h4>
+                    <p class="text-xs text-slate-300 leading-relaxed">רוב האטרקציות ומתחמי הקניות במרכז (תל אביב, נמל, מתחם התחנה ירושלים, קניונים מובילים) קרובות מאוד לקווי רכבת קלה או אוטובוסים.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Search & Advanced Filters Bar -->
+        <section class="bg-slate-900/90 border border-slate-800 rounded-2xl p-6 shadow-xl flex flex-col gap-5">
+            <div class="flex flex-col md:flex-row gap-4 items-center justify-between">
+                <div class="w-full relative">
+                    <span class="absolute right-4 top-3.5 text-slate-400">🔍</span>
+                    <input type="text" id="searchInput" oninput="filterContent()" placeholder="חפש לפי שם אטרקציה, בשר, פיצה, סושי, חנות, מיקום (תל אביב, ירושלים)..." class="w-full bg-slate-950 border border-slate-700 rounded-xl py-3 pr-11 pl-4 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition">
+                </div>
+                <div class="flex flex-wrap gap-2 w-full md:w-auto justify-end">
+                    <button onclick="filterCategory('all')" id="btn-all" class="filter-btn bg-cyan-500 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs transition">הכל</button>
+                    <button onclick="filterCategory('attractions')" id="btn-attractions" class="filter-btn bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-bold px-4 py-2 rounded-xl text-xs transition">🎮 אטרקציות</button>
+                    <button onclick="filterCategory('food')" id="btn-food" class="filter-btn bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-bold px-4 py-2 rounded-xl text-xs transition">🍕🍔 אוכל ומסעדות</button>
+                    <button onclick="filterCategory('shops')" id="btn-shops" class="filter-btn bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-bold px-4 py-2 rounded-xl text-xs transition">🛍️ חנויות וקניות</button>
+                </div>
+            </div>
+
+            <!-- Free Search Box with Real Gemini & Search Grounding -->
+            <div class="border-t border-slate-800 pt-4 flex flex-col md:flex-row gap-3 items-center">
+                <div class="w-full">
+                    <label class="block text-xs text-cyan-300 font-bold mb-1">חיפוש חופשי חכם (עם מידע אמיתי מהרשת על דירוגים, מבצעים ומקורות):</label>
+                    <input type="text" id="customSearchInput" placeholder="הקלד שם של כל מקום שתרצה (למשל: פיצרייה בירושלים, חנות גיימינג בתל אביב, מסעדה)..." class="w-full bg-slate-950 border border-slate-700 rounded-xl py-2.5 px-4 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400 transition">
+                </div>
+                <button onclick="searchCustomPlaceAI()" id="searchAiBtn" class="w-full md:w-auto bg-amber-500 hover:bg-amber-400 text-slate-950 font-black px-6 py-2.5 rounded-xl text-xs transition shadow-lg whitespace-nowrap mt-5 md:mt-0 flex items-center justify-center gap-1.5">
+                    <span>חפש עם AI 🌟</span>
+                </button>
+            </div>
+            
+            <!-- Custom Search Results container with live data and sources -->
+            <div id="customResultsContainer" class="hidden p-5 bg-slate-950 border border-amber-500/40 rounded-2xl text-sm text-slate-200 shadow-xl">
+                <div class="flex justify-between items-center mb-3 border-b border-slate-800 pb-2">
+                    <span class="font-bold text-amber-400 text-base">תוצאות חיפוש חכם (כולל דירוגים ומבצעים):</span>
+                    <button onclick="closeCustomResults()" class="text-xs text-slate-400 hover:text-white px-2 py-1 bg-slate-900 rounded-lg">סגור ✕</button>
+                </div>
+                <div id="customResultText" class="text-xs md:text-sm text-slate-300 leading-relaxed space-y-3">
+                    <div class="flex items-center gap-2 text-cyan-400">
+                        <div class="animate-spin rounded-full h-4 w-4 border-2 border-cyan-400 border-t-transparent"></div>
+                        <span>מחפש מידע עדכני ברשת ומנתח את הנתונים...</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Attractions Section -->
+        <section id="attractions-section" class="category-section">
+            <div class="flex justify-between items-end mb-6">
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-black text-cyan-300 mb-1">🎮 אטרקציות שוות לבני 13-14 (מרכז, ירושלים והסביבה)</h2>
+                    <p class="text-slate-400 text-xs md:text-sm">פארקי שעשועים, מציאות מדומה, לייזר טאג, בריחה ואקסטרים.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                
+                <!-- Attraction 1 -->
+                <div class="item-card bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between card-hover" data-title="בבילון פארק נמל תל אביב אקשן גיימינג">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <span class="bg-cyan-500/20 text-cyan-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">אקשן וגיימינג</span>
+                            <button onclick="toggleFavorite(this, 'בבילון פארק (נמל תל אביב)')" class="text-slate-500 hover:text-amber-400 text-lg transition">⭐</button>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mt-3 mb-1">בבילון פארק (נמל תל אביב)</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            מתחם ענק של משחקי ארקייד, מכונות וידאו מתקדמות, סימולטורים של מציאות מדומה ומתקני אקסטרים. מושלם לבני נוער שאוהבים אתגרים ותחרויות.
+                        </p>
+                    </div>
+                    <div class="border-t border-slate-800 pt-3 flex justify-between items-center text-xs text-slate-400">
+                        <span>📍 נמל תל אביב</span>
+                        <a href="https://waze.com/ul?q=בבילון+פארק+נמל+תל+אביב" target="_blank" class="text-cyan-400 hover:underline font-bold">נווט בוויז 🚗</a>
+                    </div>
+                </div>
+
+                <!-- Attraction 2 -->
+                <div class="item-card bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between card-hover" data-title="מחבואים בחשיכה תל אביב אלנבי אתגר">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <span class="bg-cyan-500/20 text-cyan-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">אתגר וסיעור מוחות</span>
+                            <button onclick="toggleFavorite(this, 'מחבואים בחשיכה (תל אביב)')" class="text-slate-500 hover:text-amber-400 text-lg transition">⭐</button>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mt-3 mb-1">מחבואים בחשיכה (תל אביב)</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            משחק קבוצתי חשוך ומותח לחלוטין שבו צריך לנווט במבוך חשוך, להתחמק או למצוא אחד את השני. חוויה חברתית אדירה לקבוצת חברים.
+                        </p>
+                    </div>
+                    <div class="border-t border-slate-800 pt-3 flex justify-between items-center text-xs text-slate-400">
+                        <span>📍 אלנבי 132, תל אביב</span>
+                        <a href="https://waze.com/ul?q=אלנבי+132+תל+אביב" target="_blank" class="text-cyan-400 hover:underline font-bold">נווט בוויז 🚗</a>
+                    </div>
+                </div>
+
+                <!-- Attraction 3 -->
+                <div class="item-card bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between card-hover" data-title="סקיי גאמפ נמל תל אביב טרמפולינות אקסטרים">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <span class="bg-cyan-500/20 text-cyan-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">אקסטרים וקפיצות</span>
+                            <button onclick="toggleFavorite(this, 'סקיי ג\'אמפ (Sky Jump נמל)')" class="text-slate-500 hover:text-amber-400 text-lg transition">⭐</button>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mt-3 mb-1">סקיי ג'אמפ (Sky Jump נמל)</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            פארק טרמפולינות ומתחמי קפיצה אתגריים שבהם אפשר להוציא המון אנרגיה, לנסות פעלולים ולשחק בכדורסל טרמפולינות.
+                        </p>
+                    </div>
+                    <div class="border-t border-slate-800 pt-3 flex justify-between items-center text-xs text-slate-400">
+                        <span>📍 נמל תל אביב</span>
+                        <a href="https://waze.com/ul?q=סקיי+גאמפ+נמל+תל+אביב" target="_blank" class="text-cyan-400 hover:underline font-bold">נווט בוויז 🚗</a>
+                    </div>
+                </div>
+
+                <!-- Attraction 4 -->
+                <div class="item-card bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between card-hover" data-title="מציאות מדומה מתחם התחנה ירושלים">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <span class="bg-cyan-500/20 text-cyan-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">מציאות מדומה ואקשן</span>
+                            <button onclick="toggleFavorite(this, 'זירת VR ופארק אקסטרים (מתחם התחנה, ירושלים)')" class="text-slate-500 hover:text-amber-400 text-lg transition">⭐</button>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mt-3 mb-1">זירת VR ופארק אקסטרים (מתחם התחנה, ירושלים)</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            מתחם מלהיב המציע משחקי מציאות מדומה קבוצתיים, חדרי בריחה משוכללים ואטרקציות אקשן מודרניות באחד המקומות המיוחדים בירושלים.
+                        </p>
+                    </div>
+                    <div class="border-t border-slate-800 pt-3 flex justify-between items-center text-xs text-slate-400">
+                        <span>📍 מתחם התחנה, ירושלים</span>
+                        <a href="https://waze.com/ul?q=מתחם+התחנה+ירושלים" target="_blank" class="text-cyan-400 hover:underline font-bold">נווט בוויז 🚗</a>
+                    </div>
+                </div>
+
+                <!-- Attraction 5 -->
+                <div class="item-card bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between card-hover" data-title="באולינג קניון מעלה אדומים גיימינג">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <span class="bg-cyan-500/20 text-cyan-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">באולינג וגיימינג</span>
+                            <button onclick="toggleFavorite(this, 'באולינג ופארק משחקים (מעלה אדומים)')" class="text-slate-500 hover:text-amber-400 text-lg transition">⭐</button>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mt-3 mb-1">באולינג ופארק משחקים (מעלה אדומים)</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            מרחב בילוי וספורט מושלם לבני נוער הכולל מסלולי באולינג תחרותיים, מכונות משחקי ארקייד ומגוון פעילויות חברתיות מהנות.
+                        </p>
+                    </div>
+                    <div class="border-t border-slate-800 pt-3 flex justify-between items-center text-xs text-slate-400">
+                        <span>📍 קניון מעלה אדומים</span>
+                        <a href="https://waze.com/ul?q=קניון+מעלה+אדומים" target="_blank" class="text-cyan-400 hover:underline font-bold">נווט בוויז 🚗</a>
+                    </div>
+                </div>
+
+                <!-- Attraction 6 -->
+                <div class="item-card bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between card-hover" data-title="החלקה על קרח פיס ארנה ירושלים">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <span class="bg-cyan-500/20 text-cyan-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">החלקה על קרח</span>
+                            <button onclick="toggleFavorite(this, 'הפארק הישראלי להחלקה על קרח (ירושלים / פיס ארנה)')" class="text-slate-500 hover:text-amber-400 text-lg transition">⭐</button>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mt-3 mb-1">הפארק הישראלי להחלקה על קרח (ירושלים / פיס ארנה)</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            משטח החלקה ענק ואולימפי על קרח. חוויה כיפית, מלאה באנרגיה וצחוק שמתאימה מאוד לבני נוער שרוצים לבלות יחד.
+                        </p>
+                    </div>
+                    <div class="border-t border-slate-800 pt-3 flex justify-between items-center text-xs text-slate-400">
+                        <span>📍 מתחם הארנה, ירושלים</span>
+                        <a href="https://waze.com/ul?q=פיס+ארנה+ירושלים" target="_blank" class="text-cyan-400 hover:underline font-bold">נווט בוויז 🚗</a>
+                    </div>
+                </div>
+
+                <!-- Attraction 7 -->
+                <div class="item-card bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between card-hover" data-title="לונה פארק תל אביב אקסטרים מתקנים">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <span class="bg-cyan-500/20 text-cyan-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">פארק שעשועים ענק</span>
+                            <button onclick="toggleFavorite(this, 'לונה פארק תל אביב')" class="text-slate-500 hover:text-amber-400 text-lg transition">⭐</button>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mt-3 mb-1">לונה פארק תל אביב</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            רכבות הרים מסעירות, מתקני אקסטרים מפחידים וכיפיים, ואווירה מושלמת ליום שלם של כיף עם החברים בגילאי 13-14.
+                        </p>
+                    </div>
+                    <div class="border-t border-slate-800 pt-3 flex justify-between items-center text-xs text-slate-400">
+                        <span>📍 גני יהושע, תל אביב</span>
+                        <a href="https://waze.com/ul?q=לונה+פארק+תל+אביב" target="_blank" class="text-cyan-400 hover:underline font-bold">נווט בוויז 🚗</a>
+                    </div>
+                </div>
+
+                <!-- Attraction 8 -->
+                <div class="item-card bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between card-hover" data-title="זירת לייזר טאג פלנט אתגר ראשון לציון תל אביב">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <span class="bg-cyan-500/20 text-cyan-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">לייזר טאג וקרבות</span>
+                            <button onclick="toggleFavorite(this, 'לייזר טאג אקסטרים (מרכז הארץ)')" class="text-slate-500 hover:text-amber-400 text-lg transition">⭐</button>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mt-3 mb-1">לייזר טאג אקסטרים (מרכז הארץ)</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            קרבות לייזר ממוחשבים בתוך זירות חשוכות ועתידניות. משחק אסטרטגי מהנה שבו קבוצות מתחרות על ניצחון וצבירת נקודות.
+                        </p>
+                    </div>
+                    <div class="border-t border-slate-800 pt-3 flex justify-between items-center text-xs text-slate-400">
+                        <span>📍 אזור המרכז</span>
+                        <a href="https://waze.com/ul?q=לייזר+טאג+מרכז" target="_blank" class="text-cyan-400 hover:underline font-bold">נווט בוויז 🚗</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Food & Restaurants Section -->
+        <section id="food-section" class="category-section">
+            <div class="flex justify-between items-end mb-6">
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-black text-amber-400 mb-1">🍕🍔 סושי, פיצות, בשרים ומסעדות שילדים ובני נוער יעופו עליהן</h2>
+                    <p class="text-slate-400 text-xs md:text-sm">המבורגרים מושחתים, פיצות מעולות, סושי טרי ואוכל מהיר שכיף לאכול עם חברים.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- Restaurant 1: Meat -->
+                <div class="item-card bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between card-hover" data-title="דיקסי גריל בר תל אביב המבורגר בשר">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <span class="bg-amber-500/20 text-amber-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">בשרים והמבורגר</span>
+                            <button onclick="toggleFavorite(this, 'דיקסי גריל בר (Dixie)')" class="text-slate-500 hover:text-amber-400 text-lg transition">⭐</button>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mt-3 mb-1">דיקסי גריל בר (Dixie)</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            מוסד בשרים אמריקאי אגדי בתל אביב. ידוע בהמבורגרים המעולים שלו, כנפיים, סטייקים ומנות שילדים ובני נוער פשוט מתענגים עליהן בכל שעה.
+                        </p>
+                    </div>
+                    <div class="border-t border-slate-800 pt-3 flex justify-between items-center text-xs text-slate-400">
+                        <span>📍 יגאל אלון 120, תל אביב</span>
+                        <a href="https://waze.com/ul?q=דיקסי+תל+אביב" target="_blank" class="text-amber-400 hover:underline font-bold">נווט בוויז 🚗</a>
+                    </div>
+                </div>
+
+                <!-- Restaurant 2: Pizza -->
+                <div class="item-card bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between card-hover" data-title="פיצה שמש / פיצריות מעולות תל אביב ירושלים">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <span class="bg-red-500/20 text-red-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">פיצות ואיטלקית</span>
+                            <button onclick="toggleFavorite(this, 'רשתות פיצריות מובילות (מרכז וירושלים)')" class="text-slate-500 hover:text-amber-400 text-lg transition">⭐</button>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mt-3 mb-1">פיצריות שוות (מרכז וירושלים)</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            מגשי פיצה חמים, גבינה נמתחת ותוספות מטורפות במחירים שמתאימים בול לתקציב של בני נוער שמבלים יחד בקניון או בטיילת.
+                        </p>
+                    </div>
+                    <div class="border-t border-slate-800 pt-3 flex justify-between items-center text-xs text-slate-400">
+                        <span>📍 סניפים בכל האזור</span>
+                        <a href="https://waze.com/ul?q=פיצריה+מומלצת" target="_blank" class="text-amber-400 hover:underline font-bold">נווט בוויז 🚗</a>
+                    </div>
+                </div>
+
+                <!-- Restaurant 3: Sushi -->
+                <div class="item-card bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between card-hover" data-title="סושי בר / גפאניקה תל אביב ירושלים">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <span class="bg-emerald-500/20 text-emerald-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">סושי ואסייתי</span>
+                            <button onclick="toggleFavorite(this, 'גפאניקה / סושיות מובילות')" class="text-slate-500 hover:text-amber-400 text-lg transition">⭐</button>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mt-3 mb-1">גפאניקה וסושיות מובילות</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            רשתות אסייתיות אהובות המציעות קומבינציות סושי צבעוניות, נודלס, מוקפצים ומנות שילדים בגילאי 13-14 מתים עליהן בבילוי משותף.
+                        </p>
+                    </div>
+                    <div class="border-t border-slate-800 pt-3 flex justify-between items-center text-xs text-slate-400">
+                        <span>📍 סניפים במרכז ובירושלים</span>
+                        <a href="https://waze.com/ul?q=גפאניקה" target="_blank" class="text-amber-400 hover:underline font-bold">נווט בוויז 🚗</a>
+                    </div>
+                </div>
+
+                <!-- Restaurant 4: Burger -->
+                <div class="item-card bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between card-hover" data-title="צקבורגר צאק ירושלים המבורגר בשר">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <span class="bg-amber-500/20 text-amber-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">המבורגרים וסטריט פוד</span>
+                            <button onclick="toggleFavorite(this, 'צ\'אק (Chuck\'s Burger) ירושלים')" class="text-slate-500 hover:text-amber-400 text-lg transition">⭐</button>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mt-3 mb-1">צ'אק (Chuck's Burger) ירושלים</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            מסעדת המבורגרים מעולה השוכנת בירושלים, מציעה קציצות בשר עסיסיות במיוחד, צ'יפס מתובל ותוספות שילדים ובני נוער עפים עליהן.
+                        </p>
+                    </div>
+                    <div class="border-t border-slate-800 pt-3 flex justify-between items-center text-xs text-slate-400">
+                        <span>📍 מרכז העיר, ירושלים</span>
+                        <a href="https://waze.com/ul?q=צק+בורגר+ירושלים" target="_blank" class="text-amber-400 hover:underline font-bold">נווט בוויז 🚗</a>
+                    </div>
+                </div>
+
+                <!-- Restaurant 5: Street Food / Meat -->
+                <div class="item-card bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between card-hover" data-title="בגט בשר חם ירושלים שוק מחנה יהודה">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <span class="bg-amber-500/20 text-amber-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">סטריט פוד ירושלמי ובשר</span>
+                            <button onclick="toggleFavorite(this, 'סטריט פוד מחנה יהודה ירושלים')" class="text-slate-500 hover:text-amber-400 text-lg transition">⭐</button>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mt-3 mb-1">סטריט פוד מחנה יהודה (ירושלים)</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            דוכני בשר מעולים, מעורב ירושלמי אסלי, קباب עסיסי בפיתה רכה באווירה הירושלמית המיוחדת של השוק.
+                        </p>
+                    </div>
+                    <div class="border-t border-slate-800 pt-3 flex justify-between items-center text-xs text-slate-400">
+                        <span>📍 שוק מחנה יהודה, ירושלים</span>
+                        <a href="https://waze.com/ul?q=שוק+מחנה+יהודה+ירושלים" target="_blank" class="text-amber-400 hover:underline font-bold">נווט בוויז 🚗</a>
+                    </div>
+                </div>
+
+                <!-- Restaurant 6: Ice cream & Sweets -->
+                <div class="item-card bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between card-hover" data-title="גלידריות ומתוקים מרכז ירושלים">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <span class="bg-pink-500/20 text-pink-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">גלידה ומתוקים</span>
+                            <button onclick="toggleFavorite(this, 'גלידריות בוטיק וקינוחים מרכז וירושלים')" class="text-slate-500 hover:text-amber-400 text-lg transition">⭐</button>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mt-3 mb-1">גלידריות וקינוחים שווים</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            גלידות קרות בטעמים מטורפים, וופל בלגי, פנקייקים וקינוחים מושחתים שסוגרים כל בילוי עם חברים בצורה הכי מתוקה שיש.
+                        </p>
+                    </div>
+                    <div class="border-t border-slate-800 pt-3 flex justify-between items-center text-xs text-slate-400">
+                        <span>📍 מתחמי בילוי וקניונים</span>
+                        <a href="https://waze.com/ul?q=גלידריה+מומלצת" target="_blank" class="text-amber-400 hover:underline font-bold">נווט בוויז 🚗</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Shops & Shopping Section -->
+        <section id="shops-section" class="category-section">
+            <div class="flex justify-between items-end mb-6">
+                <div>
+                    <h2 class="text-2xl md:text-3xl font-black text-purple-400 mb-1">🛍️ חנויות, גיימינג וקניות שילדים ובני נוער אוהבים</h2>
+                    <p class="text-slate-400 text-xs md:text-sm">חנויות גיימינג, בגדי רחוב, קומיקס, קניונים ומרכזי קניות מובילים.</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                
+                <!-- Shop 1 -->
+                <div class="item-card bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between card-hover" data-title="טויס אר אס וחנויות גיימינג קניון עזריאלי תל אביב">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <span class="bg-purple-500/20 text-purple-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">גיימינג וטכנולוגיה</span>
+                            <button onclick="toggleFavorite(this, 'חנויות גיימינג וטכנולוגיה (עזריאלי תל אביב)')" class="text-slate-500 hover:text-amber-400 text-lg transition">⭐</button>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mt-3 mb-1">חנויות גיימינג וטכנולוגיה (עזריאלי)</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            כל ציוד הגיימינג, האוזניות, המקלדות המוארות, הקונסולות והגאדג'טים הכי חדשים שכל נער בגיל 13-14 חולם עליהם.
+                        </p>
+                    </div>
+                    <div class="border-t border-slate-800 pt-3 flex justify-between items-center text-xs text-slate-400">
+                        <span>📍 קניון עזריאלי, תל אביב</span>
+                        <a href="https://waze.com/ul?q=קניון+עזריאלי+תל+אביב" target="_blank" class="text-purple-400 hover:underline font-bold">נווט בוויז 🚗</a>
+                    </div>
+                </div>
+
+                <!-- Shop 2 -->
+                <div class="item-card bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between card-hover" data-title="חנות קומיקס ומרצדייז גיק תל אביב ירושלים">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <span class="bg-purple-500/20 text-purple-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">קומיקס ומרצדייז</span>
+                            <button onclick="toggleFavorite(this, 'חנויות קומיקס וגיקים (מרכז וירושלים)')" class="text-slate-500 hover:text-amber-400 text-lg transition">⭐</button>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mt-3 mb-1">חנויות קומיקס ומרצדייז</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            חוברות קומיקס, דמויות אספנות (Funko Pop), חולצות של גיבורי-על ומשחקי קלפים פופולריים כמו פוקימון ומג'יק.
+                        </p>
+                    </div>
+                    <div class="border-t border-slate-800 pt-3 flex justify-between items-center text-xs text-slate-400">
+                        <span>📍 תל אביב וירושלים</span>
+                        <a href="https://waze.com/ul?q=חנות+קומיקס+תל+אביב" target="_blank" class="text-purple-400 hover:underline font-bold">נווט בוויז 🚗</a>
+                    </div>
+                </div>
+
+                <!-- Shop 3 -->
+                <div class="item-card bg-slate-900 border border-slate-800 rounded-2xl p-5 flex flex-col justify-between card-hover" data-title="קניון ממילא ירושלים קניות אופנה">
+                    <div>
+                        <div class="flex justify-between items-start">
+                            <span class="bg-purple-500/20 text-purple-400 text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">אופנה ובילוי</span>
+                            <button onclick="toggleFavorite(this, 'שדרת ממילא (ירושלים)')" class="text-slate-500 hover:text-amber-400 text-lg transition">⭐</button>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mt-3 mb-1">שדרת ממילא (ירושלים)</h3>
+                        <p class="text-xs text-slate-300 leading-relaxed mb-4">
+                            מרכז קניות פתוח ומדהים בסמוך לחומות העיר העתיקה, המשלב חנויות בגדים מובילות, בתי קפה ואווירה ייחודית שכיף להסתובב בה.
+                        </p>
+                    </div>
+                    <div class="border-t border-slate-800 pt-3 flex justify-between items-center text-xs text-slate-400">
+                        <span>📍 ממילא, ירושלים</span>
+                        <a href="https://waze.com/ul?q=שדרת+ממילא+ירושלים" target="_blank" class="text-purple-400 hover:underline font-bold">נווט בוויז 🚗</a>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Favorites Modal -->
+    <div id="favoritesModal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-700 rounded-3xl p-6 max-w-md w-full shadow-2xl relative">
+            <div class="flex justify-between items-center mb-4 border-b border-slate-800 pb-3">
+                <h3 class="text-lg font-bold text-cyan-400">⭐ המקומות המועדפים ששמרת</h3>
+                <button onclick="closeFavoritesModal()" class="text-slate-400 hover:text-white text-sm font-bold">סגור ✕</button>
+            </div>
+            <div id="favoritesList" class="flex flex-col gap-2.5 max-h-64 overflow-y-auto custom-scrollbar text-xs text-slate-200">
+                <p class="text-slate-500 text-center py-4">עדיין לא הוספת מקומות למועדפים. לחץ על כוכב (⭐) בכל כרטיסייה כדי לשמור אותם כאן!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-900 border-t border-slate-800 py-6 text-center text-xs text-slate-400 mt-12">
+        <p>נוצר באהבה עם המלצות ענק לאטרקציות, אוכל וקניות למרכז, ירושלים, מעלה אדומים והסביבה לבני נוער! 🍔🍕🛍️🚀</p>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-cyan-500 text-slate-950 px-5 py-2.5 rounded-2xl shadow-2xl font-bold text-xs opacity-0 pointer-events-none transition-all duration-300 z-50">
+        הפעולה בוצעה בהצלחה! 📋
+    </div>
+
+    <script>
+        let favorites = JSON.parse(localStorage.getItem('user_favorites') || '[]');
+        updateFavCount();
+
+        function filterContent() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            const cards = document.querySelectorAll('.item-card');
+
+            cards.forEach(card => {
+                const titleData = card.getAttribute('data-title').toLowerCase();
+                const textContent = card.innerText.toLowerCase();
+                if (titleData.includes(query) || textContent.includes(query)) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        async function searchCustomPlaceAI() {
+            const query = document.getElementById('customSearchInput').value.trim();
+            if (!query) {
+                showToast("נא להקליד ערך לחיפוש!");
+                return;
+            }
+
+            const container = document.getElementById('customResultsContainer');
+            const resultText = document.getElementById('customResultText');
+            const searchBtn = document.getElementById('searchAiBtn');
+
+            container.classList.remove('hidden');
+            searchBtn.disabled = true;
+            searchBtn.classList.add('opacity-50');
+
+            resultText.innerHTML = `
+                <div class="flex items-center gap-2.5 text-cyan-400 py-3">
+                    <div class="animate-spin rounded-full h-5 w-5 border-2 border-cyan-400 border-t-transparent"></div>
+                    <span class="font-bold">חוקר את הרשת לגבי "${query}" (דירוגים, מבצעים, שעות ומחירים)...</span>
+                </div>
+            `;
+
+            try {
+                const systemPrompt = "אתה עוזר סיורים והמלצות מקצועי לנוער בישראל. עבור המקום שהמשתמש מבקש באזור המרכז, ירושלים או מעלה אדומים, ספק סיכום קצר, הערכת דירוג משוערת, טיפים לבני נוער (13-14), מבצעים או המלצות כרטיסים, וקישור לניווט בוויז. הצג את התשובה בעברית נקייה וברורה עם כותרות בולטות.";
+                const userQuery = `חפש מידע מעודכן על אטרקציה, מסעדה או חנות זו: ${query}`;
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${apiKey}`;
+
+                const payload = {
+                    contents: [{ parts: [{ text: userQuery }] }],
+                    tools: [{ "google_search": {} }],
+                    systemInstruction: {
+                        parts: [{ text: systemPrompt }]
+                    }
+                };
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                const candidate = result.candidates?.[0];
+
+                if (candidate && candidate.content?.parts?.[0]?.text) {
+                    const text = candidate.content.parts[0].text;
+                    
+                    let sourcesHtml = '';
+                    const groundingMetadata = candidate.groundingMetadata;
+                    if (groundingMetadata && groundingMetadata.groundingAttributions) {
+                        const validSources = groundingMetadata.groundingAttributions
+                            .map(attr => ({ uri: attr.web?.uri, title: attr.web?.title }))
+                            .filter(s => s.uri && s.title);
+
+                        if (validSources.length > 0) {
+                            sourcesHtml = `
+                                <div class="mt-4 pt-3 border-t border-slate-800">
+                                    <span class="text-xs font-bold text-cyan-400 block mb-1">🔗 מקורות מידע מהרשת:</span>
+                                    <div class="flex flex-wrap gap-2">
+                                        ${validSources.slice(0, 3).map(s => `
+                                            <a href="${s.uri}" target="_blank" class="bg-slate-900 hover:bg-slate-800 text-slate-300 text-[11px] px-2.5 py-1 rounded-lg border border-slate-700 truncate max-w-[220px] transition">
+                                                🌐 ${s.title}
+                                            </a>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    }
+
+                    const formattedText = text.replace(/\n/g, '<br>');
+                    const wazeUrl = `https://waze.com/ul?q=${encodeURIComponent(query)}`;
+
+                    resultText.innerHTML = `
+                        <div class="space-y-2 text-slate-200">
+                            <div class="bg-slate-900 p-4 rounded-xl border border-slate-800">
+                                ${formattedText}
+                            </div>
+                            <div class="flex justify-between items-center pt-2">
+                                <a href="${wazeUrl}" target="_blank" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs transition flex items-center gap-1">
+                                    <span>🚗 נווט למקום בוויז</span>
+                                </a>
+                                <button onclick="toggleFavorite(this, '${query}')" class="bg-slate-900 hover:bg-slate-800 text-amber-400 border border-slate-700 px-3 py-2 rounded-xl text-xs font-bold transition">
+                                    ⭐ הוסף למועדפים שלי
+                                </button>
+                            </div>
+                            ${sourcesHtml}
+                        </div>
+                    `;
+                } else {
+                    resultText.innerHTML = `<p class="text-red-400">לא הצלחנו לאתר מידע ספציפי עבור "${query}". נסה לנסח שוב או לחפש שם מדויק יותר.</p>`;
+                }
+            } catch (err) {
+                console.error(err);
+                resultText.innerHTML = `<p class="text-red-400">אירעה שגיאה בחיפוש המידע. אנא נסה שוב מאוחר יותר.</p>`;
+            } finally {
+                searchBtn.disabled = false;
+                searchBtn.classList.remove('opacity-50');
+            }
+        }
+
+        function closeCustomResults() {
+            document.getElementById('customResultsContainer').classList.add('hidden');
+        }
+
+        function filterCategory(category) {
+            const attrSection = document.getElementById('attractions-section');
+            const foodSection = document.getElementById('food-section');
+            const shopsSection = document.getElementById('shops-section');
+
+            const btnAll = document.getElementById('btn-all');
+            const btnAttr = document.getElementById('btn-attractions');
+            const btnFood = document.getElementById('btn-food');
+            const btnShops = document.getElementById('btn-shops');
+
+            [btnAll, btnAttr, btnFood, btnShops].forEach(btn => {
+                btn.className = "filter-btn bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 font-bold px-4 py-2 rounded-xl text-xs transition";
+            });
+
+            if (category === 'all') {
+                attrSection.style.display = 'block';
+                foodSection.style.display = 'block';
+                shopsSection.style.display = 'block';
+                btnAll.className = "filter-btn bg-cyan-500 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs transition";
+            } else if (category === 'attractions') {
+                attrSection.style.display = 'block';
+                foodSection.style.display = 'none';
+                shopsSection.style.display = 'none';
+                btnAttr.className = "filter-btn bg-cyan-500 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs transition";
+            } else if (category === 'food') {
+                attrSection.style.display = 'none';
+                foodSection.style.display = 'block';
+                shopsSection.style.display = 'none';
+                btnFood.className = "filter-btn bg-amber-500 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs transition";
+            } else if (category === 'shops') {
+                attrSection.style.display = 'none';
+                foodSection.style.display = 'none';
+                shopsSection.style.display = 'block';
+                btnShops.className = "filter-btn bg-purple-500 text-slate-950 font-bold px-4 py-2 rounded-xl text-xs transition";
+            }
+        }
+
+        function recommendByMood(mood) {
+            const box = document.getElementById('moodResultBox');
+            const text = document.getElementById('moodResultText');
+            box.classList.remove('hidden');
+
+            if (mood === 'action') {
+                text.innerHTML = "אנחנו ממליצים על <b>לונה פארק תל אביב</b> או <b>לייזר טאג אקסטרים</b>, ולאחר מכן לקפוץ ל<b>דיקסי גריל בר</b> להמבורגר עסיסי או פיצה חמה שתרגיע את הרעב!";
+            } else if (mood === 'chill') {
+                text.innerHTML = "הבחירה המושלמת: <b>בבילון פארק נמל תל אביב</b> או <b>זירת VR במתחם התחנה בירושלים</b>, ואחרי זה לשבת ב<b>גפאניקה לסושי</b> או להסתובב בחנויות הגיימינג!";
+            } else if (mood === 'hungry') {
+                text.innerHTML = "הכי רעבים? לכו ישר למסעדות הבשרים, לפיצריות או לדוכנים המטורפים של <b>שוק מחנה יהודה בירושלים</b> לשילוב של אוכל מושחת ואווירה מעולה!";
+            }
+        }
+
+        function toggleFavorite(btn, placeName) {
+            const index = favorites.indexOf(placeName);
+            if (index > -1) {
+                favorites.splice(index, 1);
+                btn.style.color = '#64748b';
+                showToast(`הוסר מהמועדפים: ${placeName}`);
+            } else {
+                favorites.push(placeName);
+                btn.style.color = '#f59e0b';
+                showToast(`נוסף למועדפים בהצלחה! ⭐`);
+            }
+            localStorage.setItem('user_favorites', JSON.stringify(favorites));
+            updateFavCount();
+        }
+
+        function updateFavCount() {
+            document.getElementById('favCount').innerText = favorites.length;
+        }
+
+        function openFavoritesModal() {
+            const modal = document.getElementById('favoritesModal');
+            const list = document.getElementById('favoritesList');
+            modal.classList.remove('hidden');
+
+            if (favorites.length === 0) {
+                list.innerHTML = `<p class="text-slate-500 text-center py-4">עדיין לא הוספת מקומות למועדפים. לחץ על כוכב (⭐) בכל כרטיסייה!</p>`;
+                return;
+            }
+
+            list.innerHTML = favorites.map(fav => `
+                <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex justify-between items-center">
+                    <span class="font-bold text-cyan-300">${fav}</span>
+                    <a href="https://waze.com/ul?q=${encodeURIComponent(fav)}" target="_blank" class="text-xs text-amber-400 font-bold hover:underline">נווט בוויז 🚗</a>
+                </div>
+            `).join('');
+        }
+
+        function closeFavoritesModal() {
+            document.getElementById('favoritesModal').classList.add('hidden');
+        }
+
+        function shareWebsite() {
+            const text = "היי! מצאתי מדריך ענק ומעודכן לאטרקציות, מסעדות (בשרים, פיצות, סושי) וחנויות לבני נוער במרכז, ירושלים והסביבה: ";
+            const url = window.location.href;
+            const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(text + url)}`;
+            window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+        }
+
+        function copyLink() {
+            const dummy = document.createElement('textarea');
+            document.body.appendChild(dummy);
+            dummy.value = window.location.href;
+            dummy.select();
+            document.execCommand('copy');
+            document.body.removeChild(dummy);
+            showToast("הקישור הועתק בהצלחה ללוח! 📋");
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.innerText = msg;
+            toast.style.opacity = '1';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+            }, 2500);
+        }
+    </script>
+</body>
+</html>

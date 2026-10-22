@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CinemaStream Israel - סטרימינג פלוס</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Google Fonts: Heebo & Rubik for top-tier Hebrew UI typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Rubik:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            red: '#E50914',
+                            redHover: '#B80710',
+                            dark: '#0A0B0E',
+                            card: '#12151E',
+                            surface: '#1A1D2A',
+                            accent: '#38BDF8',
+                            gold: '#F59E0B'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Heebo', 'Rubik', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar and glassmorphism styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0A0B0E;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #262B3D;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #E50914;
+        }
+        .glass-header {
+            background: rgba(10, 11, 14, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+        }
+        .glass-card {
+            background: rgba(26, 29, 42, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+        .card-hover-effect {
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .card-hover-effect:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 16px 32px -8px rgba(229, 9, 20, 0.3);
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .hide-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-brand-dark text-gray-100 font-sans antialiased min-h-screen flex flex-col selection:bg-brand-red selection:text-white">
+
+    <!-- Top Navigation Header -->
+    <header id="mainNav" class="fixed top-0 w-full z-40 transition-all duration-300 glass-header border-b border-white/5 py-3.5 px-4 md:px-10 flex items-center justify-between">
+        
+        <!-- Left Section: Logo & Desktop Navigation -->
+        <div class="flex items-center gap-8">
+            <a href="#" onclick="filterByCategory('הכל'); return false;" class="flex items-center gap-2.5 group">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-red to-orange-500 flex items-center justify-center text-white shadow-lg shadow-brand-red/30 group-hover:scale-105 transition-transform">
+                    <i class="fa-solid fa-play text-lg pr-0.5"></i>
+                </div>
+                <div class="flex flex-col">
+                    <span class="text-xl md:text-2xl font-black tracking-tight bg-gradient-to-l from-white via-gray-200 to-brand-red bg-clip-text text-transparent">
+                        CINEMA<span class="text-brand-red">STREAM</span>
+                    </span>
+                    <span class="text-[10px] text-gray-400 font-bold tracking-widest -mt-1 uppercase">ישראל פלוס</span>
+                </div>
+            </a>
+
+            <!-- Desktop Nav Links -->
+            <nav class="hidden lg:flex items-center gap-6 text-sm font-semibold">
+                <button onclick="filterByCategory('הכל')" class="nav-item hover:text-brand-red transition-colors text-brand-red">דף הבית</button>
+                <button onclick="filterByCategory('סרטים ישראליים')" class="nav-item hover:text-brand-red transition-colors flex items-center gap-1.5">
+                    <span>🇮🇱 ישראלי</span>
+                </button>
+                <button onclick="filterByCategory('פופולרי')" class="nav-item hover:text-brand-red transition-colors">פופולרי</button>
+                <button onclick="filterByCategory('אקשן')" class="nav-item hover:text-brand-red transition-colors">אקשן</button>
+                <button onclick="filterByCategory('סדרות')" class="nav-item hover:text-brand-red transition-colors">סדרות</button>
+                <button onclick="showMyList()" class="nav-item hover:text-brand-red transition-colors flex items-center gap-1.5">
+                    <i class="fa-solid fa-bookmark text-xs"></i>
+                    <span>הרשימה שלי</span>
+                    <span id="navWatchlistBadge" class="bg-brand-red text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">0</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Right Section: Search & Actions -->
+        <div class="flex items-center gap-3">
+            <!-- Search Bar -->
+            <div class="relative flex items-center">
+                <i class="fa-solid fa-magnifying-glass absolute right-3.5 text-gray-400 pointer-events-none text-sm"></i>
+                <input type="text" id="searchInput" oninput="handleSearch()" placeholder="חפש סרט, שחקן, ז'אנר..." 
+                       class="bg-brand-surface/90 border border-white/10 text-xs md:text-sm rounded-full pr-10 pl-4 py-2 w-36 sm:w-56 focus:w-64 md:focus:w-72 focus:outline-none focus:border-brand-red transition-all duration-300 placeholder-gray-400">
+            </div>
+
+            <!-- Add Movie Button -->
+            <button onclick="openModal('addMovieModal')" class="bg-gradient-to-r from-brand-red to-red-600 hover:from-brand-redHover hover:to-red-700 text-white font-bold text-xs md:text-sm px-4 py-2 rounded-full flex items-center gap-2 shadow-lg shadow-brand-red/20 transition-all hover:scale-105 active:scale-95">
+                <i class="fa-solid fa-circle-plus"></i>
+                <span class="hidden sm:inline">הוסף סרט</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Mobile Bottom Navigation Bar -->
+    <div class="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-brand-dark/95 border-t border-white/10 flex justify-around py-3 text-xs text-gray-400 backdrop-blur-lg">
+        <button onclick="filterByCategory('הכל')" class="flex flex-col items-center gap-1 hover:text-brand-red">
+            <i class="fa-solid fa-house text-lg"></i>
+            <span>בית</span>
+        </button>
+        <button onclick="filterByCategory('סרטים ישראליים')" class="flex flex-col items-center gap-1 hover:text-brand-red">
+            <i class="fa-solid fa-star text-lg"></i>
+            <span>ישראלי</span>
+        </button>
+        <button onclick="showMyList()" class="flex flex-col items-center gap-1 hover:text-brand-red relative">
+            <i class="fa-solid fa-bookmark text-lg"></i>
+            <span>הרשימה שלי</span>
+            <span id="mobileWatchlistBadge" class="absolute -top-1 right-2 bg-brand-red text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full">0</span>
+        </button>
+        <button onclick="openModal('addMovieModal')" class="flex flex-col items-center gap-1 hover:text-brand-red">
+            <i class="fa-solid fa-plus-circle text-lg"></i>
+            <span>הוסף</span>
+        </button>
+    </div>
+
+    <!-- Main Dynamic Content Container -->
+    <main class="flex-grow pt-16 pb-20 lg:pb-12">
+
+        <!-- Featured Spotlight Hero Banner -->
+        <section id="heroBanner" class="relative w-full h-[70vh] md:h-[80vh] bg-cover bg-center flex items-end transition-all duration-700">
+            <!-- Gradient Overlay Filters -->
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-dark via-brand-dark/50 to-transparent"></div>
+            <div class="absolute inset-0 bg-gradient-to-r from-brand-dark via-brand-dark/30 to-transparent"></div>
+
+            <div class="relative z-10 px-4 md:px-12 pb-10 md:pb-16 max-w-4xl">
+                <div class="flex flex-wrap items-center gap-2 mb-3">
+                    <span class="bg-brand-red text-white font-extrabold text-[11px] px-2.5 py-1 rounded-md uppercase tracking-wider shadow-md">🔥 תוכן נבחר</span>
+                    <span id="heroCategory" class="bg-brand-surface/80 backdrop-blur-md text-brand-accent font-semibold text-xs px-2.5 py-1 rounded-md border border-white/10">דרמה / אקשן</span>
+                    <span id="heroRating" class="bg-amber-500/20 text-amber-400 font-bold text-xs px-2.5 py-1 rounded-md border border-amber-500/30 flex items-center gap-1">
+                        <i class="fa-solid fa-star text-[10px]"></i> 9.6
+                    </span>
+                    <span id="heroYear" class="text-gray-300 text-xs px-2 py-0.5 border border-gray-700 rounded">2024</span>
+                </div>
+
+                <h1 id="heroTitle" class="text-3xl sm:text-5xl md:text-7xl font-black mb-3 leading-none drop-shadow-lg text-white">פאודה - עונה 4</h1>
+                <p id="heroDesc" class="text-gray-300 text-sm md:text-base mb-6 line-clamp-3 leading-relaxed max-w-2xl font-light">
+                    דורון וצוות המסתערבים יוצאים למבצע בינלאומי מסוכן בעקבות איום חדש. דרמת המתח הישראלית המצליחה בעולם שמביאה אקשן ללא הפסקה.
+                </p>
+
+                <div class="flex flex-wrap items-center gap-3">
+                    <button id="heroPlayBtn" onclick="" class="bg-brand-red hover:bg-brand-redHover text-white font-black px-7 py-3.5 rounded-xl flex items-center gap-3 shadow-xl shadow-brand-red/30 transition-all hover:scale-105 active:scale-95 text-sm md:text-base">
+                        <i class="fa-solid fa-play text-lg"></i>
+                        <span>צפה עכשיו בחינם</span>
+                    </button>
+                    <button id="heroListBtn" onclick="" class="glass-card hover:bg-white/10 text-white font-semibold px-6 py-3.5 rounded-xl flex items-center gap-2 transition-all text-sm">
+                        <i class="fa-regular fa-bookmark"></i>
+                        <span>הוסף לרשימה שלי</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Category Horizontal Scroll Bar -->
+        <section class="px-4 md:px-12 -mt-6 relative z-20">
+            <div class="flex items-center gap-2 overflow-x-auto pb-4 hide-scrollbar" id="categoriesBar">
+                <!-- Categories rendered dynamically -->
+            </div>
+        </section>
+
+        <!-- Main Movies Catalog Section -->
+        <section class="px-4 md:px-12 mt-6">
+            <div class="flex items-center justify-between mb-6 border-r-4 border-brand-red pr-3">
+                <div>
+                    <h2 id="sectionHeading" class="text-xl md:text-2xl font-black text-white">כל התכנים</h2>
+                    <p id="sectionSubheading" class="text-xs text-gray-400">בחר סרט או סדרה לצפייה ישירה ובאיכות גבוהה</p>
+                </div>
+                <span id="resultsCount" class="bg-brand-surface text-gray-400 text-xs px-3 py-1 rounded-full border border-white/10 font-medium">
+                    25 תכנים
+                </span>
+            </div>
+
+            <!-- Movies Grid Grid -->
+            <div id="moviesGrid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
+                <!-- Movie cards populated via JavaScript -->
+            </div>
+
+            <!-- Empty Results View -->
+            <div id="emptyState" class="hidden text-center py-20 bg-brand-surface/30 rounded-3xl border border-white/5 my-8">
+                <i class="fa-solid fa-film text-6xl text-gray-600 mb-4 animate-bounce"></i>
+                <h3 class="text-xl font-bold text-gray-200">לא נמצאו סרטים מתאימים</h3>
+                <p class="text-gray-400 text-sm mt-1 max-w-md mx-auto">נסה לחפש שחקן, ז'אנר אחר או השתמש בכפתור "הוסף סרט" כדי להוסיף תוכן משלך לקטלוג.</p>
+                <button onclick="filterByCategory('הכל')" class="mt-5 bg-brand-red text-white text-xs font-bold px-5 py-2.5 rounded-xl hover:bg-brand-redHover transition-colors">
+                    חזור לכל הסרטים
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- HTML5 VIDEO PLAYER MODAL (No YouTube Embeds - Direct Video Streaming) -->
+    <div id="videoModal" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-2xl hidden flex flex-col justify-between p-2 md:p-6 transition-opacity duration-300">
+        <!-- Player Header Top Overlay -->
+        <div class="flex items-center justify-between z-20 bg-gradient-to-b from-black/90 to-transparent p-4 rounded-t-2xl">
+            <div class="flex items-center gap-3">
+                <button onclick="closeVideoModal()" class="w-10 h-10 rounded-full bg-white/10 hover:bg-brand-red text-white flex items-center justify-center transition-colors">
+                    <i class="fa-solid fa-arrow-right text-lg"></i>
+                </button>
+                <div>
+                    <h3 id="playerMovieTitle" class="font-black text-base md:text-xl text-white">שם הסרט</h3>
+                    <p id="playerMovieSub" class="text-xs text-brand-accent font-medium">נגן וידאו מובנה HD</p>
+                </div>
+            </div>
+            <span class="bg-brand-red/80 text-white text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider">סטרימינג ישיר</span>
+        </div>
+
+        <!-- Video Canvas & HTML5 Player -->
+        <div class="relative flex-grow flex items-center justify-center my-auto overflow-hidden rounded-2xl group border border-white/10 bg-black">
+            <video id="html5VideoPlayer" class="w-full h-full max-h-[75vh] object-contain rounded-2xl" crossorigin="anonymous">
+                <source id="videoSource" src="" type="video/mp4">
+                הדפדפן שלך אינו תומך בנגן הוידאו.
+            </video>
+
+            <!-- Loading Spinner -->
+            <div id="videoLoader" class="absolute inset-0 flex items-center justify-center bg-black/60 hidden">
+                <div class="w-12 h-12 border-4 border-brand-red border-t-transparent rounded-full animate-spin"></div>
+            </div>
+        </div>
+
+        <!-- Custom Video Player Controls Overlay -->
+        <div class="bg-brand-surface/90 backdrop-blur-xl border border-white/10 p-4 rounded-2xl mt-2 flex flex-col gap-3">
+            <!-- Progress / Seek Bar -->
+            <div class="flex items-center gap-3">
+                <span id="currentTimeDisplay" class="text-xs font-mono text-gray-300">00:00</span>
+                <input type="range" id="seekSlider" value="0" min="0" max="100" class="flex-grow h-1.5 bg-gray-700 accent-brand-red rounded-lg cursor-pointer">
+                <span id="durationDisplay" class="text-xs font-mono text-gray-400">00:00</span>
+            </div>
+
+            <!-- Control Buttons & Features -->
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                    <button id="playPauseBtn" onclick="togglePlayPause()" class="w-10 h-10 rounded-full bg-brand-red text-white flex items-center justify-center hover:scale-105 transition-transform">
+                        <i id="playIcon" class="fa-solid fa-play pr-0.5 text-base"></i>
+                    </button>
+                    
+                    <button onclick="rewindVideo(10)" class="text-gray-300 hover:text-white transition-colors text-sm flex items-center gap-1">
+                        <i class="fa-solid fa-rotate-left"></i> 10 ש׳
+                    </button>
+                    <button onclick="forwardVideo(10)" class="text-gray-300 hover:text-white transition-colors text-sm flex items-center gap-1">
+                        10 ש׳ <i class="fa-solid fa-rotate-right"></i>
+                    </button>
+
+                    <!-- Volume Control -->
+                    <div class="hidden sm:flex items-center gap-2 pr-2 border-r border-white/10">
+                        <button id="muteBtn" onclick="toggleMute()" class="text-gray-300 hover:text-white text-sm">
+                            <i id="volumeIcon" class="fa-solid fa-volume-high"></i>
+                        </button>
+                        <input type="range" id="volumeSlider" value="1" min="0" max="1" step="0.1" class="w-20 h-1 bg-gray-700 accent-brand-red rounded-lg cursor-pointer">
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3 text-xs text-gray-300">
+                    <!-- Playback Speed Dropdown -->
+                    <select id="speedSelect" onchange="changeSpeed()" class="bg-black/60 border border-white/10 rounded-lg px-2 py-1 text-white focus:outline-none">
+                        <option value="0.75">0.75x</option>
+                        <option value="1" selected>1.0x (רגיל)</option>
+                        <option value="1.25">1.25x</option>
+                        <option value="1.5">1.5x</option>
+                        <option value="2">2.0x</option>
+                    </select>
+
+                    <button onclick="toggleFullscreen()" class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-white">
+                        <i class="fa-solid fa-expand"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MOVIE DETAILS MODAL -->
+    <div id="detailsModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl hidden flex items-center justify-center p-3 md:p-6 overflow-y-auto">
+        <div class="bg-brand-surface w-full max-w-3xl rounded-3xl border border-white/10 overflow-hidden shadow-2xl relative my-auto max-h-[92vh] flex flex-col">
+            
+            <button onclick="closeModal('detailsModal')" class="absolute top-4 left-4 z-20 w-9 h-9 rounded-full bg-black/70 hover:bg-brand-red text-white flex items-center justify-center transition-colors">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Backdrop Poster Top -->
+            <div class="relative h-60 sm:h-72 w-full bg-cover bg-center" id="detailsPoster">
+                <div class="absolute inset-0 bg-gradient-to-t from-brand-surface via-brand-surface/40 to-transparent"></div>
+                <div class="absolute bottom-4 right-6 flex items-center gap-3">
+                    <button id="detailsPlayBtn" onclick="" class="bg-brand-red hover:bg-brand-redHover text-white font-black px-6 py-3 rounded-xl flex items-center gap-2 shadow-xl shadow-brand-red/30 transition-transform active:scale-95 text-sm">
+                        <i class="fa-solid fa-play"></i>
+                        <span>צפה עכשיו</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Info Content -->
+            <div class="p-6 md:p-8 overflow-y-auto flex-grow space-y-6">
+                <div>
+                    <h2 id="detailsTitle" class="text-2xl md:text-4xl font-extrabold text-white mb-2"></h2>
+                    <div class="flex flex-wrap items-center gap-3 text-xs md:text-sm text-gray-300">
+                        <span id="detailsRating" class="text-amber-400 font-bold flex items-center gap-1"></span>
+                        <span>•</span>
+                        <span id="detailsYear"></span>
+                        <span>•</span>
+                        <span id="detailsDuration"></span>
+                        <span>•</span>
+                        <span id="detailsCategory" class="bg-brand-red/20 text-red-400 border border-brand-red/30 px-2.5 py-0.5 rounded-md font-bold"></span>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">תקציר הסרט</h4>
+                    <p id="detailsSynopsis" class="text-gray-200 text-sm md:text-base leading-relaxed font-light"></p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-black/40 p-4 rounded-2xl border border-white/5 text-xs md:text-sm">
+                    <div>
+                        <span class="text-gray-400 block mb-0.5">צוות שחקנים:</span>
+                        <span id="detailsCast" class="text-white font-medium"></span>
+                    </div>
+                    <div>
+                        <span class="text-gray-400 block mb-0.5">במאי:</span>
+                        <span id="detailsDirector" class="text-white font-medium"></span>
+                    </div>
+                </div>
+
+                <!-- User Star Rating & Review Section -->
+                <div class="bg-brand-card p-4 rounded-2xl border border-white/5 space-y-3">
+                    <h4 class="text-xs font-bold text-gray-300 uppercase tracking-wider">דירוג הקהל וחוות דעת</h4>
+                    <div class="flex items-center gap-2 text-xl text-amber-400" id="starRatingContainer">
+                        <!-- Interactive Stars -->
+                        <i class="fa-regular fa-star cursor-pointer hover:scale-125 transition-transform" onclick="rateMovie(1)"></i>
+                        <i class="fa-regular fa-star cursor-pointer hover:scale-125 transition-transform" onclick="rateMovie(2)"></i>
+                        <i class="fa-regular fa-star cursor-pointer hover:scale-125 transition-transform" onclick="rateMovie(3)"></i>
+                        <i class="fa-regular fa-star cursor-pointer hover:scale-125 transition-transform" onclick="rateMovie(4)"></i>
+                        <i class="fa-regular fa-star cursor-pointer hover:scale-125 transition-transform" onclick="rateMovie(5)"></i>
+                        <span id="userRatingText" class="text-xs text-gray-400 font-sans mr-2">בחר דירוג</span>
+                    </div>
+                </div>
+
+                <!-- Recommendations -->
+                <div>
+                    <h4 class="text-sm font-bold mb-3 text-gray-200">תכנים נוספים שאולי תאהב</h4>
+                    <div id="recommendedGrid" class="grid grid-cols-2 sm:grid-cols-4 gap-3"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ADD MOVIE MODAL -->
+    <div id="addMovieModal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl hidden flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-brand-surface w-full max-w-lg rounded-3xl border border-white/10 p-6 md:p-8 shadow-2xl relative my-auto">
+            
+            <button onclick="closeModal('addMovieModal')" class="absolute top-4 left-4 w-9 h-9 rounded-full bg-white/10 hover:bg-brand-red text-white flex items-center justify-center transition-colors">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <h3 class="text-2xl font-black mb-1 text-white flex items-center gap-2">
+                <i class="fa-solid fa-film text-brand-red"></i>
+                <span>הוספת סרט או סדרה</span>
+            </h3>
+            <p class="text-gray-400 text-xs mb-6">הכנס קישור ישיר לקובץ וידאו (MP4) כדי להזרים בנגן המובנה</p>
+
+            <form id="addMovieForm" onsubmit="handleAddMovieSubmit(event)" class="space-y-4 text-xs md:text-sm">
+                <div>
+                    <label class="block text-gray-300 font-semibold mb-1">שם הסרט / הסדרה *</label>
+                    <input type="text" id="newTitle" required placeholder="לדוגמה: אופנהיימר" 
+                           class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-brand-red">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-gray-300 font-semibold mb-1">קטגוריה *</label>
+                        <select id="newCategory" required class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-brand-red">
+                            <option value="סרטים ישראליים">סרטים ישראליים</option>
+                            <option value="אקשן">אקשן</option>
+                            <option value="דרמה">דרמה</option>
+                            <option value="מדע בדיוני">מדע בדיוני</option>
+                            <option value="קומדיה">קומדיה</option>
+                            <option value="אנימציה">אנימציה</option>
+                            <option value="סדרות">סדרה</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-gray-300 font-semibold mb-1">סוג *</label>
+                        <select id="newType" required class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-2.5 text-white focus:outline-none focus:border-brand-red">
+                            <option value="סרט">סרט</option>
+                            <option value="סדרה">סדרה</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-gray-300 font-semibold mb-1">דירוג IMDb</label>
+                        <input type="number" id="newRating" step="0.1" min="1" max="10" value="8.5" 
+                               class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-brand-red">
+                    </div>
+                    <div>
+                        <label class="block text-gray-300 font-semibold mb-1">שנת יציאה</label>
+                        <input type="text" id="newYear" value="2025" 
+                               class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-brand-red">
+                    </div>
+                    <div>
+                        <label class="block text-gray-300 font-semibold mb-1">משך זמן</label>
+                        <input type="text" id="newDuration" placeholder="שעה ו-50 דק׳" 
+                               class="w-full bg-black/50 border border-white/10 rounded-xl px-3 py-2 text-white focus:outline-none focus:border-brand-red">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-gray-300 font-semibold mb-1">קישור ישיר לקובץ וידאו (Direct MP4 Stream URL) *</label>
+                    <input type="url" id="newVideoUrl" required placeholder="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" 
+                           class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-brand-red text-left" dir="ltr">
+                </div>
+
+                <div>
+                    <label class="block text-gray-300 font-semibold mb-1">קישור לתמונת פוסטר (Image Poster URL)</label>
+                    <input type="url" id="newPosterUrl" placeholder="https://images.unsplash.com/photo-..." 
+                           class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-brand-red text-left" dir="ltr">
+                </div>
+
+                <div>
+                    <label class="block text-gray-300 font-semibold mb-1">תקציר הסרט</label>
+                    <textarea id="newSynopsis" rows="2" placeholder="ספר בקצרה על העלילה..." 
+                              class="w-full bg-black/50 border border-white/10 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-brand-red resize-none"></textarea>
+                </div>
+
+                <div class="pt-3 flex justify-end gap-3 border-t border-white/10">
+                    <button type="button" onclick="closeModal('addMovieModal')" class="px-5 py-2 rounded-xl bg-white/10 hover:bg-white/20 font-semibold text-gray-300">ביטול</button>
+                    <button type="submit" class="px-6 py-2 rounded-xl bg-brand-red hover:bg-brand-redHover text-white font-bold shadow-lg shadow-brand-red/30">שמור והוסף</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APP ARCHITECTURE -->
+    <script>
+        // High quality CDN MP4 direct video clips for smooth browser streaming
+        const sampleVideos = {
+            bunny: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+            elephants: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+            sintel: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
+            steel: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
+            blender: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+        };
+
+        // 25+ Movie Catalog with Official Movie Poster URLs (Wikipedia / Wikimedia / Official CDNs)
+        const initialMoviesCatalog = [
+            {
+                id: 1,
+                title: "קיוטי נגד אקמי (Coyote vs. Acme)",
+                category: "קומדיה",
+                type: "סרט",
+                rating: 9.2,
+                year: "2026",
+                duration: "103 דק׳",
+                poster: "https://upload.wikimedia.org/wikipedia/en/2/23/Coyote_vs._Acme_poster.jpeg",
+                videoUrl: sampleVideos.bunny,
+                synopsis: "לאחר שעוד אחד ממוצרי חברת ACME כושל ברגע המכריע, וייל אי. קויוטי (זאב הערבות) מחליט לעשות את הבלתי יאומן: לשכור עורך דין כושל ולתבוע את תאגיד הענק ACME. קומדיה מטורפת המשולבת באנימציה ולייב-אקשן עם ג'ון סינה וויל פורטה!",
+                cast: "וויל פורטה, ג'ון סינה, לנה קונדור, אריק באוזה",
+                director: "דייב גרין",
+                popular: true
+            },
+            {
+                id: 2,
+                title: "פאודה - עונה 4",
+                category: "סרטים ישראליים",
+                type: "סדרה",
+                rating: 9.6,
+                year: "2024",
+                duration: "4 עונות",
+                poster: "https://upload.wikimedia.org/wikipedia/he/2/20/Fauda_S3_Poster.jpg",
+                videoUrl: sampleVideos.steel,
+                synopsis: "דורון וצוות המסתערבים יוצאים למבצע בינלאומי מסוכן בעקבות איום חדש. דרמת המתח הישראלית המצליחה בעולם שמביאה אקשן ללא הפסקה.",
+                cast: "ליאור רז, עידן עמדי, דורון בן דוד, יתיר וקסלר",
+                director: "ליאור רז, אבי יששכרוף",
+                popular: true
+            },
+            {
+                id: 3,
+                title: "חולית: חלק שני (Dune: Part Two)",
+                category: "מדע בדיוני",
+                type: "סרט",
+                rating: 9.1,
+                year: "2024",
+                duration: "2 שעות ו-46 דק׳",
+                poster: "https://upload.wikimedia.org/wikipedia/en/5/52/Dune_Part_Two_poster.jpeg",
+                videoUrl: sampleVideos.sintel,
+                synopsis: "פול אטריידס מאחד כוחות עם צ'אני והדרור המקומיים במרוץ לנקמה כנגד אלו שהרסו את משפחתו, תוך ניסיון למנוע עתיד נורא.",
+                cast: "טימותי שאלאמה, זנדאיה, רבקה פרגוסון, חאווייר ברדם",
+                director: "דני וילנב",
+                popular: true
+            },
+            {
+                id: 4,
+                title: "אופנהיימר (Oppenheimer)",
+                category: "דרמה",
+                type: "סרט",
+                rating: 8.9,
+                year: "2023",
+                duration: "3 שעות",
+                poster: "https://upload.wikimedia.org/wikipedia/en/4/4a/Oppenheimer_%28film%29.jpg",
+                videoUrl: sampleVideos.blender,
+                synopsis: "סיפורו של הפיזיקאי ג'יי רוברט אופנהיימר ועבודתו על פרויקט מנהטן שהובילה לפיתוח פצצת האטום הראשונה בהיסטוריה.",
+                cast: "סיליאן מרפי, אמילי בלאנט, מאט דיימון, רוברט דאוני ג'וניור",
+                director: "כריסטופר נולאן",
+                popular: true
+            },
+            {
+                id: 5,
+                title: "קופה ראשית - עונה 5",
+                category: "סרטים ישראליים",
+                type: "סדרה",
+                rating: 9.5,
+                year: "2024",
+                duration: "5 עונות",
+                poster: "https://upload.wikimedia.org/wikipedia/he/8/8d/Kupa_Rashit_Logo.png",
+                videoUrl: sampleVideos.bunny,
+                synopsis: "הקומדיה הסאטירית האהובה על התרחשויות בסניף 'שפע יששכר' ביבנה. עובדי הסופרמרקט והלקוחות בסיטואציות ישראליות קורעות מצחוק.",
+                cast: "קרן מור, דב נבון, יניב סוויסה, אמיר שורוש",
+                director: "אורן שקדי",
+                popular: true
+            },
+            {
+                id: 6,
+                title: "האביר הכהן (The Dark Knight)",
+                category: "אקשן",
+                type: "סרט",
+                rating: 9.0,
+                year: "2008",
+                duration: "2 שעות ו-32 דק׳",
+                poster: "https://upload.wikimedia.org/wikipedia/en/1/1c/The_Dark_Knight_%282008_film%29.jpg",
+                videoUrl: sampleVideos.steel,
+                synopsis: "באטמן מתמודד מול הג'וקר, נבל פסיכופת המביא אנרכיה וכאוס לגות'אם סיטי ומעמיד את מוסריותו במבחן עליון.",
+                cast: "כריסטיאן בייל, הית' לדג'ר, מייקל קיין, גארי אולדמן",
+                director: "כריסטופר נולאן",
+                popular: true
+            },
+            {
+                id: 7,
+                title: "ספיידרמן: בממדי העכביש",
+                category: "אנימציה",
+                type: "סרט",
+                rating: 8.8,
+                year: "2023",
+                duration: "2 שעות ו-20 דק׳",
+                poster: "https://upload.wikimedia.org/wikipedia/en/8/87/Spider-Man_Into_the_Spider-Verse_poster.png",
+                videoUrl: sampleVideos.elephants,
+                synopsis: "מיילס מוראלס משתגר דרך הרב-יקום ופוגש צוות של אנשי-עכביש המופקדים על הגנת עצם קיומו.",
+                cast: "שאמייק מור, היילי סטיינפלד, אוסקר אייזק",
+                director: "חואקים דוס סנטוס",
+                popular: true
+            },
+            {
+                id: 8,
+                title: "אקדמיית הגיבורים שלי (My Hero Academia)",
+                category: "אנימציה",
+                type: "סדרה",
+                rating: 8.5,
+                year: "2024",
+                duration: "7 עונות",
+                poster: "https://upload.wikimedia.org/wikipedia/en/5/5a/My_Hero_Academia_Volume_1.png",
+                videoUrl: sampleVideos.sintel,
+                synopsis: "איזוקו מידוריה שנולד ללא כוחות על בעולם שבו לרוב האוכלוסייה יש כוחות, שואף להפוך לגיבור העל הגדול ביותר בהדרכתו של אול מאייט.",
+                cast: "דאיקי יאמשיטה, נובוהיקו אוקאמוטו, קנטה מייאקה",
+                director: "קנג'י נאגאסאקי",
+                popular: true
+            },
+            {
+                id: 9,
+                title: "משחקי הכס (Game of Thrones)",
+                category: "סדרות",
+                type: "סדרה",
+                rating: 9.2,
+                year: "2019",
+                duration: "8 עונות",
+                poster: "https://upload.wikimedia.org/wikipedia/en/d/d8/Game_of_Thrones_title_card.jpg",
+                videoUrl: sampleVideos.steel,
+                synopsis: "תשע משפחות אצולה נלחמות על השליטה באדמות וסטרוז, בעוד אויב עתיק חוזר לאחר אלפי שנים.",
+                cast: "אמיליה קלארק, קיט הרינגטון, פיטר דינקלג'",
+                director: "דייוויד בניוף, ד. ב. וייס",
+                popular: true
+            },
+            {
+                id: 10,
+                title: "לשחרר את שולי",
+                category: "סרטים ישראליים",
+                type: "סרט",
+                rating: 8.7,
+                year: "2021",
+                duration: "שעה ו-30 דק׳",
+                poster: "https://upload.wikimedia.org/wikipedia/he/f/f6/Saving_Shuli_Poster.jpeg",
+                videoUrl: sampleVideos.bunny,
+                synopsis: "שלישיית מה קשור במרוץ קורע מצחוק בקולומביה כדי לחלץ את שולי שנחטף על ידי קרטל סמים מקומי.",
+                cast: "ציון ברוך, אסי ישראלוף, שלום מיכאלשווילי",
+                director: "בן בכר",
+                popular: false
+            },
+            {
+                id: 11,
+                title: "דברים מוזרים (Stranger Things)",
+                category: "סדרות",
+                type: "סדרה",
+                rating: 8.7,
+                year: "2022",
+                duration: "4 עונות",
+                poster: "https://upload.wikimedia.org/wikipedia/en/7/78/Stranger_Things_season_4.png",
+                videoUrl: sampleVideos.sintel,
+                synopsis: "כאשר ילד צעיר נעלם בעיירה קטנה, חבריו ומשפחתו מגלים תעלומה הכוללת ניסויים סודיים, כוחות על טבעיים ועולם מקביל.",
+                cast: "מילי בובי בראון, וינונה ריידר, דיוויד הארבור",
+                director: "האחים דאפר",
+                popular: true
+            },
+            {
+                id: 12,
+                title: "התחלה (Inception)",
+                category: "מדע בדיוני",
+                type: "סרט",
+                rating: 8.8,
+                year: "2010",
+                duration: "2 שעות ו-28 דק׳",
+                poster: "https://upload.wikimedia.org/wikipedia/en/2/2e/Inception_%282010%29_theatrical_poster.jpg",
+                videoUrl: sampleVideos.blender,
+                synopsis: "גנב החודר לחלומות של אנשים כדי לגנוב סודות מקבל משימה כמעט בלתי אפשרית: להשתיל רעיון במוחו של מנכ\"ל תאגיד.",
+                cast: "לאונרדו דיקפריו, ג'וזף גורדון-לוויט, אליוט פייג'",
+                director: "כריסטופר נולאן",
+                popular: true
+            },
+            {
+                id: 13,
+                title: "שטיסל - עונה 3",
+                category: "סרטים ישראליים",
+                type: "סדרה",
+                rating: 9.3,
+                year: "2021",
+                duration: "3 עונות",
+                poster: "https://upload.wikimedia.org/wikipedia/he/e/e0/Shtisel.jpg",
+                videoUrl: sampleVideos.elephants,
+                synopsis: "דרמה מרגשת העוקבת אחר קורותיה של משפחת שטיסל החרדית בשכונת גאולה בירושלים, בין אהבה, אמנות ואמונה.",
+                cast: "מיכאל אלוני, דב גליקמן, נטע ריסקין",
+                director: "אלון זינגמן",
+                popular: false
+            },
+            {
+                id: 14,
+                title: "מטריקס (The Matrix)",
+                category: "מדע בדיוני",
+                type: "סרט",
+                rating: 8.7,
+                year: "1999",
+                duration: "2 שעות ו-16 דק׳",
+                poster: "https://upload.wikimedia.org/wikipedia/en/c/c1/The_Matrix_Poster.jpg",
+                videoUrl: sampleVideos.steel,
+                synopsis: "האקר מחשבים מגלה מהמורדים המסתוריים את המציאות האמיתית של עולמו ואת תפקידו במלחמה נגד השולטים בו.",
+                cast: "קיאנו ריבס, לורנס פישבורן, קארי-אן מוס",
+                director: "האחיות וצ'אוסקי",
+                popular: false
+            },
+            {
+                id: 15,
+                title: "אווטאר: דרך המים",
+                category: "מדע בדיוני",
+                type: "סרט",
+                rating: 7.6,
+                year: "2022",
+                duration: "3 שעות ו-12 דק׳",
+                poster: "https://upload.wikimedia.org/wikipedia/en/5/54/Avatar_The_Way_of_Water_poster.jpg",
+                videoUrl: sampleVideos.sintel,
+                synopsis: "ג'ייק סאלי ונייטירי מקימים משפחה בנדורה ונאלצים לעזוב את ביתם ולהגן על שבטי המים מפני איום ישן-חדש.",
+                cast: "סאם וורת'ינגטון, זואי סלדנה, סיגורני ויבר",
+                director: "ג'יימס קמרון",
+                popular: false
+            },
+            {
+                id: 16,
+                title: "אפס ביחסי אנוש",
+                category: "סרטים ישראליים",
+                type: "סרט",
+                rating: 8.9,
+                year: "2014",
+                duration: "שעה ו-40 דק׳",
+                poster: "https://upload.wikimedia.org/wikipedia/he/8/87/Zero_Motivation.jpg",
+                videoUrl: sampleVideos.bunny,
+                synopsis: "קומדיה שחורה ומצליחה על שירותן הצבאי של חיילות שלישות בבסיס צה\"ל נידח בדרום הארץ.",
+                cast: "דאנה איבגי, נלי תגר, שני חדד",
+                director: "טליה לביא",
+                popular: false
+            },
+            {
+                id: 17,
+                title: "המנדלוריאן (The Mandalorian)",
+                category: "סדרות",
+                type: "סדרה",
+                rating: 8.7,
+                year: "2023",
+                duration: "3 עונות",
+                poster: "https://upload.wikimedia.org/wikipedia/en/a/ab/The_Mandalorian_season_1_poster.jpg",
+                videoUrl: sampleVideos.steel,
+                synopsis: "צייד ראשים מנדלוריאני נע בגלקסיה הרחוקה ומוצא את עצמו מגן על יצור מסתורי מבוקש.",
+                cast: "פדרו פסקל, קארל ות'רס, ג'אנקרלו אספוזיטו",
+                director: "ג'ון פאברו",
+                popular: false
+            },
+            {
+                id: 18,
+                title: "גלדיאטור 2",
+                category: "אקשן",
+                type: "סרט",
+                rating: 8.4,
+                year: "2024",
+                duration: "2 שעות ו-28 דק׳",
+                poster: "https://upload.wikimedia.org/wikipedia/en/0/04/Gladiator_II_poster.jpg",
+                videoUrl: sampleVideos.sintel,
+                synopsis: "שנים לאחר מותו של מקסימוס, לוקיוס נכנס לקולוסיאום כדי להילחם על כבודו ועתידה של אימפריית רומא.",
+                cast: "פול מסקל, פדרו פסקל, דנזל וושינגטון",
+                director: "רידלי סקוט",
+                popular: true
+            },
+            {
+                id: 19,
+                title: "זגורי אימפריה",
+                category: "סרטים ישראליים",
+                type: "סדרה",
+                rating: 9.0,
+                year: "2015",
+                duration: "2 עונות",
+                poster: "https://upload.wikimedia.org/wikipedia/he/2/2b/Zaguri_Imperia.jpg",
+                videoUrl: sampleVideos.bunny,
+                synopsis: "דרמה קומית יוצאת דופן על משפחה רועשת מבאר שבע הנאבקת בקללה משפחתית עתיקה שמטלטלת את חייהם.",
+                cast: "עוז זהבי, חן אמסלם, משה אבגי, נינט טייב",
+                director: "מאור זגורי",
+                popular: false
+            },
+            {
+                id: 20,
+                title: "הערת שוליים",
+                category: "סרטים ישראליים",
+                type: "סרט",
+                rating: 8.6,
+                year: "2011",
+                duration: "שעה ו-43 דק׳",
+                poster: "https://upload.wikimedia.org/wikipedia/he/5/52/Footnote_Poster.jpeg",
+                videoUrl: sampleVideos.elephants,
+                synopsis: "יריבות עיקשת בין אב ובנו, שניהם פרופסורים בחוג לתלמוד באוניברסיטה העברית בירושלים.",
+                cast: "שלמה בראבא, ליאור אשכנזי, עלמה זק",
+                director: "יוסף סידר",
+                popular: false
+            },
+            {
+                id: 21,
+                title: "מלך האריות (The Lion King)",
+                category: "אנימציה",
+                type: "סרט",
+                rating: 8.5,
+                year: "1994",
+                duration: "שעה ו-28 דק׳",
+                poster: "https://upload.wikimedia.org/wikipedia/en/3/3d/The_Lion_King_poster.jpg",
+                videoUrl: sampleVideos.bunny,
+                synopsis: "סימבה הגור הצעיר נאלץ לעזוב את ממלכתו לאחר מות אביו מופאסה, וחוזר בבגרותו לדרוש את כס המלכות.",
+                cast: "מת'יו ברודריק, ג'רמי איירונס, ג'יימס ארל ג'ונס",
+                director: "רוג'ר אלרס",
+                popular: false
+            },
+            {
+                id: 22,
+                title: "בלאק מירור (Black Mirror)",
+                category: "מדע בדיוני",
+                type: "סדרה",
+                rating: 8.7,
+                year: "2023",
+                duration: "6 עונות",
+                poster: "https://upload.wikimedia.org/wikipedia/en/2/24/Black_Mirror_title_card.jpg",
+                videoUrl: sampleVideos.steel,
+                synopsis: "אנתולוגיית מד\"ב אפלה ואופנתית הבוחנת את השפעות הטכנולוגיה והמדיה החברתית על החברה האנושית.",
+                cast: "ארון פול, סלמה הייק, בריס דאלאס הווארד",
+                director: "צ'ארלי ברוקר",
+                popular: false
+            },
+            {
+                id: 23,
+                title: "ג'וקר (Joker)",
+                category: "דרמה",
+                type: "סרט",
+                rating: 8.4,
+                year: "2019",
+                duration: "2 שעות ו-2 דק׳",
+                poster: "https://upload.wikimedia.org/wikipedia/en/e/e1/Joker_%282019_film%29_poster.jpg",
+                videoUrl: sampleVideos.blender,
+                synopsis: "ארתור פלק, קומיקאי כושל מנודה מגות'אם, שוקע לאט לאט לשגעון והופך לסמל המהפכה האלימה.",
+                cast: "חואקין פיניקס, רוברט דה נירו, זאזי ביטס",
+                director: "טוד פיליפס",
+                popular: false
+            },
+            {
+                id: 24,
+                title: "מועדון קרב (Fight Club)",
+                category: "דרמה",
+                type: "סרט",
+                rating: 8.8,
+                year: "1999",
+                duration: "2 שעות ו-19 דק׳",
+                poster: "https://upload.wikimedia.org/wikipedia/en/fc/Fight_Club_poster.jpg",
+                videoUrl: sampleVideos.sintel,
+                synopsis: "עובד משרדי הלוקה בנדודי שינה פוגש יצרן סבון כריזמטי ויחד הם מקימים מועדון קרב מחתרתי.",
+                cast: "בראד פיט, אדוארד נורטון, הלנה בונהם קרטר",
+                director: "דיוויד פינצ'ר",
+                popular: false
+            },
+            {
+                id: 25,
+                title: "שר הטבעות: אחוות הטבעת",
+                category: "אקשן",
+                type: "סרט",
+                rating: 8.9,
+                year: "2001",
+                duration: "2 שעות ו-58 דק׳",
+                poster: "https://upload.wikimedia.org/wikipedia/en/8/8a/The_Lord_of_the_Rings_The_Fellowship_of_the_Ring_%282001%29.org.jpg",
+                videoUrl: sampleVideos.steel,
+                synopsis: "הוביט צעיר יוצא למסע מסוכן ברחבי הארץ התיכונה כדי להשמיד את הטבעת האחת במורדור.",
+                cast: "אליג'ה ווד, איאן מקלן, ויגו מורטנסן",
+                director: "פיטר ג'קסון",
+                popular: false
+            }
+        ];
+
+        // Reset local storage on poster update to force updated catalog
+        localStorage.removeItem('cs_movies_db');
+
+        // Categories List
+        const categoriesList = ["הכל", "פופולרי", "סרטים ישראליים", "אקשן", "דרמה", "מדע בדיוני", "קומדיה", "אנימציה", "סדרות"];
+
+        // Global State
+        let moviesCatalog = initialMoviesCatalog;
+        let myWatchlist = JSON.parse(localStorage.getItem('cs_watchlist_db')) || [1, 2, 4];
+        let userRatings = JSON.parse(localStorage.getItem('cs_ratings_db')) || {};
+        let activeCategory = "הכל";
+        let searchQuery = "";
+        let currentMovieInDetails = null;
+
+        // DOM Loaded Init
+        window.addEventListener('DOMContentLoaded', () => {
+            renderCategoriesBar();
+            renderFeaturedHero(moviesCatalog[0]);
+            renderMoviesGrid();
+            updateWatchlistBadges();
+            initVideoPlayerListeners();
+        });
+
+        // Category Filter Tabs
+        function renderCategoriesBar() {
+            const container = document.getElementById('categoriesBar');
+            container.innerHTML = '';
+
+            categoriesList.forEach(cat => {
+                const isActive = activeCategory === cat;
+                const btn = document.createElement('button');
+                btn.className = `px-5 py-2 rounded-full text-xs md:text-sm font-bold whitespace-nowrap transition-all flex items-center gap-2 ${
+                    isActive 
+                    ? 'bg-brand-red text-white shadow-lg shadow-brand-red/30 scale-105' 
+                    : 'glass-card text-gray-300 hover:border-white/20'
+                }`;
+                btn.onclick = () => filterByCategory(cat);
+                btn.innerHTML = `
+                    <span>${cat}</span>
+                    <span class="${isActive ? 'bg-white/20 text-white' : 'bg-black/40 text-gray-400'} px-2 py-0.5 rounded-full text-[10px]">${getCategoryCount(cat)}</span>
+                `;
+                container.appendChild(btn);
+            });
+        }
+
+        function getCategoryCount(cat) {
+            if (cat === 'הכל') return moviesCatalog.length;
+            if (cat === 'פופולרי') return moviesCatalog.filter(m => m.popular).length;
+            return moviesCatalog.filter(m => m.category === cat || (cat === 'סדרות' && m.type === 'סדרה')).length;
+        }
+
+        function filterByCategory(cat) {
+            activeCategory = cat;
+            renderCategoriesBar();
+            
+            const heading = document.getElementById('sectionHeading');
+            if (cat === 'הכל') heading.textContent = 'כל התכנים';
+            else heading.textContent = `קטגוריה: ${cat}`;
+
+            renderMoviesGrid();
+        }
+
+        // Search Input Handling
+        function handleSearch() {
+            searchQuery = document.getElementById('searchInput').value.trim().toLowerCase();
+            renderMoviesGrid();
+        }
+
+        // Render Movies Cards Grid
+        function renderMoviesGrid() {
+            const grid = document.getElementById('moviesGrid');
+            const empty = document.getElementById('emptyState');
+            grid.innerHTML = '';
+
+            const filtered = moviesCatalog.filter(movie => {
+                const matchesCat = 
+                    activeCategory === 'הכל' ||
+                    (activeCategory === 'פופולרי' && movie.popular) ||
+                    (activeCategory === 'סדרות' && movie.type === 'סדרה') ||
+                    movie.category === activeCategory;
+
+                const matchesSearch = 
+                    !searchQuery ||
+                    movie.title.toLowerCase().includes(searchQuery) ||
+                    movie.category.toLowerCase().includes(searchQuery) ||
+                    (movie.cast && movie.cast.toLowerCase().includes(searchQuery)) ||
+                    (movie.director && movie.director.toLowerCase().includes(searchQuery));
+
+                return matchesCat && matchesSearch;
+            });
+
+            document.getElementById('resultsCount').textContent = `${filtered.length} תכנים`;
+
+            if (filtered.length === 0) {
+                empty.classList.remove('hidden');
+            } else {
+                empty.classList.add('hidden');
+                filtered.forEach(movie => {
+                    const isSaved = myWatchlist.includes(movie.id);
+                    const card = document.createElement('div');
+                    card.className = "bg-brand-card rounded-2xl overflow-hidden card-hover-effect cursor-pointer flex flex-col group border border-white/5 relative";
+                    card.innerHTML = `
+                        <div class="relative aspect-[2/3] overflow-hidden bg-gray-900" onclick="openDetailsModal(${movie.id})">
+                            <img src="${movie.poster}" alt="${movie.title}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=800'">
+                            <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                <button onclick="event.stopPropagation(); playMovieDirect(${movie.id})" class="w-12 h-12 rounded-full bg-brand-red text-white flex items-center justify-center text-lg shadow-xl hover:scale-110 transition-transform">
+                                    <i class="fa-solid fa-play pr-0.5"></i>
+                                </button>
+                            </div>
+                            <span class="absolute top-2 right-2 bg-black/75 backdrop-blur-md text-amber-400 font-bold text-xs px-2 py-0.5 rounded-md flex items-center gap-1 shadow">
+                                <i class="fa-solid fa-star text-[10px]"></i> ${movie.rating}
+                            </span>
+                            ${movie.category === 'סרטים ישראליים' ? '<span class="absolute top-2 left-2 bg-blue-600/90 text-white font-bold text-[10px] px-2 py-0.5 rounded shadow">🇮🇱 ישראלי</span>' : ''}
+                        </div>
+                        <div class="p-3.5 flex flex-col justify-between flex-grow">
+                            <div>
+                                <h3 class="font-extrabold text-sm text-gray-100 line-clamp-1 group-hover:text-brand-red transition-colors" onclick="openDetailsModal(${movie.id})">${movie.title}</h3>
+                                <div class="flex items-center justify-between mt-1 text-[11px] text-gray-400">
+                                    <span>${movie.year}</span>
+                                    <span>•</span>
+                                    <span class="text-brand-accent font-semibold">${movie.category}</span>
+                                </div>
+                            </div>
+                            <div class="mt-3 pt-2.5 border-t border-white/5 flex items-center justify-between text-xs">
+                                <button onclick="toggleWatchlist(event, ${movie.id})" class="text-gray-400 hover:text-brand-red transition-colors flex items-center gap-1">
+                                    <i class="${isSaved ? 'fa-solid text-brand-red' : 'fa-regular'} fa-bookmark"></i>
+                                    <span>${isSaved ? 'שמור' : 'לרשימה'}</span>
+                                </button>
+                                <button onclick="playMovieDirect(${movie.id})" class="text-brand-red font-bold hover:underline flex items-center gap-1">
+                                    <span>צפה</span>
+                                    <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+        }
+
+        // Spotlight Featured Movie Banner
+        function renderFeaturedHero(movie) {
+            document.getElementById('heroBanner').style.backgroundImage = `url('${movie.poster}')`;
+            document.getElementById('heroTitle').textContent = movie.title;
+            document.getElementById('heroDesc').textContent = movie.synopsis;
+            document.getElementById('heroCategory').textContent = movie.category;
+            document.getElementById('heroRating').innerHTML = `<i class="fa-solid fa-star text-[10px]"></i> ${movie.rating}`;
+            document.getElementById('heroYear').textContent = movie.year;
+
+            document.getElementById('heroPlayBtn').onclick = () => playMovieDirect(movie.id);
+            document.getElementById('heroListBtn').onclick = () => toggleWatchlist(null, movie.id);
+        }
+
+        // Watchlist Functions
+        function toggleWatchlist(e, movieId) {
+            if (e) e.stopPropagation();
+            const idx = myWatchlist.indexOf(movieId);
+            if (idx === -1) {
+                myWatchlist.push(movieId);
+            } else {
+                myWatchlist.splice(idx, 1);
+            }
+            localStorage.setItem('cs_watchlist_db', JSON.stringify(myWatchlist));
+            updateWatchlistBadges();
+            renderMoviesGrid();
+        }
+
+        function updateWatchlistBadges() {
+            document.getElementById('navWatchlistBadge').textContent = myWatchlist.length;
+            document.getElementById('mobileWatchlistBadge').textContent = myWatchlist.length;
+        }
+
+        function showMyList() {
+            activeCategory = 'הרשימה שלי';
+            renderCategoriesBar();
+            document.getElementById('sectionHeading').textContent = 'הרשימה השמורה שלי';
+            
+            const grid = document.getElementById('moviesGrid');
+            const empty = document.getElementById('emptyState');
+            grid.innerHTML = '';
+
+            const savedMovies = moviesCatalog.filter(m => myWatchlist.includes(m.id));
+            document.getElementById('resultsCount').textContent = `${savedMovies.length} תכנים`;
+
+            if (savedMovies.length === 0) {
+                empty.classList.remove('hidden');
+            } else {
+                empty.classList.add('hidden');
+                savedMovies.forEach(movie => {
+                    const card = document.createElement('div');
+                    card.className = "bg-brand-card rounded-2xl overflow-hidden card-hover-effect flex flex-col border border-white/5";
+                    card.innerHTML = `
+                        <img src="${movie.poster}" class="aspect-[2/3] object-cover cursor-pointer" onclick="openDetailsModal(${movie.id})">
+                        <div class="p-3">
+                            <h4 class="font-bold text-sm text-gray-100 truncate">${movie.title}</h4>
+                            <button onclick="toggleWatchlist(event, ${movie.id})" class="mt-2 w-full bg-red-600/20 text-red-400 hover:bg-brand-red hover:text-white py-1.5 rounded-lg text-xs font-bold transition-colors">
+                                הסר מהרשימה
+                            </button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+        }
+
+        // Details Modal Setup
+        function openDetailsModal(movieId) {
+            const movie = moviesCatalog.find(m => m.id === movieId);
+            if (!movie) return;
+            currentMovieInDetails = movie;
+
+            document.getElementById('detailsPoster').style.backgroundImage = `url('${movie.poster}')`;
+            document.getElementById('detailsTitle').textContent = movie.title;
+            document.getElementById('detailsRating').innerHTML = `<i class="fa-solid fa-star"></i> ${movie.rating}/10 IMDb`;
+            document.getElementById('detailsYear').textContent = movie.year;
+            document.getElementById('detailsDuration').textContent = movie.duration;
+            document.getElementById('detailsCategory').textContent = movie.category;
+            document.getElementById('detailsSynopsis').textContent = movie.synopsis;
+            document.getElementById('detailsCast').textContent = movie.cast || 'צוות שחקנים ישראלי ובינלאומי';
+            document.getElementById('detailsDirector').textContent = movie.director || 'במאי מוביל';
+
+            document.getElementById('detailsPlayBtn').onclick = () => {
+                closeModal('detailsModal');
+                playMovieDirect(movie.id);
+            };
+
+            // Set user rating state
+            const savedRating = userRatings[movie.id] || 0;
+            highlightStars(savedRating);
+
+            // Related Movies Recommendations
+            const recGrid = document.getElementById('recommendedGrid');
+            recGrid.innerHTML = '';
+            const recs = moviesCatalog.filter(m => m.id !== movie.id && (m.category === movie.category || m.type === movie.type)).slice(0, 4);
+            recs.forEach(rec => {
+                const div = document.createElement('div');
+                div.className = "bg-brand-surface rounded-xl overflow-hidden cursor-pointer hover:opacity-80 transition-opacity border border-white/5";
+                div.onclick = () => openDetailsModal(rec.id);
+                div.innerHTML = `
+                    <img src="${rec.poster}" class="w-full h-24 object-cover">
+                    <p class="text-xs p-2 font-bold text-gray-200 truncate">${rec.title}</p>
+                `;
+                recGrid.appendChild(div);
+            });
+
+            openModal('detailsModal');
+        }
+
+        function rateMovie(stars) {
+            if (!currentMovieInDetails) return;
+            userRatings[currentMovieInDetails.id] = stars;
+            localStorage.setItem('cs_ratings_db', JSON.stringify(userRatings));
+            highlightStars(stars);
+        }
+
+        function highlightStars(count) {
+            const container = document.getElementById('starRatingContainer');
+            const stars = container.querySelectorAll('.fa-star');
+            const text = document.getElementById('userRatingText');
+
+            stars.forEach((star, index) => {
+                if (index < count) {
+                    star.className = 'fa-solid fa-star text-amber-400 cursor-pointer hover:scale-125 transition-transform';
+                } else {
+                    star.className = 'fa-regular fa-star text-amber-400 cursor-pointer hover:scale-125 transition-transform';
+                }
+            });
+
+            text.textContent = count > 0 ? `דירגת: ${count} מתוך 5 כוכבים` : 'בחר דירוג';
+        }
+
+        // Custom HTML5 Video Player Modal Controls (No YouTube)
+        const videoPlayer = document.getElementById('html5VideoPlayer');
+        const videoSource = document.getElementById('videoSource');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const playIcon = document.getElementById('playIcon');
+        const seekSlider = document.getElementById('seekSlider');
+        const volumeSlider = document.getElementById('volumeSlider');
+
+        function playMovieDirect(movieId) {
+            const movie = moviesCatalog.find(m => m.id === movieId);
+            if (!movie) return;
+
+            document.getElementById('playerMovieTitle').textContent = movie.title;
+            document.getElementById('playerMovieSub').textContent = `${movie.category} • ${movie.year} • איכות HD 1080p`;
+
+            videoSource.src = movie.videoUrl || sampleVideos.bunny;
+            videoPlayer.load();
+            
+            document.getElementById('videoLoader').classList.remove('hidden');
+            openModal('videoModal');
+
+            videoPlayer.play().then(() => {
+                document.getElementById('videoLoader').classList.add('hidden');
+                playIcon.className = 'fa-solid fa-pause text-base';
+            }).catch(() => {
+                document.getElementById('videoLoader').classList.add('hidden');
+            });
+        }
+
+        function initVideoPlayerListeners() {
+            videoPlayer.addEventListener('timeupdate', () => {
+                if (videoPlayer.duration) {
+                    const pct = (videoPlayer.currentTime / videoPlayer.duration) * 100;
+                    seekSlider.value = pct;
+                    document.getElementById('currentTimeDisplay').textContent = formatTime(videoPlayer.currentTime);
+                    document.getElementById('durationDisplay').textContent = formatTime(videoPlayer.duration);
+                }
+            });
+
+            seekSlider.addEventListener('input', () => {
+                if (videoPlayer.duration) {
+                    videoPlayer.currentTime = (seekSlider.value / 100) * videoPlayer.duration;
+                }
+            });
+
+            volumeSlider.addEventListener('input', () => {
+                videoPlayer.volume = volumeSlider.value;
+                document.getElementById('volumeIcon').className = videoPlayer.volume === 0 ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-volume-high';
+            });
+        }
+
+        function togglePlayPause() {
+            if (videoPlayer.paused) {
+                videoPlayer.play();
+                playIcon.className = 'fa-solid fa-pause text-base';
+            } else {
+                videoPlayer.pause();
+                playIcon.className = 'fa-solid fa-play pr-0.5 text-base';
+            }
+        }
+
+        function rewindVideo(seconds) {
+            videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - seconds);
+        }
+
+        function forwardVideo(seconds) {
+            videoPlayer.currentTime = Math.min(videoPlayer.duration, videoPlayer.currentTime + seconds);
+        }
+
+        function toggleMute() {
+            videoPlayer.muted = !videoPlayer.muted;
+            document.getElementById('volumeIcon').className = videoPlayer.muted ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-volume-high';
+        }
+
+        function changeSpeed() {
+            const speed = document.getElementById('speedSelect').value;
+            videoPlayer.playbackRate = parseFloat(speed);
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                videoPlayer.requestFullscreen().catch(err => alert(err.message));
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        function closeVideoModal() {
+            videoPlayer.pause();
+            videoSource.src = "";
+            closeModal('videoModal');
+        }
+
+        function formatTime(seconds) {
+            const m = Math.floor(seconds / 60);
+            const s = Math.floor(seconds % 60);
+            return `${m < 10 ? '0' : ''}${m}:${s < 10 ? '0' : ''}${s}`;
+        }
+
+        // Add New Custom Movie
+        function handleAddMovieSubmit(event) {
+            event.preventDefault();
+            const newM = {
+                id: Date.now(),
+                title: document.getElementById('newTitle').value,
+                category: document.getElementById('newCategory').value,
+                type: document.getElementById('newType').value,
+                rating: parseFloat(document.getElementById('newRating').value) || 8.0,
+                year: document.getElementById('newYear').value || "2025",
+                duration: document.getElementById('newDuration').value || "שעה ו-40 דק׳",
+                poster: document.getElementById('newPosterUrl').value || "https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=800",
+                videoUrl: document.getElementById('newVideoUrl').value || sampleVideos.bunny,
+                synopsis: document.getElementById('newSynopsis').value || "סרט חדש שתווסף למאגר.",
+                cast: "שחקנים",
+                director: "במאי",
+                popular: false
+            };
+
+            moviesCatalog.unshift(newM);
+            localStorage.setItem('cs_movies_db', JSON.stringify(moviesCatalog));
+            closeModal('addMovieModal');
+            document.getElementById('addMovieForm').reset();
+            renderCategoriesBar();
+            renderMoviesGrid();
+        }
+
+        // Generic Modal Toggle Helpers
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+    </script>
+</body>
+</html>

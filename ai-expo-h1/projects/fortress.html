@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>מבצר הכוכב 3D - שחר רוזנפלד</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Three.js Library for 3D Graphics -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Heebo', sans-serif;
+            background-color: #030712;
+            color: #f8fafc;
+            overflow: hidden;
+            user-select: none;
+        }
+        #canvas-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+        }
+        .glow-text {
+            text-shadow: 0 0 15px rgba(56, 189, 248, 0.7);
+        }
+        .ui-panel {
+            background: rgba(15, 23, 42, 0.88);
+            backdrop-filter: blur(14px);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+        }
+        .btn-game {
+            transition: all 0.2s ease;
+        }
+        .btn-game:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(56, 189, 248, 0.5);
+        }
+        .btn-game:active {
+            transform: translateY(1px);
+        }
+    </style>
+</head>
+<body class="relative w-screen h-screen flex flex-col justify-between p-4 pointer-events-none">
+
+    <div id="canvas-container"></div>
+
+    <header class="w-full max-w-6xl mx-auto flex justify-between items-center ui-panel px-6 py-3 rounded-2xl shadow-2xl z-10 pointer-events-auto">
+        <div>
+            <h1 class="text-xl md:text-2xl font-black text-cyan-400 glow-text">מבצר הכוכב 3D 🛡️🚀</h1>
+            <p class="text-xs text-slate-400">יוצר: שחר רוזנפלד | פעולה ואסטרטגיה תלת-ממדית</p>
+        </div>
+        <div class="flex gap-3 items-center">
+            <div class="bg-slate-900/90 px-3 py-1.5 rounded-xl border border-slate-700 text-center">
+                <span class="block text-[10px] text-slate-400">אנרגיה (⚡)</span>
+                <span id="score-resources" class="text-base font-bold text-amber-400">150</span>
+            </div>
+            <div class="bg-slate-900/90 px-3 py-1.5 rounded-xl border border-slate-700 text-center">
+                <span class="block text-[10px] text-slate-400">גל אויבים</span>
+                <span id="score-wave" class="text-base font-bold text-cyan-400">1</span>
+            </div>
+            <div class="bg-slate-900/90 px-3 py-1.5 rounded-xl border border-slate-700 text-center">
+                <span class="block text-[10px] text-slate-400">ניקוד</span>
+                <span id="score-points" class="text-base font-bold text-emerald-400">0</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="w-full max-w-6xl mx-auto flex justify-between items-end z-10 pointer-events-none mb-2">
+        <div class="ui-panel p-4 rounded-2xl shadow-xl pointer-events-auto hidden md:block max-w-xs">
+            <h3 class="text-sm font-bold text-cyan-300 mb-1">פקודות שליטה:</h3>
+            <p class="text-xs text-slate-300 leading-relaxed">
+                • תנועת הגיבור: מקשי <b class="text-cyan-400">W A S D</b> או חצים.<br>
+                • ירי טילים: <b class="text-amber-400">קליק שמאלי</b> בעכבר לעבר המפה.<br>
+                • איסוף כוח: אסוף משאבים ונקודות כוח זוהרות בשטח.
+            </p>
+        </div>
+
+        <div class="ui-panel p-4 rounded-2xl shadow-xl pointer-events-auto flex flex-col gap-3 w-full md:w-80">
+            <h3 class="text-sm font-bold text-cyan-300 border-b border-slate-700 pb-1">ניהול הגנות ומשאבים</h3>
+            <div class="grid grid-cols-2 gap-2">
+                <button onclick="upgradeHeroFire()" class="btn-game bg-slate-900 border border-cyan-500/50 p-2.5 rounded-xl flex flex-col items-center text-center">
+                    <span class="font-bold text-xs text-cyan-400">שדרוג נשק גיבור</span>
+                    <span class="text-[10px] text-amber-300 mt-1">40 ⚡</span>
+                </button>
+                <button onclick="spawnPowerUp()" class="btn-game bg-slate-900 border border-purple-500/50 p-2.5 rounded-xl flex flex-col items-center text-center">
+                    <span class="font-bold text-xs text-purple-400">זימון נקודת כוח</span>
+                    <span class="text-[10px] text-amber-300 mt-1">30 ⚡</span>
+                </button>
+            </div>
+
+            <div class="border-t border-slate-700 pt-2 flex flex-col gap-1.5">
+                <div class="flex justify-between text-xs text-slate-300">
+                    <span>חיי הגיבור:</span>
+                    <span id="hero-health-text" class="text-emerald-400 font-bold">100 / 100 ❤️</span>
+                </div>
+                <div class="w-full bg-slate-900 rounded-full h-2.5 overflow-hidden border border-slate-700">
+                    <div id="heroHealthBar" class="bg-emerald-500 h-full transition-all duration-300" style="width: 100%;"></div>
+                </div>
+                <button onclick="startNextWave()" id="nextWaveBtn" class="mt-1 btn-game bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold py-2 px-4 rounded-xl text-xs shadow-lg">
+                    שגר גל אויבים הבא 🚀
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <div id="gameOverlay" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center z-50 p-6 text-center pointer-events-auto">
+        <h2 id="overlay-title" class="text-4xl md:text-6xl font-black text-cyan-400 mb-3 glow-text">מבצר הכוכב 3D</h2>
+        <p id="overlay-desc" class="text-slate-300 max-w-lg mb-8 text-sm md:text-base leading-relaxed">
+            שלוט בלוחם החלל שלך באמצעות מקשי ה-WASD, סייר בזירה, אסוף נקודות כוח ומששאבים זוהרים, והשמד את הפולשים לפני שיפגעו בך!
+        </p>
+        <button id="startBtn" class="btn-game bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black text-lg px-10 py-4 rounded-2xl shadow-2xl">
+            התחל במשחק התלת-ממד
+        </button>
+    </div>
+
+    <script>
+        let gameState = 'START';
+        let score = 0;
+        let resources = 150;
+        let wave = 1;
+        let heroHealth = 100;
+        let maxHeroHealth = 100;
+        let heroFirePower = 25;
+        let waveActive = false;
+
+        let scene, camera, renderer;
+        let hero;
+        let enemies = [];
+        let projectiles = [];
+        let powerUps = [];
+        let enemySpawnTimer = 0;
+        let enemiesToSpawn = 0;
+
+        const keys = { w: false, a: false, s: false, d: false, ArrowUp: false, ArrowLeft: false, ArrowDown: false, ArrowRight: false };
+        let mouse = new THREE.Vector2();
+        let raycaster = new THREE.Raycaster();
+        let groundPlane;
+
+        function init3D() {
+            const container = document.getElementById('canvas-container');
+            
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x030712);
+            scene.fog = new THREE.FogExp2(0x030712, 0.015);
+
+            camera = new THREE.PerspectiveCamera(55, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 32, 26);
+            camera.lookAt(0, 0, -2);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            container.appendChild(renderer.domElement);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            const sunLight = new THREE.DirectionalLight(0x38bdf8, 1.3);
+            sunLight.position.set(20, 40, 20);
+            sunLight.castShadow = true;
+            scene.add(sunLight);
+
+            const groundGeo = new THREE.PlaneGeometry(80, 50, 40, 25);
+            const groundMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.8, metalness: 0.2 });
+            groundPlane = new THREE.Mesh(groundGeo, groundMat);
+            groundPlane.rotation.x = -Math.PI / 2;
+            groundPlane.receiveShadow = true;
+            scene.add(groundPlane);
+
+            const gridHelper = new THREE.GridHelper(80, 40, 0x38bdf8, 0x1e293b);
+            gridHelper.position.y = 0.05;
+            scene.add(gridHelper);
+
+            hero = createDetailedCharacter(0x0284c7, 0x38bdf8, 'hero');
+            hero.position.set(0, 0, 0);
+            scene.add(hero);
+
+            window.addEventListener('resize', onWindowResize);
+            window.addEventListener('keydown', (e) => handleKey(e, true));
+            window.addEventListener('keyup', (e) => handleKey(e, false));
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('click', onClick);
+
+            animate();
+        }
+
+        function createDetailedCharacter(primaryColor, glowColor, type) {
+            const group = new THREE.Group();
+
+            // Torso
+            const bodyGeo = new THREE.BoxGeometry(0.9, 1.4, 0.6);
+            const bodyMat = new THREE.MeshStandardMaterial({ color: primaryColor, roughness: 0.3, metalness: 0.8 });
+            const body = new THREE.Mesh(bodyGeo, bodyMat);
+            body.position.y = 1.1;
+            body.castShadow = true;
+            group.add(body);
+
+            // Helmet
+            const helmetGeo = new THREE.BoxGeometry(0.65, 0.65, 0.65);
+            const helmetMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.2, metalness: 0.9 });
+            const helmet = new THREE.Mesh(helmetGeo, helmetMat);
+            helmet.position.y = 2.1;
+            helmet.castShadow = true;
+            group.add(helmet);
+
+            // Visor
+            const visorGeo = new THREE.BoxGeometry(0.55, 0.18, 0.35);
+            const visorMat = new THREE.MeshStandardMaterial({ color: glowColor, emissive: glowColor, emissiveIntensity: 1.0 });
+            const visor = new THREE.Mesh(visorGeo, visorMat);
+            visor.position.set(0, 2.1, 0.3);
+            group.add(visor);
+
+            // Rifle
+            const rifleGeo = new THREE.BoxGeometry(0.2, 0.2, 1.3);
+            const rifleMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.9 });
+            const rifle = new THREE.Mesh(rifleGeo, rifleMat);
+            rifle.position.set(0.5, 1.0, 0.4);
+            group.add(rifle);
+
+            // Legs
+            const legGeo = new THREE.CylinderGeometry(0.16, 0.16, 0.85);
+            const legMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, metalness: 0.5 });
+            
+            const leftLeg = new THREE.Mesh(legGeo, legMat);
+            leftLeg.position.set(-0.25, 0.42, 0);
+            leftLeg.castShadow = true;
+            group.add(leftLeg);
+
+            const rightLeg = new THREE.Mesh(legGeo, legMat);
+            rightLeg.position.set(0.25, 0.42, 0);
+            rightLeg.castShadow = true;
+            group.add(rightLeg);
+
+            group.userData = { type: type };
+            return group;
+        }
+
+        function handleKey(e, isDown) {
+            if (keys.hasOwnProperty(e.key)) keys[e.key] = isDown;
+            if (keys.hasOwnProperty(e.code)) keys[e.code] = isDown;
+            if (e.key === 'w' || e.key === 'W') keys.w = isDown;
+            if (e.key === 'a' || e.key === 'A') keys.a = isDown;
+            if (e.key === 's' || e.key === 'S') keys.s = isDown;
+            if (e.key === 'd' || e.key === 'D') keys.d = isDown;
+        }
+
+        function onMouseMove(e) {
+            mouse.x = (e.clientX / window.innerWidth) * 2 - 1;
+            mouse.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        }
+
+        function onClick(e) {
+            if (gameState !== 'PLAYING') return;
+            if (e.clientY < 70 || e.clientX > window.innerWidth - 320) return;
+            shootHeroProjectile();
+        }
+
+        function shootHeroProjectile() {
+            raycaster.setFromCamera(mouse, camera);
+            const intersects = raycaster.intersectObject(groundPlane);
+            if (intersects.length === 0) return;
+
+            const targetPoint = intersects[0].point;
+            const angle = Math.atan2(targetPoint.z - hero.position.z, targetPoint.x - hero.position.x);
+
+            const projGeo = new THREE.SphereGeometry(0.35, 8, 8);
+            const projMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+            const mesh = new THREE.Mesh(projGeo, projMat);
+            mesh.position.copy(hero.position);
+            mesh.position.y += 1.4;
+            scene.add(mesh);
+
+            projectiles.push({
+                mesh: mesh,
+                velocity: new THREE.Vector3(Math.cos(angle) * 0.9, 0, Math.sin(angle) * 0.9),
+                damage: heroFirePower,
+                life: 90
+            });
+        }
+
+        function spawnPowerUp() {
+            if (resources < 30) return;
+            resources -= 30;
+            updateUI();
+
+            const puGeo = new THREE.OctahedronGeometry(0.8);
+            const puMat = new THREE.MeshStandardMaterial({ color: 0xa855f7, emissive: 0xa855f7, emissiveIntensity: 0.8 });
+            const mesh = new THREE.Mesh(puGeo, puMat);
+            mesh.position.set((Math.random() - 0.5) * 30, 0.8, (Math.random() - 0.5) * 20);
+            scene.add(mesh);
+
+            powerUps.push({ mesh: mesh, type: 'energy', value: 40 });
+        }
+
+        function upgradeHeroFire() {
+            if (resources < 40) return;
+            resources -= 40;
+            heroFirePower += 15;
+            updateUI();
+        }
+
+        function startNextWave() {
+            if (waveActive) return;
+            waveActive = true;
+            enemiesToSpawn = 5 + wave * 3;
+            enemySpawnTimer = 0;
+            document.getElementById('nextWaveBtn').disabled = true;
+            document.getElementById('nextWaveBtn').classList.add('opacity-50', 'cursor-not-allowed');
+        }
+
+        function spawnEnemy() {
+            const color = wave >= 3 ? 0xfb923c : 0xf43f5e;
+            const hp = 40 + wave * 12;
+            const speed = 0.08 + wave * 0.004;
+
+            const enemyMesh = createDetailedCharacter(color, 0xf43f5e, 'enemy');
+            enemyMesh.position.set(38, 0, (Math.random() - 0.5) * 35);
+            scene.add(enemyMesh);
+
+            enemies.push({
+                mesh: enemyMesh,
+                hp: hp,
+                speed: speed,
+                damage: 12
+            });
+        }
+
+        function updateUI() {
+            document.getElementById('score-resources').innerText = resources;
+            document.getElementById('score-wave').innerText = wave;
+            document.getElementById('score-points').innerText = score;
+            document.getElementById('hero-health-text').innerText = `${heroHealth} / ${maxHeroHealth} ❤️`;
+            const healthPct = Math.max(0, (heroHealth / maxHeroHealth) * 100);
+            document.getElementById('heroHealthBar').style.width = `${healthPct}%`;
+        }
+
+        function updateGame() {
+            if (gameState !== 'PLAYING') return;
+
+            // Hero Movement
+            const moveSpeed = 0.22;
+            if (keys.w || keys.ArrowUp) hero.position.z -= moveSpeed;
+            if (keys.s || keys.ArrowDown) hero.position.z += moveSpeed;
+            if (keys.a || keys.ArrowLeft) hero.position.x -= moveSpeed;
+            if (keys.d || keys.ArrowRight) hero.position.x += moveSpeed;
+
+            // Arena Boundaries for Hero
+            hero.position.x = Math.max(-36, Math.min(36, hero.position.x));
+            hero.position.z = Math.max(-22, Math.min(22, hero.position.z));
+
+            // Enemy Spawning
+            if (enemiesToSpawn > 0) {
+                enemySpawnTimer++;
+                if (enemySpawnTimer > 45) {
+                    spawnEnemy();
+                    enemiesToSpawn--;
+                    enemySpawnTimer = 0;
+                }
+            } else if (enemies.length === 0 && waveActive) {
+                waveActive = false;
+                wave++;
+                resources += 75 + wave * 15;
+                document.getElementById('nextWaveBtn').disabled = false;
+                document.getElementById('nextWaveBtn').classList.remove('opacity-50', 'cursor-not-allowed');
+                updateUI();
+            }
+
+            // Update Power-ups collision
+            for (let i = powerUps.length - 1; i >= 0; i--) {
+                let pu = powerUps[i];
+                pu.mesh.rotation.y += 0.05;
+                if (hero.position.distanceTo(pu.mesh.position) < 2.0) {
+                    resources += pu.value;
+                    score += 50;
+                    scene.remove(pu.mesh);
+                    powerUps.splice(i, 1);
+                    updateUI();
+                }
+            }
+
+            // Update Projectiles
+            for (let i = projectiles.length - 1; i >= 0; i--) {
+                let p = projectiles[i];
+                p.mesh.position.add(p.velocity);
+                p.life--;
+
+                let hit = false;
+                for (let j = enemies.length - 1; j >= 0; j--) {
+                    let enemy = enemies[j];
+                    if (p.mesh.position.distanceTo(enemy.mesh.position) < 1.6) {
+                        enemy.hp -= p.damage;
+                        hit = true;
+                        if (enemy.hp <= 0) {
+                            scene.remove(enemy.mesh);
+                            enemies.splice(j, 1);
+                            score += 30;
+                            resources += 20;
+                            updateUI();
+                        }
+                        break;
+                    }
+                }
+
+                if (hit || p.life <= 0) {
+                    scene.remove(p.mesh);
+                    projectiles.splice(i, 1);
+                }
+            }
+
+            // Update Enemies
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                let enemy = enemies[i];
+                const dir = new THREE.Vector3().subVectors(hero.position, enemy.mesh.position).normalize();
+                enemy.mesh.position.add(dir.multiplyScalar(enemy.speed));
+                enemy.mesh.lookAt(hero.position);
+
+                if (enemy.mesh.position.distanceTo(hero.position) < 1.8) {
+                    heroHealth -= enemy.damage;
+                    scene.remove(enemy.mesh);
+                    enemies.splice(i, 1);
+                    updateUI();
+
+                    if (heroHealth <= 0) {
+                        gameState = 'GAMEOVER';
+                        showGameOverScreen();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            updateGame();
+            renderer.render(scene, camera);
+        }
+
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+
+        function showGameOverScreen() {
+            const overlay = document.getElementById('gameOverlay');
+            document.getElementById('overlay-title').innerText = 'הגיבור נפצע! 💀';
+            document.getElementById('overlay-desc').innerText = `החזקת מעמד עד גל ${wave} והשגת ציון של ${score} נקודות. נסה שוב!`;
+            document.getElementById('startBtn').innerText = 'משחק חדש';
+            overlay.classList.remove('hidden');
+        }
+
+        document.getElementById('startBtn').addEventListener('click', () => {
+            gameState = 'PLAYING';
+            score = 0;
+            resources = 150;
+            wave = 1;
+            heroHealth = 100;
+            maxHeroHealth = 100;
+            heroFirePower = 25;
+            waveActive = false;
+
+            enemies.forEach(e => scene.remove(e.mesh));
+            enemies = [];
+            powerUps.forEach(p => scene.remove(p.mesh));
+            powerUps = [];
+            projectiles.forEach(p => scene.remove(p.mesh));
+            projectiles = [];
+
+            hero.position.set(0, 0, 0);
+            updateUI();
+            document.getElementById('gameOverlay').classList.add('hidden');
+        });
+
+        window.onload = init3D;
+    </script>
+</body>
+</html>
